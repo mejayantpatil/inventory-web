@@ -1,0 +1,271 @@
+<br>
+<div class="row">
+    <!-- <div class="col-2">
+        <app-menus></app-menus>
+    </div> -->
+    <div class="col-12">
+        <div *ngIf="!showNewWorkOrderForm">
+            <h2>Work Orders</h2>
+            <br>
+            <div class="row">
+                <div class="col-6">
+                    <!-- <span>Filter By Category</span>
+                    <select #mySelect (change)='filterResults(mySelect.value)' class="form-select form-control"
+                        aria-label="Default select">
+                        <option selected value="">All Category</option>
+                        <option [value]="cat._id" *ngFor="let cat of categorys; let i = index">
+                            {{cat.categoryName}}
+                        </option>
+                    </select> -->
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-4">
+                    <!-- <span>filter</span> -->
+                    <!-- <input placeholder="Filter By Part No or Part Name" type="text" class="form-control"
+                        [(ngModel)]="partNo"> -->
+                </div>
+                <div class="col-8">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-warning" (click)="exportToExcel()"><i
+                                class="bi bi-box-arrow-in-down"></i> Export
+                            WorkOrders</button>
+                        <button type="button" class="btn btn-primary pull-right" (click)="newWorkOrder()">New Work
+                            Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <!-- <ul class="list-group pop-up" *ngIf="1 === showPopup">
+                <li class="list-group-item">An item</li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+                <li class="list-group-item">A fourth item</li>
+                <li class="list-group-item">And a fifth one</li>
+            </ul> -->
+            <div class="col-10">
+                <table class="table table-striped table-hover" id="excel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="50">#</th>
+                            <th scope="col">Order No</th>
+                            <th scope="col">Order Date</th>
+                            <th scope="col">Service Provider Name</th>
+                            <th scope="col">Total Quantity</th>
+                            <th scope="col">Order Status</th>
+                            <!-- <th scope="col">Quantity</th>
+                        <th scope="col">Sale Rate</th>
+                        <th scope="col">Purchase Rate</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Store Loc.</th> -->
+
+                            <th scope="col" width="200">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr *ngFor="let order of workOrders;let i=index">
+                            <th scope=" row" width="50">{{i+1}}</th>
+                            <td>{{order.workOrderNumber}}</td>
+                            <td>{{order.date}}</td>
+                            <td>{{order.serviceProviderName}}</td>
+                            <td>{{order.totalQuantity}}</td>
+                            <td
+                                [ngClass]="{'text-success': order.status === 'Complete', 'text-primary': order.status === 'Pending'}">
+                                {{order.status}}</td>
+                            <!-- <td>{{(workOrder.quantity?workOrder.quantity:0) + (stockPurchased[workOrder.partNumber] ?
+                            stockPurchased[workOrder.partNumber]:0) -
+                            (stockConsumed[workOrder.partNumber]? stockConsumed[workOrder.partNumber]:0)}}</td>
+                        <td>{{workOrder.saleRate}}</td>
+                         <td>{{workOrder.newRate}}</td>
+                        <td>{{workOrder.unit}}</td>
+                        <td>{{workOrder.storeLocation}}</td> -->
+
+                            <td width="200">
+                                <i class="bi bi-pencil-square" (click)="editWorkOrder(order)"
+                                    title="Edit"></i>&nbsp;&nbsp;
+                                <i class="bi bi-trash3" (click)="deleteWorkOrder(order._id)"
+                                    title="Delete"></i>&nbsp;&nbsp;
+                                <i class="bi bi-check-circle" *ngIf="order.status !== 'Complete'"
+                                    [ngClass]="{'complete': order.status === 'Complete', 'pending': order.status === 'Pending'}"
+                                    (click)="completeOrder(order)" title="Click to Complete"></i>
+                                <!--                                 
+                                <button type="button" class="btn btn-success pull-right" (click)="completeOrder(order)"
+                                    *ngIf="order.status !== 'Complete'">Complete</button> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div *ngIf="showNewWorkOrderForm">
+            <h2>Work Order </h2>
+            <br>
+            <form [formGroup]="workOrderForm">
+                <div class="row">
+                    <div class="col-2">
+                        Work Order No
+                        <input class="form-control text-end" type="number" readonly formControlName="workOrderNumber" />
+                    </div>
+                    <div class="col-3">
+                        Service Provider Name
+                        <ng-autocomplete [data]="accounts" [searchKeyword]="'accountName'"
+                            placeholder="Select Service Provider" [itemTemplate]="itemTemplate"
+                            [notFoundTemplate]="notFoundTemplate" (selected)='setSupplier($event)'
+                            formControlName="serviceProviderName">
+                        </ng-autocomplete>
+                        <ng-template #itemTemplate let-item>
+                            <a [innerHTML]="item.accountName"></a>
+                        </ng-template>
+                        <ng-template #notFoundTemplate let-notFound>
+                            <div [innerHTML]="notFound"></div>
+                        </ng-template>
+                    </div>
+                    <div class="col-2">
+                        Order Date
+                        <input class="form-control" type="date" formControlName="date" />
+                    </div>
+
+                </div>
+                <br>
+                <div class="row" *ngIf="workOrderForm.value.serviceProviderName">
+                    <div class="col-2">
+                        Part No
+                        <!-- <input class="form-control" type="text" formControlName="partNo" /> -->
+                        <!-- <select class="form-select form-control" (change)="setProductField()" aria-label="Default select"
+                                        id="partNo" formControlName="partNo">
+                                        <option value="" disabled selected>Select Part No</option>
+                                        <option [value]="product.partNumber" *ngFor="let product of products; let i = index">
+                                            {{product.partNumber}}
+                                        </option>
+                                    </select> -->
+                        <ng-autocomplete [data]="products" formControlName="partNo" [searchKeyword]="'partNumber'"
+                            placeholder="Select Part No" [itemTemplate]="partNoTemplate"
+                            [initialValue]="selectedProduct" [notFoundTemplate]="notFoundTemplate"
+                            (selected)='setPartNo($event)'>
+                        </ng-autocomplete>
+                        <ng-template #partNoTemplate let-item>
+                            <a [innerHTML]="item.partNumber"></a>
+                        </ng-template>
+
+                    </div>
+                    <div class="col-2">
+                        Part Name
+                        <ng-autocomplete [data]="products" formControlName="partName" [searchKeyword]="'partName'"
+                            [initialValue]="selectedProduct" placeholder="Select Part Name"
+                            [itemTemplate]="partNameTemplate" [notFoundTemplate]="notFoundTemplate"
+                            (selected)='setPartName($event)'>
+                        </ng-autocomplete>
+                        <ng-template #partNameTemplate let-item>
+                            <a [innerHTML]="item.partName"></a>
+                        </ng-template>
+                    </div>
+                    <div class="col-1">
+                        Quantity
+                        <input class="form-control" type="number" formControlName="quantity" />
+                    </div>
+                    <div class="col-1">
+                        Unit
+                        <input class="form-control" type="text" formControlName="unit" />
+                    </div>
+                    <div class="col-1">
+                        Rate
+                        <input class="form-control" type="number" formControlName="rate" />
+                    </div>
+                    <div class="col-2">
+                        Last GST%
+                        <input class="form-control" type="number" (blur)="addData()" formControlName="gst" />
+                    </div>
+
+                </div>
+                <br>
+                <div class="row" *ngIf="workOrderForm.value.serviceProviderName">
+                    <div class="col-12">
+                        <hr>
+                        <table class="table table-striped table-hover" id="excel-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Part No</th>
+                                    <th scope="col">Part Name</th>
+                                    <th scope="col" class="text-right">Last Rate</th>
+                                    <th scope="col" class="text-right">Qty</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col" class="text-right">GST</th>
+                                    <!-- <th scope="col" class="text-right">Dis%</th>
+                                                                    <th scope="col" class="text-right">Dis AMT</th>
+                                                                    <th scope="col" class="text-right">Gross</th>
+                                                                    <th scope="col" class="text-right">SGST%</th>
+                                                                    <th scope="col" class="text-right">SGST Amt</th>
+                                                                    <th scope="col" class="text-right">CGST%</th>
+                                                                    <th scope="col" class="text-right">CGST Amt</th> -->
+                                    <!-- <th scope="col" class="text-right">Net Amount</th> -->
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pi of partsData;let i=index">
+                                    <th scope="row">{{i+1}}</th>
+                                    <td>{{pi.partNo}}</td>
+                                    <td>{{pi.partName}}</td>
+                                    <td class="text-right">{{pi.rate}}</td>
+                                    <td class="text-right">{{pi.quantity}}</td>
+                                    <td>{{pi.unit}}</td>
+
+                                    <!-- <td class="text-right">{{pi.discountPercentage}}%</td>
+                                                                    <td class="text-right">{{pi.discount}}</td>
+                                                                    <td class="text-right">{{pi.grossAmount}}</td>
+                                                                    <td class="text-right">{{pi.sgstPercentage}}%</td>
+                                                                    <td class="text-right">{{pi.sgstAmount}}</td>
+                                                                    <td class="text-right">{{pi.cgstPercentage}}%</td>
+                                                                    <td class="text-right">{{pi.cgstAmount}}</td> -->
+                                    <td class="text-right">{{pi.gst}}%</td>
+                                    <td>
+                                        <i class="bi bi-pencil-square" (click)="editData(i)"></i>&nbsp;
+                                        <i class="bi bi-trash3" (click)="deleteData(i)"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-6">
+                        Order Description
+                        <textarea class="form-control" id="comment" formControlName="comment" rows="3"></textarea>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-warning" (click)="cancel()">Cancel</button>
+                            <button type="button" class="btn btn-primary pull-right" (click)="saveWorkOrder()"
+                                [disabled]="!workOrderForm.value.serviceProviderName">Save
+                            </button>
+                            <button type="button" class="btn btn-success pull-right" (click)="printOrder()"
+                                [disabled]="!workOrderForm.value.serviceProviderName">Print</button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+            </form>
+
+
+            <br><br>
+        </div>
+    </div>
+</div>

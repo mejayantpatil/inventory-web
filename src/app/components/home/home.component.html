@@ -1,0 +1,105 @@
+<div>
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Library</li>
+        </ol>
+      </nav>
+      <div class="alert alert-primary" role="alert">
+        Recommended results matching to your profile!
+      </div>
+      <div class="row">
+        <div class="col-md-3 hidden-xs">
+          Filter
+          <hr>
+          <ol class="list-group list-group-numbered">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">Subheading</div>
+                Cras justo odio
+              </div>
+              <span class="badge bg-primary rounded-pill">14</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">Subheading</div>
+                Cras justo odio
+              </div>
+              <span class="badge bg-primary rounded-pill">14</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">Subheading</div>
+                Cras justo odio
+              </div>
+              <span class="badge bg-primary rounded-pill">14</span>
+            </li>
+          </ol>
+        </div>
+        <div class="col-md-9 col-xs-12">
+          Display Type: Grid/List
+          <hr>
+          <!-- <div class="col-12" *ngFor="let item of data; let i=index;"> -->
+            <div class="card mb-3" *ngFor="let item of data; let i=index;">
+                <!-- <img src="assets/images/blank-profile-picture.png" class="card-img-top" alt="..."> -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <img src="assets/images/blank-profile-picture.png" class="card-img-top" alt="..." height="200" width="200">
+                        </div>
+                        <div class="col-8">
+                            <h5 class="card-title">Name: {{item.firstName}} {{item.lastName}}</h5>
+                            <div>
+                                <small>Locaion: {{item.location}},</small><br>
+                                <small>Occupation: {{item.occupation}},</small><br>
+                                <small>Age: {{item.age}},</small><br>
+                                <small>Locaion: {{item.location}},</small><br>
+                            </div>
+                            
+                        </div>
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-grid gap-3 d-md-block">
+                                <button type="button" class="btn btn-success me-md-2" (click)="viewProfile(item.id)">View Profile</button>
+                                <button type="button" class="btn btn-danger me-md-2" (click)="shortlist()">ShortList</button>
+                                <button type="button" class="btn btn-warning" (click)="sendMessage()">Send Message</button>
+                              </div>
+                        </div>
+                    </div>
+                    
+                </div>
+              <!-- </div> -->
+        </div>
+        </div>
+        <div class="col-md-6 col-lg-6 col-sm-12" *ngFor="let item of data; let i=index;">
+            <div class="card">
+                <!-- <img src="assets/images/blank-profile-picture.png" class="card-img-top" alt="..."> -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <img src="assets/images/blank-profile-picture.png" class="card-img-top" alt="..." height="200" width="200">
+                        </div>
+                        <div class="col-6">
+                            <h5 class="card-title">Name: {{item.firstName}} {{item.lastName}}</h5>
+                            <div>
+                                <small>Locaion: {{item.location}},</small><br>
+                                <small>Occupation: {{item.occupation}},</small><br>
+                                <small>Age: {{item.age}},</small><br>
+                                <small>Locaion: {{item.location}},</small><br>
+                            </div>
+                            
+                        </div>
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-block">
+                                <button type="button" class="btn btn-success" (click)="viewProfile(item.id)">View Profile</button>
+                                <button type="button" class="btn btn-danger" (click)="shortlist()">ShortList</button>
+                                <button type="button" class="btn btn-warning" (click)="sendMessage()">Send Message</button>
+                              </div>
+                        </div>
+                    </div>
+                    
+                </div>
+              </div>
+        </div>
+      </div>
+</div>

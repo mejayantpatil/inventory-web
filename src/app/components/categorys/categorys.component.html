@@ -1,0 +1,67 @@
+<br>
+<div class="row">
+    <!-- <div class="col-2">
+        <app-menus></app-menus>
+    </div> -->
+    <div class="col-12">
+        <div *ngIf="!showNewCategoryForm">
+            <h2>Categorys</h2>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-warning" (click)="exportToExcel()"><i
+                        class="bi bi-box-arrow-in-down"></i> Export Categorys</button>
+                <!-- <button type="button" class="btn btn-info">Info</button> -->
+                <button type="button" class="btn btn-primary pull-right" (click)="newCategory()">New Category</button>
+            </div>
+            <hr>
+            <table class="table table-striped table-hover" id="excel-table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Category Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let category of data;let i=index">
+                        <th scope="row">{{i+1}}</th>
+                        <td>{{category.categoryName}}</td>
+                    </tr>
+                    <tr>
+                </tbody>
+            </table>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div *ngIf="showNewCategoryForm">
+            <h2>Categorys</h2>
+            <form [formGroup]="categoryForm">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Category Details:</li>
+                    <li class="list-group-item">Category Name:
+                        <span *ngIf="!editCategoryFlag">{{category.categoryName}}</span>
+                        <input *ngIf="editCategoryFlag" id="categoryName" class="form-control" type="text"
+                            formControlName="categoryName" />
+                    </li>
+                    <!-- <li class="list-group-item">Country:
+                              <span *ngIf="!editCategoryFlag">{{category.country}}</span>
+                              <input *ngIf="editCategoryFlag" id="country" class="form-control" type="text" formControlName="country">
+                            </li> -->
+                </ul>
+            </form>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-warning" (click)="cancel()">Cancel</button>
+                <!-- <button type="button" class="btn btn-info">Info</button> -->
+                <button type="button" class="btn btn-primary pull-right" (click)="saveCategory()">Save Category</button>
+            </div>
+            <br><br>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,111 @@
+new button - in part done
+menu transaction - parts inwards done
+
+
+setup file on desktop - done
+dashboard - supply order - place order directly from dashboard - done
+
+
+
+REPORTS
+
+
+FEATURE  PART REPAIR - like part inward
+part repair
+no discount
+labour Price
+
+supply order on low quantity in job card
+create table for order with old rate and new rate
+
+job madun add hoyala pahije
+
+
+
+
+part inward new rate add -
+new rate pick for job card
+problem should some from - 
+mechanic name pick from account table - 
+categories wise report generate - 
+lagder page no add in job report  done
+on save update quantity - done
+show stock in red   -done
+new rate
+
+
+changes 
+
+new rate vaLU   done
+EDITABLE  done
+new part done
+
+part
+job
+password for edit n delete - done
+popup on product details 
+
+
+REPORTS
+bus wise
+all
+transaction details
+
+
+
+
+purchase report
+part inward ch copy 
+avail stock
+
+
+purchase 
+
+flag can be used 
+
+all products
+all transactions
+all jobs 
+
+
+pratno = {opening: 0, purchased: 10, consumed: 3}
+
+done
+
+
+24 april
+
+LASTRATE GST QTY 
+JOB CARD
+CHANGES -
+
+PART INWARD AUTO GENERATE NO 
+
+CARD click open current job card
+
+reset color on bill
+generate bill status
+job car number auto 
+
+
+job report madh bottom Line distey - pending
+add new parts handle for 0 entry 
+
+generate bill make card reset and update status - vip
+
+28 april
+
+parts repaired
+new rate calculation
+show runnig services on dashboard
+
+
+qty in purchaed details
+net amount 
+
+03 MAY
+
+purchase report madhe
+supllier name 
+service provdier 
+in filter

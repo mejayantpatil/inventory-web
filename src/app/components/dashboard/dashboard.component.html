@@ -1,0 +1,92 @@
+<br>
+<div class="row">
+  <!-- <div class="col-2">
+    <app-menus></app-menus>
+  </div> -->
+  <div class="col-12">
+    <h1>Welcome to Vishwayoddha Shetkari Multitrade</h1>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col-6">
+        <div class="card text-dark bg-light mb-3">
+          <div class="card-header">Products</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-7">
+                <label class="card-title text-start">Qunaity is low for below products</label> &nbsp;
+              </div>
+              <div class="text-end col-5">
+                <button type="button" class="btn btn-warning" (click)="addToSupplyOrder()">
+                  Add to Supply Order
+                </button>
+              </div>
+            </div>
+            <br>
+            <div class="responsive-table">
+              <table class="table table-danger table-striped table-hover table-sm" id="excel-table">
+                <thead>
+                  <tr>
+                    <th scope="col"><input class="form-check-input" [(ngModel)]="selectAll" type="checkbox"
+                        (change)="checkAll()" value="All">
+                    </th>
+                    <th scope="col">#</th>
+                    <th scope="col">Part No</th>
+                    <th scope="col">Part Name</th>
+                    <th scope="col">Qty</th>
+                    <th scope="col">Supplier</th>
+
+                    <!-- <th scope="col">Rate</th>
+                    <th scope="col">Unit</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Page No</th> -->
+                    <!-- <th scope="col">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let product of products;let i=index">
+                    <td scope="col"><input class="form-check-input" type="checkbox"
+                        (change)="product.checked = !product.checked" [checked]="product.checked"
+                        value="product.checked"></td>
+                    <th scope="row">{{i+1}}</th>
+                    <td>{{product.partNumber}}</td>
+                    <td>{{product.partName}}</td>
+                    <td>{{product.quantity}}</td>
+                    <td>{{product.supplierName}}</td>
+                    <!-- <td>{{product.saleRate}}</td>
+                    <td>{{product.unit}}</td>
+                    <td>{{product.storeLocation}}</td>
+                    <td>{{product.ledgerPageNumber}}</td> -->
+                    <!-- <td>
+                              <i class="bi bi-pencil-square" (click)="editProduct(product)"></i>&nbsp;
+                              <i class="bi bi-trash3" (click)="deleteProduct(product._id)"></i>
+                            </td> -->
+                  </tr>
+                  <tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card text-dark bg-light mb-3">
+          <div class="card-header">Running Job Cards</div>
+          <div class="card-body">
+            <!-- <h5 class="card-title">Job Card</h5> -->
+            <div class="row">
+              <div class="col-12 custom-btn" *ngIf="activeCards.length > 0">
+                <button *ngFor="let job of activeCards; let i =index;" class="btn btn-primary"
+                  (click)="openJobCard(job)">{{job}}
+                  <i class="bi bi-bus-front text-primary"></i></button>
+              </div>
+            </div>
+            <p class="card-text" *ngIf="activeCards.length  === 0">There is no bus in servicing.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

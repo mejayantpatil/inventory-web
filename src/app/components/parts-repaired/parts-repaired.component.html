@@ -1,0 +1,417 @@
+<br>
+<div class="row">
+    <!-- <div class="col-3">
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action active" routerLink="/dashboard">Dashboard</a>
+            <a href="#" class="list-group-item list-group-item-action" routerLink="/accounts">Accounts</a>
+            <a href="#" class="list-group-item list-group-item-action" routerLink="/products">Porducts</a>
+            <a href="#" class="list-group-item list-group-item-action" routerLink="/part-inward">Parts Inward</a>
+            <a href="#" class="list-group-item list-group-item-action" routerLink="/groups">Groups</a>
+            <a href="#" class="list-group-item list-group-item-action" routerLink="/categorys">Category</a>
+            <a href="#" class="list-group-item list-group-item-action" routerLink="/users">Users</a>
+        </div>
+    </div> -->
+
+    <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]="notFound"></div>
+    </ng-template>
+    <div class="col-12">
+        <h2>
+            <a href="#" routerLink="/transactions">
+                <i class="bi bi-arrow-left-square-fill"></i>
+            </a> Part Repaired
+        </h2><br>
+        <form [formGroup]="partInwardForm">
+
+            <div class="row">
+                <div class="col-4">
+                    Transaction No
+                    <input class="form-control" type="text" readonly formControlName="transactionNo" />
+                </div>
+                <div class="col-4">
+                    Payment Mode
+                    <!-- <input class="form-control" type="text" formControlName="paymentMode" /> -->
+                    <select class="form-select form-control" #paymentMode aria-label="Default select" id="paymentMode"
+                        formControlName="paymentMode" autofocus>
+                        <option value="" disabled selected>Select Mode</option>
+                        <option [selected]="mode===partInwardForm.value.paymentMode" [value]="mode"
+                            *ngFor="let mode of modes; let i = index">
+                            {{mode}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    Service Provider Invoice No
+                    <input class="form-control" type="text" formControlName="supplierInvoiceNo" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    Service Provider Name
+                    <!-- <select class="form-select form-control" aria-label="Default select" id="supplierName"
+                        formControlName="supplierName">
+                        <option value="" disabled selected>Select supplierName</option>
+                        <option [value]="account.accountName" *ngFor="let account of accounts; let i = index">
+                            {{account.accountName}}
+                        </option>
+                    </select> -->
+                    <ng-autocomplete [data]="accounts" [searchKeyword]="'accountName'"
+                        placeholder="Select Service Provider" [itemTemplate]="itemTemplate"
+                        [notFoundTemplate]="notFoundTemplate" (selected)='setSupplier($event)'
+                        formControlName="supplierName">
+                    </ng-autocomplete>
+                    <ng-template #itemTemplate let-item>
+                        <a [innerHTML]="item.accountName"></a>
+                    </ng-template>
+                </div>
+                <div class="col-2"><br>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#accountModal">Show Accounts</button>
+                    &nbsp;&nbsp;
+                </div>
+                <div class="col-4"></div>
+                <div class="col-2">
+                    Date
+                    <input class="form-control" type="date" formControlName="date" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    Part No
+                    <!-- <input class="form-control" type="text" formControlName="partNo" /> -->
+                    <!-- <select class="form-select form-control" (change)="setProductField()" aria-label="Default select"
+                        id="partNo" formControlName="partNo">
+                        <option value="" disabled selected>Select Part No</option>
+                        <option [value]="product.partNumber" *ngFor="let product of products; let i = index">
+                            {{product.partNumber}}
+                        </option>
+                    </select> -->
+                    <ng-autocomplete [data]="repairableProducts" formControlName="partNo" [searchKeyword]="'partNumber'"
+                        placeholder="Select Part No" [itemTemplate]="partNoTemplate" [initialValue]="selectedProduct"
+                        [notFoundTemplate]="notFoundTemplate" (selected)='setPartNo($event)'>
+                    </ng-autocomplete>
+                    <ng-template #partNoTemplate let-item>
+                        <a [innerHTML]="item.partNumber"></a>
+                    </ng-template>
+
+                </div>
+                <div class="col-2">
+                    Part Name
+                    <!-- <input class="form-control" type="text" formControlName="partName" /> -->
+                    <!-- <select class="form-select form-control" aria-label="Default select" id="partName"
+                        formControlName="partName">
+                        <option value="" disabled selected>Select Part Name</option>
+                        <option [value]="product.partName"
+                            [selected]="product.partName === partInwardForm.value.partName"
+                            *ngFor="let product of products; let i = index">
+                            {{product.partName}}
+                        </option>
+                    </select> -->
+                    <ng-autocomplete [data]="repairableProducts" formControlName="partName" [searchKeyword]="'partName'"
+                        [initialValue]="selectedProduct" placeholder="Select Part Name"
+                        [itemTemplate]="partNameTemplate" [notFoundTemplate]="notFoundTemplate"
+                        (selected)='setPartName($event)'>
+                    </ng-autocomplete>
+                    <ng-template #partNameTemplate let-item>
+                        <a [innerHTML]="item.partName"></a>
+                    </ng-template>
+                </div>
+                <div class="col-1">
+                    Quantity
+                    <input class="form-control" type="number" formControlName="quantity" />
+                </div>
+                <div class="col-1">
+                    Unit
+                    <input class="form-control" type="text" formControlName="unit" />
+                </div>
+                <div class="col-1">
+                    Rate
+                    <input class="form-control" type="number" formControlName="rate" />
+                    <!-- <span>{{selectedProduct ? selectedProduct.saleRate: ''}}</span> -->
+                </div>
+                <!-- <div class="col-1">
+                    Discount %
+                    <input class="form-control" type="number" (blur)="setDiscount()"
+                        formControlName="discountPercentage" />
+                </div> -->
+                <!-- <div class="col-2">
+                    Labour Charges
+                    <input class="form-control" type="number" formControlName="labourCharges" />
+                </div> -->
+                <div class="col-1">
+                    GST%
+                    <input class="form-control" type="number" (blur)="setGST()" formControlName="gstPercentage" />
+                </div>
+                <div class="col-1">
+                    GST
+                    <input class="form-control" type="number" formControlName="gst" readonly />
+                </div>
+                <div class="col-1">
+                    Part Net
+                    <input class="form-control" type="number" readonly formControlName="netAmount" />
+                </div>
+                <div class="col-5"></div>
+                <div class="col-2">
+                    Labour Charges
+                    <input class="form-control" type="number" formControlName="labourCharges" />
+                </div>
+                <div class="col-1">
+                    GST%
+                    {{partInwardForm.value.gstPercentage}}
+                    <input class="form-control" type="number" (blur)="setLGST()" formControlName="lgstPercentage" />
+                </div>
+                <div class="col-1">
+                    GST
+                    <input class="form-control" type="number" formControlName="lgst" readonly />
+                </div>
+                <div class="col-1">
+                    Labour Net
+                    <input class="form-control" type="number" (blur)="addData()" readonly
+                        formControlName="lnetAmount" />
+                </div>
+                <div class="col-5"></div>
+                <div class="col-2">
+                    Total
+                </div>
+                <div class="col-1" *ngIf="partInwardForm.value.gstPercentage">
+                    {{partInwardForm.value.gstPercentage + partInwardForm.value.lgstPercentage}}
+
+                </div>
+                <div class="col-1">
+                    {{partInwardForm.value.totalGST}}
+                </div>
+                <div class="col-1">
+                    {{partInwardForm.value.total}}
+                </div>
+            </div>
+            <br>
+            <div class="row" *ngIf="selectedIndex > -1 && selectedProduct">
+                <div class="col-2">
+                    <button type="button" class="btn btn-warning" (click)="cancelUpdate()">Cancel</button>&nbsp;
+                    <button type="button" class="btn btn-success" (click)="update()">Update</button>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="!(selectedIndex > -1 && selectedProduct)">
+                <div class="col-2">
+                    <!-- <button type="button" class="btn btn-warning" (click)="cancelUpdate()">Cancel</button>&nbsp; -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addNewProduct">
+                        Add New Product
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="addNewProductLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addNewProductLabel">New Product</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form [formGroup]="productForm">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Product Details:</li>
+                                    <li class="list-group-item">Part Number:
+                                        <input id="partNumber" class="form-control" type="text"
+                                            formControlName="partNumber" />
+                                    </li>
+                                    <li class="list-group-item">Part Name:
+                                        <input id="partName" class="form-control" type="text"
+                                            formControlName="partName" />
+                                    </li>
+                                    <li class="list-group-item">Sale Rate:
+                                        <input id="saleRate" class="form-control" type="text"
+                                            formControlName="saleRate" />
+                                    </li>
+                                    <li class="list-group-item">Quantity:
+                                        <input id="quantity" class="form-control" type="text"
+                                            formControlName="quantity" />
+                                    </li>
+                                    <li class="list-group-item">Unit:
+                                        <input id="unit" class="form-control" type="text" formControlName="unit" />
+                                    </li>
+                                    <li class="list-group-item">Store Location:
+                                        <input id="storeLocation" class="form-control" type="text"
+                                            formControlName="storeLocation" />
+                                    </li>
+                                    <li class="list-group-item">Ledger Page Number:
+                                        <input id="ledgerPageNumber" class="form-control" type="text"
+                                            formControlName="ledgerPageNumber" />
+                                    </li>
+                                    <li class="list-group-item">Category:
+                                        <select class="form-select form-control" aria-label="Default select"
+                                            id="category" formControlName="category">
+                                            <option selected>Select Category</option>
+                                            <option [value]="cat._id" *ngFor="let cat of categorys; let i = index">
+                                                {{cat.categoryName}}
+                                            </option>
+                                        </select>
+                                    </li>
+                                </ul>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                #closebutton>Close</button>
+                            <button type="button" class="btn btn-primary" (click)="addNewProduct()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <table class="table table-striped table-hover" id="excel-table">
+                        <thead>
+                            <tr>
+                                <th scope="col" width="50">#</th>
+                                <th scope="col">Part No</th>
+                                <th scope="col" width="200">Part Name</th>
+                                <th scope="col" class="text-right">Qty</th>
+                                <th scope="col">Unit</th>
+                                <th scope="col" class="text-right">Rate</th>
+                                <th scope="col" class="text-right">Labour Ch.</th>
+                                <!-- <th scope="col" class="text-right">Dis AMT</th> -->
+                                <th scope="col" class="text-right">Gross</th>
+                                <th scope="col" class="text-right">SGST%</th>
+                                <th scope="col" class="text-right">SGST Amt</th>
+                                <th scope="col" class="text-right">CGST%</th>
+                                <th scope="col" class="text-right">CGST Amt</th>
+                                <th scope="col" class="text-right">Net Amount</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pi of data;let i=index">
+                                <th scope="row" width="50">{{i+1}}</th>
+                                <td>{{pi.partNo}}</td>
+                                <td width="200">{{pi.partName}}</td>
+                                <td class="text-right">{{pi.quantity}}</td>
+                                <td>{{pi.unit}}</td>
+                                <td class="text-right">{{pi.rate}}</td>
+                                <td class="text-right">{{pi.labourCharges}}</td>
+                                <!-- <td class="text-right">{{pi.discount}}</td> -->
+                                <td class="text-right">{{pi.grossAmount}}</td>
+                                <td class="text-right">{{pi.sgstPercentage}}%</td>
+                                <td class="text-right">{{pi.sgstAmount}}</td>
+                                <td class="text-right">{{pi.cgstPercentage}}%</td>
+                                <td class="text-right">{{pi.cgstAmount}}</td>
+                                <td class="text-right">{{pi.total}}</td>
+                                <td>
+                                    <i class="bi bi-pencil-square" (click)="editData(i)"></i>&nbsp;
+                                    <i class="bi bi-trash3" (click)="deleteData(i)"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-6">
+                    <label for="" class="form-label">Item Description</label>
+                    <textarea class="form-control" id="comment" formControlName="comment" rows="3"></textarea>
+                </div>
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-6">
+                            Gross Amount
+                            <input class="form-control" type="text" formControlName="grossAmount" />
+                        </div>
+                        <div class="col-6">
+                            GST
+                            <input class="form-control" type="text" formControlName="gstTotal" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            Grand Total Amount
+                            <input class="form-control" type="text" formControlName="grandTotal" />
+                        </div>
+                        <div class="col-6">
+                            Net Amount
+                            <input class="form-control" type="text" formControlName="totalNetAmount" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <br>
+            <hr>
+            <div class="row">
+                <div class="col-6">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <button type="button" class="btn btn-dark" (click)="loadTransaction('first')">First</button>
+                        <button type="button" class="btn btn-dark"
+                            (click)="loadTransaction('previous')">Previous</button>
+                        <button type="button" class="btn btn-dark" (click)="loadTransaction('next')">Next</button>
+                        <button type="button" class="btn btn-dark" (click)="loadTransaction('last')">Last</button>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-danger" (click)="newTransaction('new')">New
+                            Part</button>
+                        <button type="button" class="btn btn-warning" routerLink="/transactions">Find</button>
+                        <button type="button" class="btn btn-primary pull-right" (click)="saveTransaction()">Save
+                            Product</button>
+                        <button type="button" class="btn btn-success" (click)="report()">Print Invoice</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <!-- <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <button type="button" class="btn btn-warning" routerLink="/transactions">Find</button>
+                        <button type="button" class="btn btn-primary pull-right" (click)="saveTransaction()">Save
+                            Product</button>
+                        <button type="button" class="btn btn-success" (click)="report()">Print Invoice</button>
+                    </div> -->
+                </div>
+            </div>
+            <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="addNewProductLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addNewProductLabel">Accounts</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <app-accounts-master></app-accounts-master>
+                        </div>
+                        <!-- <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                #closebutton>Close</button>
+                            <button type="button" class="btn btn-primary" (click)="addNewProduct()">Save</button>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+            <div class="position-fixed top-10 end-0 p-3" style="z-index: 9999">
+                <div #toast class="toast" role="alert" data-bs-animation="true" aria-live="assertive"
+                    aria-atomic="true">
+                    <div class="toast-header">
+                        <!-- <i class="bi bi-card-checklist"></i> -->
+                        <i class="bi bi-window"></i>
+                        &nbsp;
+                        <strong class="me-auto">Transaction</strong>
+                        <small>just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Transaction saved successfully.
+                    </div>
+                </div>
+            </div>
+            <br><br>
+        </form>
+    </div>
+</div>

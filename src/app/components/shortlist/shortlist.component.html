@@ -1,0 +1,32 @@
+<div class="row">
+        <div class="col-md-6 col-lg-6 col-sm-12" *ngFor="let item of data; let i=index;">
+            <div class="card">
+                <!-- <img src="assets/images/blank-profile-picture.png" class="card-img-top" alt="..."> -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <img src="assets/images/blank-profile-picture.png" class="card-img-top" alt="...">
+                        </div>
+                        <div class="col-6">
+                            <h5 class="card-title">Name: {{item.firstName}} {{item.lastName}}</h5>
+                            <div>
+                                <small>Locaion: {{item.location}},</small><br>
+                                <small>Occupation: {{item.occupation}},</small><br>
+                                <small>Age: {{item.age}},</small><br>
+                                <small>Locaion: {{item.location}},</small><br>
+                            </div>
+                            
+                        </div>
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-block">
+                                <!-- <button type="button" class="btn btn-success" (click)="viewProfile(item.id)">View Profile</button>
+                                <button type="button" class="btn btn-danger" (click)="shortlist()">ShortList</button>
+                                <button type="button" class="btn btn-warning" (click)="sendMessage()">Send Message</button> -->
+                              </div>
+                        </div>
+                    </div>
+                    
+                </div>
+              </div>
+        </div>
+      </div>

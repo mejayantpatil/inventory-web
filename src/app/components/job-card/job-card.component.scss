@@ -1,0 +1,70 @@
+table {
+    .text-right {
+        text-align: right;
+    }
+}
+
+.custom-btn {
+    button {
+        width: 50px;
+        font-size: 12pt;
+        padding: 5px;
+        margin: 5px;
+        height: 50px;
+        border: 0;
+        color: #fff;
+        font-weight: 600;
+        background-color: transparent;
+        // background-image: url('../../../assets/images/bus.jpg');
+
+        i {
+            position: relative;
+            // color: aqua;
+            right: 7px;
+            top: -48px;
+            display: block;
+            height: 0;
+            font-size: 40pt;
+            z-index: -1; // opacity: 0.3;
+
+            // &.info {
+            //     color: aqua;
+            // }
+
+            // &.danger {
+            //     color: red;
+            // }
+
+            // &.primary {
+            //     color: blue;
+            // }
+        }
+    }
+}
+
+.test {
+    width: 100px;
+    position: relative;
+    left: 40%;
+}
+
+tbody {
+    display: block;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+thead,
+tbody tr {
+    display: table;
+    width: 100%; //var(--table-width);
+    table-layout: fixed;
+}
+
+thead {
+    width: 99%;
+}
+
+.top-10 {
+    top: 10%
+}

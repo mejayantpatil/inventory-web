@@ -1,0 +1,176 @@
+<div class="row">
+ <div class="col-md-12 mt-3">
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    Edit your profile to get results matching to your profile!
+    <a class="btn-link" routerLink="/profile">Edit your Profile Now</a>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+ </div> 
+<div class="col-md-6 col-sm-12" style="height: 500px;">
+    <h3>Profile pictures</h3>
+    <hr>
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="assets/images/blank-profile-picture.png" class="d-block w-100" style="height: 500px;">
+          </div>
+          <div class="carousel-item">
+            <img src="assets/images/blank-profile-picture.png" class="d-block w-100" style="height: 500px;">
+          </div>
+          <div class="carousel-item">
+            <img src="assets/images/blank-profile-picture.png" class="d-block w-100" style="height: 500px;">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+<div class="col-md-6 col-sm-12">
+    <!-- <div class="card">
+        <div class="card-body">
+          <h3>Personal Information</h3>
+          <h3>Personal Information</h3>
+          <div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">An item</li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+                <li class="list-group-item">A fourth item</li>
+                <li class="list-group-item">And a fifth one</li>
+              </ul>
+          </div>
+        </div>
+      </div> -->
+      <h3>{{user.firstName}} {{user.lastName}}</h3>
+      <hr>
+          <h3>Personal Information</h3>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-warning" type="button" (click)="editPersonalInfo()" *ngIf="!editPersonalInfoFlag">Edit</button>
+            <button class="btn btn-primary me-md-2" type="button" (click)="editPersonalInfoFlag=!editPersonalInfoFlag" *ngIf="editPersonalInfoFlag">Cancel</button>
+            <button class="btn btn-danger" type="button" (click)="updatePersonalInfo()" *ngIf="editPersonalInfoFlag">Update</button>
+          </div>
+          <div>
+            <form [formGroup]="personalInfo">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">First Name: 
+                  <span *ngIf="!editPersonalInfoFlag">{{user.firstName}}</span>
+                  <input *ngIf="editPersonalInfoFlag" id="first-name" class="form-control" type="text" formControlName="firstName">
+                </li>
+                <li class="list-group-item">Last Name: 
+                  <span *ngIf="!editPersonalInfoFlag">{{user.lastName}}</span>
+                  <input *ngIf="editPersonalInfoFlag" id="last-name" class="form-control" type="text" formControlName="lastName">
+                </li>
+                <li class="list-group-item">Fathes Name: 
+                  <span *ngIf="!editPersonalInfoFlag">{{user.fatherName}}</span>
+                  <input *ngIf="editPersonalInfoFlag" id="father-name" class="form-control" type="text" formControlName="fatherName">
+                </li>
+                <li class="list-group-item">Mothers Name:
+                  <span *ngIf="!editPersonalInfoFlag">{{user.motherName}}</span>
+                  <input *ngIf="editPersonalInfoFlag" id="mother-name" class="form-control" type="text" formControlName="motherName">
+                </li>
+                <li class="list-group-item">Mother's Place:
+                  <span *ngIf="!editPersonalInfoFlag">{{user.mothersPlace}}</span>
+                  <input *ngIf="editPersonalInfoFlag" id="mothers-place" class="form-control" type="text" formControlName="mothersPlace">
+                
+                </li>
+              </ul>
+            </form>
+          </div>
+
+          <hr>
+          <h3>Address</h3>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-warning" type="button" (click)="editCurrentAddress()" *ngIf="!editCurrnetAddressFlag">Edit</button>
+            <button class="btn btn-primary me-md-2" type="button" (click)="editCurrnetAddressFlag=!editCurrnetAddressFlag" *ngIf="editCurrnetAddressFlag">Cancel</button>
+            <button class="btn btn-danger" type="button" (click)="updateCurrentAddress()" *ngIf="editCurrnetAddressFlag">Update</button>
+          </div>
+          <div>
+            <form [formGroup]="currentAddressForm">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">Current Addres:</li>
+                <li class="list-group-item">City: 
+                  <span *ngIf="!editCurrnetAddressFlag">{{currentAddress.city}}</span>
+                  <input *ngIf="editCurrnetAddressFlag" id="city" class="form-control" type="text" formControlName="city">
+                </li>
+                <li class="list-group-item">Tehsil:
+                  <span *ngIf="!editCurrnetAddressFlag">{{currentAddress.tehsil}}</span>
+                  <input *ngIf="editCurrnetAddressFlag" id="tehsil" class="form-control" type="text" formControlName="tehsil">
+                </li>
+                <li class="list-group-item">District:
+                  <span *ngIf="!editCurrnetAddressFlag">{{currentAddress.district}}</span>
+                  <input *ngIf="editCurrnetAddressFlag" id="district" class="form-control" type="text" formControlName="district">
+                </li>
+                <li class="list-group-item">State:
+                  <span *ngIf="!editCurrnetAddressFlag">{{currentAddress.state}}</span>
+                  <input *ngIf="editCurrnetAddressFlag" id="state" class="form-control" type="text" formControlName="state">
+                </li>
+                <li class="list-group-item">Country:
+                  <span *ngIf="!editCurrnetAddressFlag">{{currentAddress.country}}</span>
+                  <input *ngIf="editCurrnetAddressFlag" id="country" class="form-control" type="text" formControlName="country">
+                </li>
+              </ul>
+            </form>
+            
+            <hr>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-warning" type="button" (click)="editParamnantAddress()" *ngIf="!editPermanantAddressFlag">Edit</button>
+            <button class="btn btn-primary me-md-2" type="button" (click)="editPermanantAddressFlag=!editPermanantAddressFlag" *ngIf="editPermanantAddressFlag">Cancel</button>
+            <button class="btn btn-danger" type="button" (click)="updatePermanantAddress()" *ngIf="editPermanantAddressFlag">Update</button>
+          </div>
+            <form [formGroup]="permanentAddressForm">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">Permenant Addres: </li>
+              <li class="list-group-item">City: 
+                <span *ngIf="!editPermanantAddressFlag">{{permanantAddress.city}}</span>
+                <input *ngIf="editPermanantAddressFlag" id="city" class="form-control" type="text" formControlName="city">
+              </li>
+              <li class="list-group-item">Tehsil:
+                <span *ngIf="!editPermanantAddressFlag">{{permanantAddress.tehsil}}</span>
+                <input *ngIf="editPermanantAddressFlag" id="tehsil" class="form-control" type="text" formControlName="tehsil">
+              </li>
+              <li class="list-group-item">District:
+                <span *ngIf="!editPermanantAddressFlag">{{permanantAddress.district}}</span>
+                <input *ngIf="editPermanantAddressFlag" id="district" class="form-control" type="text" formControlName="district">
+              </li>
+              <li class="list-group-item">State:
+                <span *ngIf="!editPermanantAddressFlag">{{permanantAddress.state}}</span>
+                <input *ngIf="editPermanantAddressFlag" id="state" class="form-control" type="text" formControlName="state">
+              </li>
+              <li class="list-group-item">Country:
+                <span *ngIf="!editPermanantAddressFlag">{{permanantAddress.country}}</span>
+                <input *ngIf="editPermanantAddressFlag" id="country" class="form-control" type="text" formControlName="country">
+              </li>
+            </ul>
+            </form>  
+          </div>
+        <hr>
+        <h3>Education Details</h3>
+          <div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Hight Education: </li>
+                <li class="list-group-item">University Name:</li>
+              </ul>
+          </div> 
+          <hr>
+        <h3>Professional Details</h3>
+          <div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Working as: </li>
+                <li class="list-group-item">Company Name:</li>
+                <li class="list-group-item">salary:</li>
+                
+              </ul>
+          </div>  
+</div>
+</div>

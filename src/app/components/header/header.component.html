@@ -1,0 +1,116 @@
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/dashboard" routerLinkActive="active">Vishwayoddha Shetkari Multitrade</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+      aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02" *ngIf="path !== '/login'">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/dashboard" routerLinkActive="active">Dashbord</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Reports
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <!-- <li><a class="dropdown-item" routerLink="/purchase-reports">Purchase Reports</a></li>
+                    <li><a class="dropdown-item" routerLink="/consumption-reports">Consumption Report</a></li>-->
+            <li><a class="dropdown-item" routerLink="/purchase-reports">Purchase Reports</a></li>
+            <li><a class="dropdown-item" routerLink="/product-wise-consumption-reports">Product Wise Consumption
+                Reports</a></li>
+            <li><a class="dropdown-item" routerLink="/stock-wise-reports">Stock Wise Reports</a></li>
+            <!-- <li><a class="dropdown-item" href="#">Another action</a></li> -->
+            <!-- <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/accounts" routerLinkActive="active">Accounts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/products" routerLinkActive="active">Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/jobs" routerLinkActive="active">Jobs</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/transactions" routerLinkActive="active">Parts</a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/supply-order" routerLinkActive="active">Supply Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/work-orders" routerLinkActive="active">Work Orders</a>
+        </li> -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Orders
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" routerLink="/supply-order">Supply Orders</a></li>
+            <li><a class="dropdown-item" routerLink="/work-orders">Work Orders</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/groups" routerLinkActive="active">Groups</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/categorys" routerLinkActive="active">Category</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/vehicles" routerLinkActive="active">Vehicles</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link link" aria-current="page" routerLinkActive="active" (click)="backup()">Backup</a>
+        </li>
+
+
+        <!--<li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/chat" routerLinkActive="active">Transactions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/profile" routerLinkActive="active">Utility</a>
+        </li> -->
+        <!-- <li class="nav-item">
+          <a class="nav-link" aria-current="page" routerLink="/shortlist" routerLinkActive="active">Reports</a>
+        </li> -->
+
+
+
+      </ul>
+      <!-- <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="button" (click)="search()">Search</button>
+      </form> -->
+    </div>
+  </div>
+</nav>
+
+<div class="position-fixed top-10 end-0 p-3" style="z-index: 9999">
+  <div #toast class="toast" role="alert" data-bs-animation="true" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <!-- <i class="bi bi-card-checklist"></i> -->
+      <i class="bi bi-window rounded me-2 text-success"></i>
+      &nbsp;
+      <strong class="me-auto text-success">Back Up</strong>
+      <small>just now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body text-success">
+      DB Back Up successfully.
+    </div>
+  </div>
+</div>
+<!-- <div class="alert alert-primary" role="alert">
+  <div class="container">
+    Helpline No: 9028808344 / 9130054441
+  </div>
+</div> -->
