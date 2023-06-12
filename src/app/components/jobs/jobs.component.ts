@@ -6,6 +6,7 @@ import { CategoryService } from 'src/app/services/category.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { JobService } from 'src/app/services/jobs.service';
 import * as XLSX from 'xlsx'
+import { VehicleService } from 'src/app/services/vehicle.service';
 @Component({
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
@@ -15,6 +16,7 @@ export class JobsComponent {
   private fileName: string = 'Jobs Data ' + new Date().toISOString().substring(0, 10) + '.xlsx';
   public data: any[] = [];
   public Job: any = {};
+  public Jobs: any[] = [];
   public showNewJobForm: boolean = false;
   public JobForm: FormGroup;
   public editJobFlag: boolean = false;
@@ -28,9 +30,15 @@ export class JobsComponent {
   public jobCardNo: string = '';
   public originalData: Job[] = [];
   public selectedJob: any = {};
+  public selectedRowIndex = -1;
+  public status: string = 'all'
+  public selectedVehicle = ''
+  public vehicles: any = [];
   @ViewChild('closeModal') closeModal: any
+  @ViewChild('mySelect') mySelect: any;
   constructor(private jobService: JobService,
     private router: Router,
+    private vehicleService: VehicleService,
     private categoryService: CategoryService, private spinner: SpinnerService) {
     this.JobForm = new FormGroup({
       jobNo: new FormControl(''),
@@ -51,8 +59,15 @@ export class JobsComponent {
   ngOnInit(): void {
     this.getAllJobs();
     this.getAllCategories();
+    this.getVehicles();
+
   }
 
+  getVehicles() {
+    this.vehicleService.getVehicles().subscribe(res => {
+      this.vehicles = res;
+    })
+  }
   getAllCategories() {
     this.categoryService.getCategorys().subscribe((res: any) => {
       this.categorys = res;
@@ -76,7 +91,13 @@ export class JobsComponent {
           data.push(arr);
         })
       })
-      this.data = data.reverse();
+      data.sort((a: Job, b: Job) => {
+        const aa = parseInt(a.jobCardNo)
+        const bb = parseInt(b.jobCardNo)
+        return bb - aa;
+      });
+      this.Jobs = data;
+      this.data = data;
     });
   }
 
@@ -129,6 +150,17 @@ export class JobsComponent {
       this.router.navigate(['job-card']);
       // this.getAllJobs();
     })
+  }
+
+  toggleDetails(i: number, job: Job) {
+    this.selectedRowIndex = this.selectedRowIndex !== i ? i : -1
+  }
+
+  busWise() {
+    this.mySelect.nativeElement.value = ''
+    this.status = 'all';
+    this.jobCardNo = ''
+    this.data = this.selectedVehicle ? this.Jobs.filter((d: any) => d.registrationNumber === this.selectedVehicle || d.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) : this.Jobs
   }
 
   editJob(job: Job) {
@@ -189,6 +221,16 @@ export class JobsComponent {
   //   }
   // }
 
+  filterJobs() {
+    if (this.status !== 'all') {
+      this.data = this.selectedVehicle ? this.Jobs.filter((d: any) => d.status.toLowerCase() === this.status &&
+        (d.registrationNumber === this.selectedVehicle || d.registrationNumber.includes(this.selectedVehicle.split(' ')[0]))) :
+        this.Jobs.filter((d: any) => d.status.toLowerCase() === this.status)
+    } else {
+      this.data = this.selectedVehicle ? this.Jobs.filter((d: any) => d.registrationNumber === this.selectedVehicle || d.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) : this.Jobs
+    }
+  }
+
   cancel() {
     this.editJobFlag = false
     this.showNewJobForm = false;
@@ -196,15 +238,29 @@ export class JobsComponent {
   }
 
   filterResults(categoryID: string) {
+
     if (categoryID) {
-      this.spinner.showSpinner();
-      this.jobService.getJobsByCategory(categoryID).subscribe((res: any) => {
-        this.spinner.hideSpinner();
-        this.data = res;
-      });
+      this.data = this.selectedVehicle ?
+        this.Jobs.filter((d: any) => d.spareParts.some((s: any) => s.categoryId === categoryID &&
+          (d.registrationNumber === this.selectedVehicle || d.registrationNumber.includes(this.selectedVehicle.split(' ')[0])))) :
+        this.Jobs.filter((d: any) => d.spareParts.some((s: any) => s.categoryId === categoryID))
+      // this.spinner.showSpinner();
+      // this.jobService.getJobsByCategory(categoryID).subscribe((res: any) => {
+      //   this.spinner.hideSpinner();
+      //   this.data = res;
+      // });
     } else {
-      this.getAllJobs();
+      this.data = this.Jobs
+      // this.getAllJobs();
     }
+  }
+
+  clearAll() {
+    this.mySelect.nativeElement.value = ''
+    this.status = 'all';
+    this.jobCardNo = ''
+    this.selectedVehicle = ''
+    this.data = this.Jobs;
   }
 
   setSelectedJob(id: string, recordNo: number) {
@@ -215,7 +271,7 @@ export class JobsComponent {
     recordNo = this.selectedJob.recordNo;
     this.spinner.showSpinner();
     let payload: Job = {
-      jobCardNo: 0,
+      jobCardNo: '0',
       cardData: []
     };
     this.originalData.forEach(i => {

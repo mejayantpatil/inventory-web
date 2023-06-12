@@ -17,6 +17,10 @@ tbody tr {
     display: table;
     width: 100%; //var(--table-width);
     table-layout: fixed;
+
+    td {
+        word-wrap: break-word;
+    }
 }
 
 thead {
@@ -25,4 +29,10 @@ thead {
 
 .top-10 {
     top: 10%
+}
+
+@media (max-width: 599px) {
+    table {
+        width: 1000px;
+    }
 }

@@ -52,7 +52,7 @@ export class PartsRepairedComponent {
     private groupService: GroupService) {
     this.activatedRoute.params.subscribe((params: any) => {
       this.transactionNumber = params.transactionNumber;
-      this.getTransaction(this.transactionNumber);
+      // this.getTransaction(this.transactionNumber);
     })
     this.router.events.subscribe(res => {
       this.activeMenu = window.location.pathname.split('/')[1]
@@ -61,16 +61,18 @@ export class PartsRepairedComponent {
     this.transaction = {};
     this.modes = ['Cash', 'Credit']
     this.partInwardForm = new FormGroup({
-      transactionNo: new FormControl(this.transactionNumber),
-      paymentMode: new FormControl(''),
-      supplierInvoiceNo: new FormControl(''),
-      supplierName: new FormControl(''),
-      date: new FormControl(new Date().toISOString().substring(0, 10)),
-      partNo: new FormControl('', Validators.required),
-      partName: new FormControl('', Validators.required),
-      rate: new FormControl('', Validators.required),
+      transactionNo: new FormControl(this.transactionNumber, Validators.required),
+      paymentMode: new FormControl('', Validators.required),
+      supplierInvoiceNo: new FormControl('', Validators.required),
+      supplierName: new FormControl('', Validators.required),
+      date: new FormControl(new Date().toISOString().substring(0, 10), Validators.required),
+      partNo: new FormControl(''),
+      partName: new FormControl(''),
+      ledgerPageNumber: new FormControl(''),
+      rate: new FormControl(''),
+      newRate: new FormControl(''),
       unit: new FormControl(''),
-      quantity: new FormControl('', Validators.required),
+      quantity: new FormControl(''),
       discountPercentage: new FormControl(''),
       discount: new FormControl(''),
       labourCharges: new FormControl(''),
@@ -79,6 +81,7 @@ export class PartsRepairedComponent {
       lnetAmount: new FormControl(''),
       gstPercentage: new FormControl(''),
       gst: new FormControl(''),
+      partNetAmount: new FormControl(''),
       netAmount: new FormControl(''),
       total: new FormControl(''),
       totalGST: new FormControl(''),
@@ -142,7 +145,7 @@ export class PartsRepairedComponent {
   getAllProducts() {
     this.productService.getProducts().subscribe((res: any) => {
       this.products = res;
-      this.repairableProducts = this.products.filter((p: Product) => p.partName.toLocaleLowerCase().includes('repair'));
+      this.repairableProducts = this.products.filter((p: Product) => p.partName.toLocaleLowerCase().includes('repaired'));
       console.log(this.repairableProducts);
     })
   }
@@ -165,6 +168,7 @@ export class PartsRepairedComponent {
       // this.spinner.hideSpinner();
       this.accounts = res;
       this.accounts = this.accounts.filter((a: Account) => a.groupName === this.supplierGroupID);
+      this.getTransaction(this.transactionNumber);
     });
   }
 
@@ -188,16 +192,18 @@ export class PartsRepairedComponent {
         this.transaction = {};
         this.data = [];
         this.partInwardForm = new FormGroup({
-          transactionNo: new FormControl(this.transactionNumber),
-          paymentMode: new FormControl(''),
-          supplierInvoiceNo: new FormControl(''),
-          supplierName: new FormControl(''),
-          date: new FormControl(new Date().toISOString().substring(0, 10)),
-          partNo: new FormControl('', Validators.required),
-          partName: new FormControl('', Validators.required),
+          transactionNo: new FormControl(this.transactionNumber, Validators.required),
+          paymentMode: new FormControl('', Validators.required),
+          supplierInvoiceNo: new FormControl('', Validators.required),
+          supplierName: new FormControl('', Validators.required),
+          date: new FormControl(new Date().toISOString().substring(0, 10), Validators.required),
+          partNo: new FormControl(''),
+          partName: new FormControl(''),
+          ledgerPageNumber: new FormControl(''),
           rate: new FormControl(''),
+          newRate: new FormControl(''),
           unit: new FormControl(''),
-          quantity: new FormControl('', Validators.required),
+          quantity: new FormControl(''),
           discountPercentage: new FormControl(''),
           discount: new FormControl(''),
           labourCharges: new FormControl(''),
@@ -209,7 +215,8 @@ export class PartsRepairedComponent {
           total: new FormControl(''),
           totalGST: new FormControl(''),
           totalGSTPercentage: new FormControl(''),
-          netAmount: new FormControl('', Validators.required),
+          partNetAmount: new FormControl(''),
+          netAmount: new FormControl(''),
           grossAmount: new FormControl(''),
           gstTotal: new FormControl(''),
           tradeDiscount: new FormControl(''),
@@ -234,16 +241,18 @@ export class PartsRepairedComponent {
         this.transaction = res;
         this.data = res.data;
         this.partInwardForm = new FormGroup({
-          transactionNo: new FormControl(this.transactionNumber),
-          paymentMode: new FormControl(res.paymentMode),
-          supplierInvoiceNo: new FormControl(res.supplierInvoiceNo),
-          supplierName: new FormControl(''),
-          date: new FormControl(res.date ? res.date : new Date().toISOString().substring(0, 10)),
-          partNo: new FormControl('', Validators.required),
-          partName: new FormControl('', Validators.required),
+          transactionNo: new FormControl(this.transactionNumber, Validators.required),
+          paymentMode: new FormControl(res.paymentMode, Validators.required),
+          supplierInvoiceNo: new FormControl(res.supplierInvoiceNo, Validators.required),
+          supplierName: new FormControl('', Validators.required),
+          date: new FormControl(res.date ? res.date : new Date().toISOString().substring(0, 10), Validators.required),
+          partNo: new FormControl(''),
+          partName: new FormControl(''),
+          ledgerPageNumber: new FormControl(''),
           rate: new FormControl(''),
+          newRate: new FormControl(''),
           unit: new FormControl(''),
-          quantity: new FormControl('', Validators.required),
+          quantity: new FormControl(''),
           discountPercentage: new FormControl(''),
           discount: new FormControl(''),
           labourCharges: new FormControl(''),
@@ -255,7 +264,8 @@ export class PartsRepairedComponent {
           total: new FormControl(''),
           totalGST: new FormControl(''),
           totalGSTPercentage: new FormControl(''),
-          netAmount: new FormControl('', Validators.required),
+          netAmount: new FormControl(''),
+          partNetAmount: new FormControl(''),
           grossAmount: new FormControl(res.grossAmount.toFixed(2)),
           gstTotal: new FormControl(res.gst.toFixed(2)),
           tradeDiscount: new FormControl(''),
@@ -324,7 +334,8 @@ export class PartsRepairedComponent {
 
   saveTransaction() {
 
-    if (this.partInwardForm.value.supplierName.accountName && this.data.length > 0 && this.partInwardForm.value.totalNetAmount) {
+
+    if (this.partInwardForm.valid && this.data.length > 0) {
       const payload = {
         transactionNo: this.partInwardForm.value.transactionNo,
         paymentMode: this.partInwardForm.value.paymentMode,
@@ -349,7 +360,8 @@ export class PartsRepairedComponent {
           this.data.map(async p => {
             const product: any = this.products[this.getProductIndex(p.partNo)];
             product.saleRate = p.rate;
-            product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
+            product.newRate = p.newRate ? p.newRate : 0;
+            // product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
             product.unit = p.unit
             await this.productSerivce.updateProduct(product._id, product).subscribe(() => {
               console.log('product updated')
@@ -369,7 +381,8 @@ export class PartsRepairedComponent {
           this.data.map(async p => {
             const product: any = this.products[this.getProductIndex(p.partNo)];
             product.saleRate = p.rate;
-            product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
+            product.newRate = p.newRate ? p.newRate : 0;
+            // product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
             product.unit = p.unit
             await this.productSerivce.updateProduct(product._id, product).subscribe(() => {
               console.log('product updated')
@@ -420,18 +433,18 @@ export class PartsRepairedComponent {
   setGST() {
     if (this.partInwardForm.value.gstPercentage) {
       const amount = this.partInwardForm.value.rate * this.partInwardForm.value.quantity;
-      const gst = ((amount) * this.partInwardForm.value.gstPercentage) / 100;
-      const total = (amount) + gst //this.partInwardForm.value.labourCharges;
+      const gst = (amount * this.partInwardForm.value.gstPercentage) / 100;
+      const total = amount + gst //this.partInwardForm.value.labourCharges;
       this.partInwardForm.patchValue({
         gst: parseFloat(gst.toString()).toFixed(2),
-        netAmount: parseFloat(total.toString()).toFixed(2)
+        partNetAmount: parseFloat(total.toString()).toFixed(2)
       })
     } else {
       const amount = this.partInwardForm.value.rate * this.partInwardForm.value.quantity;
       const total = amount;// this.partInwardForm.value.labourCharges;
       this.partInwardForm.patchValue({
         gst: 0,
-        netAmount: parseFloat(total.toString()).toFixed(2)
+        partNetAmount: parseFloat(total.toString()).toFixed(2)
       })
     }
   }
@@ -439,8 +452,8 @@ export class PartsRepairedComponent {
   setLGST() {
     if (this.partInwardForm.value.lgstPercentage) {
       const amount = this.partInwardForm.value.labourCharges;
-      const gst = ((amount) * this.partInwardForm.value.lgstPercentage) / 100;
-      const total = (amount) + gst;// + this.partInwardForm.value.labourCharges;
+      const gst = (amount * this.partInwardForm.value.lgstPercentage) / 100;
+      const total = amount + gst;// + this.partInwardForm.value.labourCharges;
       this.partInwardForm.patchValue({
         lgst: parseFloat(gst.toString()).toFixed(2),
         lnetAmount: parseFloat(total.toString()).toFixed(2),
@@ -457,11 +470,12 @@ export class PartsRepairedComponent {
   }
 
   setTotal() {
-    const total = parseFloat(this.partInwardForm.value.netAmount) + parseFloat(this.partInwardForm.value.lnetAmount)
+    const total = parseFloat(this.partInwardForm.value.partNetAmount) + parseFloat(this.partInwardForm.value.lnetAmount)
     const gst = parseFloat(this.partInwardForm.value.gst) + parseFloat(this.partInwardForm.value.lgst)
     const percentage = parseInt(this.partInwardForm.value.gstPercentage) + parseInt(this.partInwardForm.value.lgstPercentage)
     this.partInwardForm.patchValue({
       total: total.toFixed(2),
+      netAmount: total.toFixed(2),
       totalGST: gst.toFixed(2),
       totalGSTPercentage: percentage
     })
@@ -481,9 +495,10 @@ export class PartsRepairedComponent {
       lgstPercentage: 0,
       lgst: 0,
       lnetAmount: 0,
+      netAmount: 0,
       gstPercentage: 0,
       gst: 0,
-      netAmount: 0,
+      partNetAmount: 0,
       total: 0,
       totalGST: 0,
       totalGSTPercentage: 0
@@ -519,7 +534,8 @@ export class PartsRepairedComponent {
         lnetAmount: data.lnetAmount,
         gstPercentage: data.gstPercentage,
         gst: data.cgstAmount,
-        netAmount: data.netAmount
+        netAmount: data.netAmount,
+        partNetAmount: data.partNetAmount
       })
     }, 100)
 
@@ -539,6 +555,8 @@ export class PartsRepairedComponent {
         partName: this.partInwardForm.value.partName?.partName,
         quantity: this.partInwardForm.value.quantity,
         rate: this.partInwardForm.value.rate,
+        ledgerPageNumber: this.partInwardForm.value.partName?.ledgerPageNumber,
+        newRate: this.partInwardForm.value.netAmount / this.partInwardForm.value.quantity,
         unit: this.partInwardForm.value.unit,
         // discountPercentage: this.partInwardForm.value.discountPercentage,
         // discount: this.partInwardForm.value.discount.toFixed(2),
@@ -548,6 +566,7 @@ export class PartsRepairedComponent {
         gstPercentage: this.partInwardForm.value.gstPercentage,
         totalGST: this.partInwardForm.value.totalGST,
         lnetAmount: this.partInwardForm.value.lnetAmount,
+        partNetAmount: this.partInwardForm.value.partNetAmount,
         grossAmount: gross.toFixed(2),
         sgstPercentage: parseInt(this.partInwardForm.value.totalGSTPercentage) / 2,
         sgstAmount: (this.partInwardForm.value.totalGST / 2).toFixed(2),
@@ -563,6 +582,8 @@ export class PartsRepairedComponent {
         partName: this.partInwardForm.value.partName?.partName,
         quantity: this.partInwardForm.value.quantity,
         rate: this.partInwardForm.value.rate,
+        ledgerPageNumber: this.partInwardForm.value.partName?.ledgerPageNumber,
+        newRate: this.partInwardForm.value.netAmount / this.partInwardForm.value.quantity,
         unit: this.partInwardForm.value.unit,
         discountPercentage: this.partInwardForm.value.discountPercentage,
         discount: this.partInwardForm.value.discount,
@@ -573,6 +594,7 @@ export class PartsRepairedComponent {
         gst: this.partInwardForm.value.gstPercentage,
         gstPercentage: this.partInwardForm.value.gstPercentage,
         lnetAmount: this.partInwardForm.value.lnetAmount,
+        partNetAmount: this.partInwardForm.value.partNetAmount,
         grossAmount: gross.toFixed(2),
         sgstPercentage: parseInt(this.partInwardForm.value.totalGSTPercentage) / 2,
         sgstAmount: (this.partInwardForm.value.totalGST / 2).toFixed(2),
@@ -593,7 +615,6 @@ export class PartsRepairedComponent {
     // let total = 0
     let netAmount = 0;
     this.data.map(d => {
-      console.log(d);
       grossAmount = grossAmount + parseFloat(d.grossAmount);
       gst = gst + parseFloat(d.sgstAmount) + parseFloat(d.cgstAmount);
       // discount = discount + parseFloat(d.discount);
@@ -620,6 +641,7 @@ export class PartsRepairedComponent {
       arr.push(item.partNo + ' ' + item.partName)
       arr.push(item.quantity)
       arr.push(item.unit)
+      arr.push(item.ledgerPageNumber)
       arr.push(item.rate)
       arr.push(item.labourCharges)
       arr.push(item.grossAmount)
@@ -655,13 +677,13 @@ export class PartsRepairedComponent {
   generateReport(body: any[]) {
     const doc: any = new jsPDF({ putOnlyUsedFonts: true });
     doc.setFontSize(20);
-    doc.text("Invoice", 90, 15)
+    doc.text("INVOICE", 90, 15)
     // doc.autoTable({ html: '#my-table' })
     // doc.text("Wishvayodha Multitrade", 14, 20);
     doc.setFontSize(8);
     doc.text("Service Provider Invoice No:", 140, 30)
     // doc.setFont('', 'bold');
-    doc.text(this.partInwardForm.value.supplierInvoiceNo.toString(), 175, 30)
+    doc.text(this.partInwardForm.value.supplierInvoiceNo.toString(), 177, 30)
     doc.text("Service Provider Name:", 14, 30);
     doc.text(this.partInwardForm.value.supplierName?.accountName, 45, 30);
 
@@ -692,6 +714,7 @@ export class PartsRepairedComponent {
         "Particulars",
         "Quantity",
         "Unit",
+        "Ladger No.",
         "Rate",
         "Labour Charges",
         "Gross Amount",
@@ -705,6 +728,9 @@ export class PartsRepairedComponent {
       styles: {
         halign: 'right',
         fontSize: 8
+      },
+      headStyles: {
+        fontSize: 7
       },
       // headStyles: {
       //   valign: 'middle',
@@ -720,7 +746,8 @@ export class PartsRepairedComponent {
         }
       },
       columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' } },
-      startY: 55
+      startY: 55,
+      margin: [10, 15, 30, 15] // top left bottom left
     });
     // styles: { cellPadding: 0.5, fontSize: 8 },
     const tableHeight = doc.lastAutoTable.finalY;

@@ -1,7 +1,12 @@
 <app-header></app-header>
-<div class="container">
+<div class="container-fluid" *ngIf="loginMenu" [ngClass]="loginMenu ? 'bus-4' : '' ">
+    <router-outlet></router-outlet>
+    <app-spinner></app-spinner>
+</div>
+<div class="container" *ngIf="!loginMenu">
     <br><br>
     <router-outlet></router-outlet>
     <app-spinner></app-spinner>
 </div>
+
 <app-footer></app-footer>

@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Job } from 'src/app/models/jobs';
+import { Transaction } from 'src/app/models/transactions';
 import { Vehicle } from 'src/app/models/vehicle';
+import { JobService } from 'src/app/services/jobs.service';
+import { TransactionService } from 'src/app/services/transactions.service';
 import { VehicleService } from 'src/app/services/vehicle.service';
 import * as XLSX from 'xlsx';
 
@@ -16,14 +20,32 @@ export class VehiclesComponent {
   public showNewVehicleForm: boolean = false;
   public vehicleForm: FormGroup;
   public editVehicleFlag: boolean = false;
-  constructor(private vehicleSerivce: VehicleService) {
+  public jobs: Job[] = [];
+  public kmByBusNo: any = {};
+  constructor(private vehicleSerivce: VehicleService, private jobService: JobService) {
     this.vehicleForm = new FormGroup({
-      vehicleNumber: new FormControl(''),
-      vehicleType: new FormControl('')
+      vehicleNumber: new FormControl('', Validators.required),
+      vehicleType: new FormControl('', Validators.required),
+      currentKM: new FormControl('')
     })
   }
   ngOnInit(): void {
     this.getAllVehicles();
+    this.getJobs();
+  }
+
+  getJobs() {
+    this.jobService.getJobs().subscribe((res: any) => {
+      this.jobs = res;
+      // this.jobs.forEach(j => {
+      //   if (j.cardData[0]) {
+      //     const km = this.kmByBusNo[j.cardData[0].registrationNumber] < j.cardData[0].kmCovered ?
+      //       j.cardData[0].kmCovered : this.kmByBusNo[j.cardData[0].registrationNumber];
+      //     this.kmByBusNo[j.cardData[0].registrationNumber] = km ? km : 0;
+      //     // this.kmByBusNo[j.cardData[0].registrationNumber] = j.cardData[0].kmCovered;
+      //   }
+      // })
+    })
   }
 
   getAllVehicles() {
@@ -34,8 +56,9 @@ export class VehiclesComponent {
 
   initializeForm() {
     this.vehicleForm = new FormGroup({
-      vehicleNumber: new FormControl(''),
-      vehicleType: new FormControl('')
+      vehicleNumber: new FormControl('', Validators.required),
+      vehicleType: new FormControl('', Validators.required),
+      currentKM: new FormControl('')
     })
   }
   newVehicle() {
@@ -49,6 +72,7 @@ export class VehiclesComponent {
     this.vehicleForm = new FormGroup({
       vehicleNumber: new FormControl(vehicle.vehicleNumber),
       vehicleType: new FormControl(vehicle.vehicleType),
+      currentKM: new FormControl(vehicle.currentKM),
       _id: new FormControl(vehicle._id)
     })
   }

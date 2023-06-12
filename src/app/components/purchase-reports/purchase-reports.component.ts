@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import jsPDF from 'jspdf';
 import { Account } from 'src/app/models/account';
 import { AccountService } from 'src/app/services/accounts.service';
 import { GroupService } from 'src/app/services/groups.service';
@@ -126,7 +127,8 @@ export class PurchaseReportsComponent {
           })
           this.transactionsData.push({
             transactionNo: t.transactionNo, date: t.date, supplierName: t.supplierName,
-            netAmount: t.netAmount, quantity: quantity, data: t.data
+            netAmount: t.netAmount, quantity: quantity, data: t.data,
+            invoiceNo: t.supplierInvoiceNo, gst: t.gst, grandTotal: t.grandTotal
           })
           this.totalCost = this.totalCost + t.netAmount
           this.totalQuantity = this.totalQuantity + (quantity ? quantity : 0)
@@ -141,7 +143,8 @@ export class PurchaseReportsComponent {
         })
         this.transactionsData.push({
           transactionNo: t.transactionNo, date: t.date, supplierName: t.supplierName,
-          netAmount: t.netAmount, quantity: quantity, data: t.data
+          netAmount: t.netAmount, quantity: quantity, data: t.data,
+          invoiceNo: t.supplierInvoiceNo, gst: t.gst, grandTotal: t.grandTotal
         })
         this.totalCost = this.totalCost + t.netAmount
         this.totalQuantity = this.totalQuantity + (quantity ? quantity : 0)
@@ -174,6 +177,121 @@ export class PurchaseReportsComponent {
 
   search() {
     this.getAllTransactions();
+  }
+
+
+  report() {
+    const data: any = []
+    this.transactionsData.map((item, index) => {
+      const arr = [];
+      arr.push(index + 1)
+      arr.push(item.transactionNo)
+      arr.push(item.date)
+      arr.push(item.invoiceNo)
+      arr.push(item.supplierName)
+      arr.push(item.quantity)
+      arr.push(item.gst)
+      arr.push(item.grandTotal)
+      arr.push(item.netAmount)
+      data.push(arr);
+    })
+    this.generateReport(data);
+  }
+
+  generateReport(body: any[]) {
+    const doc: any = new jsPDF({ putOnlyUsedFonts: true });
+    doc.setFontSize(20);
+    doc.text("PURCHASE REPORT", 70, 15)
+    doc.setFontSize(10);
+    doc.text("Vishwayoddha Shetkari Multitrade", 80, 22);
+    doc.line(14, 30, 196, 30);
+
+    // doc.autoTable({ html: '#excel-table' })
+
+    doc.setFontSize(8);
+    doc.text("From Date:", 14, 36)
+    doc.text(this.endDate, 163, 36)
+    doc.text("To Date:", 150, 36);
+    doc.text(this.startDate, 30, 36);
+
+    // TODO to get address use this
+    // this.accounts[this.getAccountIndex(res.supplierName)]
+
+    doc.line(14, 40, 196, 40);
+    // doc.setFontSize(8);
+
+    // doc.text("Bill No: " + this.partInwardForm.value.transactionNo.toString(), 14, 40)
+    // doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+
+    (doc as any).autoTable({
+      head: [[
+        "Sr.No.",
+        "TN. No.",
+        "Date",
+        "Invoice No.",
+        "Supplier Name",
+        "Stock",
+        "GST",
+        "Grand Total",
+        "Net Amount",
+      ]],
+      body: body,
+      theme: 'striped',
+      styles: {
+        // halign: 'right',
+        fontSize: 8
+      },
+      headStyles: {
+        fontSize: 7
+      },
+      // headStyles: {
+      //   valign: 'middle',
+      //   halign: 'left'
+      // },
+      // headStyles: { 0: { halign: 'center' }, 1: { halign: 'left' } },
+      didParseCell: function (head: any, data: any) {
+        if (head.cell.raw === 'Sr.No.') {
+          head.cell.styles.halign = 'center'
+        }
+        if (head.cell.raw === 'GST' || head.cell.raw === 'Grand Total' || head.cell.raw === 'Net Amount') {
+          head.cell.styles.halign = 'right'
+        }
+      },
+      columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 6: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right' } },
+      startY: 45,
+      margin: [10, 15, 30, 15] // top left bottom left
+    });
+    // styles: { cellPadding: 0.5, fontSize: 8 },
+    const tableHeight = doc.lastAutoTable.finalY;
+    doc.line(14, tableHeight + 5, 196, tableHeight + 5);
+    doc.text("Total Quantiy:", 175, tableHeight + 10, { align: 'right' })
+    doc.text(this.totalQuantity.toString(), 195, tableHeight + 10, { align: 'right' })
+    doc.text("Net Amount:", 175, tableHeight + 15, { align: 'right' })
+    doc.text(this.totalCost.toFixed(2), 195, tableHeight + 15, { align: 'right' })
+    // doc.line(14, tableHeight + 45, 196, tableHeight + 45);
+
+    doc.line(14, doc.internal.pageSize.height - 30, 196, doc.internal.pageSize.height - 30);
+
+    // if (tableHeight < doc.internal.pageSize.height - 50) {
+    //   doc.text('Signature', 14, doc.internal.pageSize.height - 30);
+    //   doc.text('Seal', 150, doc.internal.pageSize.height - 30);
+    // }
+    // doc.save("report-purchase.pdf");
+    window.open(doc.output('bloburl'), '_blank');
+  }
+
+  inWords(num: any) {
+    var a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+    var b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    if ((num = num.toString()).length > 9) return 'overflow';
+    const n: any = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    if (!n) return; var str = '';
+    str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+    str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+    str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+    str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+    str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
+    return str;
   }
 
 

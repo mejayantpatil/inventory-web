@@ -1,8 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
-.bus {
+.bus-1 {
     background-image: url('./assets/images/PMPML-BUS.jpg');
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
+
+}
+
+.bus-2 {
+    background-image: url('./assets/images/PMPML-2.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+}
+
+.bus-3 {
+    background-image: url('./assets/images/pmpl-3.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+}
+
+.bus-4 {
+    background-image: url('./assets/images/pmpl-4.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 
 }
 
@@ -11,4 +36,58 @@
 .bi-check-circle {
     font-size: 15px;
     cursor: pointer;
+}
+
+.link {
+    cursor: pointer;
+}
+
+.drop-shadow {
+    box-shadow: 0px 1px 5px 0px
+}
+
+.text-shadow {
+    text-shadow: 0px 5px 5px black;
+}
+
+.bus-shadow {
+    text-shadow: 0px 1px 1px black;
+}
+
+.fixed-btns {
+    position: fixed;
+    bottom: 40px;
+    height: 55px;
+    padding: 0;
+    padding-top: 10px;
+}
+
+@media (max-width: 599px) {
+    .fixed-btns {
+        position: static;
+    }
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, .25);
+}
+
+.ng-autocomplete.ng-invalid {
+    .autocomplete-container {
+        .input-container {
+            input.ng-touched {
+                border-color: #dc3545;
+                box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, .25);
+            }
+        }
+    }
+
+}
+
+@media (min-width: 992px) {
+    table {
+        width: 1000px;
+    }
 }

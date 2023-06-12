@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Account } from 'src/app/models/account';
 import { Product } from 'src/app/models/product';
@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf';
 import { CategoryService } from 'src/app/services/category.service';
 import { TransactionService } from 'src/app/services/transactions.service';
+import { JobService } from 'src/app/services/jobs.service';
 
 
 @Component({
@@ -18,13 +19,14 @@ import { TransactionService } from 'src/app/services/transactions.service';
   styleUrls: ['./supply-order.component.scss']
 })
 export class SupplyOrderComponent {
-  public fileName = 'supply order.xlsx';
+  public fileName = 'purchase order.xlsx';
   public supplyOrders: any = [];
   public showNewSupplyOrderForm: boolean = false;
   public supplyOrderForm: FormGroup;
   public accounts: any = [];
   public supplierGroupID: string = '';
   public products: Product[] = [];
+  public productsWithLowQty: any[] = [];
   public partsData: any = [];
   public selectedProduct: any;
   public selectedIndex = -1;
@@ -32,11 +34,19 @@ export class SupplyOrderComponent {
   public newOrder: boolean = false;
   public selectedOrderId = ''
   public transactions: any = [];
+  public selectAll: boolean = false;
+  public stockPurchased: any = {}
+  public supplierNameObj: any = {}
+  public stockConsumed: any = {}
+  @ViewChild('partNo') partNo: any;
+  @ViewChild('toast') toast: any;
+
   constructor(private supplyOrderService: SupplyOrderService,
     private categoryService: CategoryService,
     private groupService: GroupService,
     private productService: ProductService,
     private transactionService: TransactionService,
+    private jobService: JobService,
     private accountSerivce: AccountService) {
     this.supplyOrderForm = new FormGroup({
       // partsData: new []
@@ -49,6 +59,7 @@ export class SupplyOrderComponent {
       quantity: new FormControl(''),
       unit: new FormControl(''),
       rate: new FormControl(''),
+      netAmount: new FormControl(''),
       date: new FormControl(new Date().toISOString().substring(0, 10)),
       totalNetAmount: new FormControl(''),
       status: new FormControl('Pending'),
@@ -58,11 +69,10 @@ export class SupplyOrderComponent {
     })
   }
   ngOnInit() {
-    this.getAllProducts();
     this.getGRoups();
     this.getAllOrders();
     this.getAllCategories();
-    // this.getAllTransactions();
+    this.getAllTransactions();
   }
 
   getAllOrders() {
@@ -82,19 +92,120 @@ export class SupplyOrderComponent {
   getAllTransactions() {
     this.transactionService.getTransactions().subscribe((res: any) => {
       this.transactions = res.filter((r: any) => r.supplierName === this.supplyOrderForm.value.supplierName?.accountName);
+      res.map((t: any) => {
+        t.data.map((i: any) => {
+
+          this.stockPurchased[i.partNo] = parseInt(this.stockPurchased[i.partNo] ? this.stockPurchased[i.partNo] : '0') + parseInt(i.quantity);
+          // this.stockPuchasedValues[i.partNo] = i.newRate ? i.newRate : 0
+          this.supplierNameObj[i.partNo] = { gst: i.cgstPercentage + i.sgstPercentage, supplierName: t.supplierName }
+        })
+      });
+      this.getAllProducts();
+    })
+  }
+
+  getAllJobs() {
+    this.jobService.getJobs().subscribe((res: any) => {
+      res.map((t: any) => {
+        t.cardData.map((c: any) => {
+          c?.spareParts && c?.spareParts.map((i: any) => {
+            // if (t.status === 'Complete') {
+            this.stockConsumed[i.partNo] = parseInt(this.stockConsumed[i.partNo] ? this.stockConsumed[i.partNo] : 0) + parseInt(i.quantity);
+            // this.totalConsumedQty = this.totalConsumedQty + i.quantity;
+            // }
+          })
+        })
+      })
     })
   }
 
   getAllProducts() {
     this.productService.getProducts().subscribe((res: any) => {
       this.products = res;
-      // this.products.map(p => {
-      // this.openingStock[p.partNumber] = p.quantity;
-      // })
       this.products = this.products.filter((p: Product) => !p.partName.toLocaleLowerCase().includes('repair'));
+      res.map((p: any) => {
+        const qty = (p.quantity ? p.quantity : 0) + (this.stockPurchased[p.partNumber] ? this.stockPurchased[p.partNumber] : 0) - (this.stockConsumed[p.partNumber] ? this.stockConsumed[p.partNumber] : 0)
+        if (qty <= 10) {
+          this.productsWithLowQty.push({
+            checked: false,
+            partName: p.partName,
+            partNumber: p.partNumber,
+            quantity: qty,
+            rate: p.newRate ? p.newRate : p.saleRate,
+            unit: p.unit,
+            gst: this.supplierNameObj[p.partNumber] ? this.supplierNameObj[p.partNumber].gst : 0,
+            supplierName: this.supplierNameObj[p.partNumber] ? this.supplierNameObj[p.partNumber].supplierName : ''
+          })
+        }
+      })
     })
   }
 
+  addToSupplyOrder() {
+    let orders: any = []
+    let supplierObj: any = {}
+    this.products.map((p: any) => {
+      let partsData: any = [];
+      if (p.checked) {
+        partsData.push({
+          partNo: p.partNumber,
+          partName: p.partName,
+          quantity: p.quantity,
+          rate: p.newRate ? p.newRate : p.rate,
+          unit: p.unit,
+          gst: p.gst,
+          categoryId: '',
+        });
+        if (supplierObj[p.supplierName]) {
+          supplierObj[p.supplierName].push(...partsData);
+
+        } else {
+          supplierObj[p.supplierName] = partsData;
+        }
+      }
+    })
+    if (Object.keys(supplierObj).length === 0) {
+      alert('Please select products');
+      return;
+    }
+    Object.keys(supplierObj).map(s => {
+      let qty = 0;
+      let total = 0;
+      supplierObj[s].map((p: any) => {
+        qty = qty + p.quantity
+        total = total + parseFloat(p.netAmount)
+      })
+      orders.push({
+        partsData: supplierObj[s],
+        supplyOrderNumber: this.supplyOrders.length + 1,
+        supplierName: s,
+        totalQuantity: qty,
+        totalAmount: total,
+        comment: '',
+        status: 'Pending',
+        date: new Date().toISOString().substring(0, 10)
+      })
+    });
+    let count = this.supplyOrders.length + 1;
+    orders.map(async (o: any) => {
+      o.supplyOrderNumber = count;
+      count++;
+      await this.supplyOrderService.saveSupplyOrder(o).subscribe(res => {
+        console.log('ok')
+      })
+    })
+    this.unCheckAll();
+    console.log('done')
+    this.showToast();
+  }
+
+  showToast() {
+    // TODO toat
+    this.toast.nativeElement.setAttribute('class', 'toast show')
+    setTimeout(() => {
+      this.toast.nativeElement.setAttribute('class', 'toast hide')
+    }, 2000)
+  }
 
   setProductField(e: any) {
     let index = -1;
@@ -142,12 +253,12 @@ export class SupplyOrderComponent {
     let totalQuantity = 0;
     this.partsData.map((p: any) => {
       totalQuantity = totalQuantity + parseFloat(p.quantity);
-      // netAmount = netAmount + parseFloat(d.netAmount.toString(2))
+      netAmount = netAmount + parseFloat(p.netAmount ? p.netAmount.toFixed(2) : parseFloat(p.rate) * p.quantity)
     })
     console.log(totalQuantity)
     this.supplyOrderForm.patchValue({
       totalQuantity: totalQuantity,
-      // totalNetAmount: parseFloat(netAmount.toString()).toFixed(2),
+      totalNetAmount: netAmount,
     })
     // this.cancelUpdate();
 
@@ -169,6 +280,19 @@ export class SupplyOrderComponent {
 
   }
 
+  checkAll() {
+    this.products.map((p: any) => {
+      p.checked = !p.checked;
+    })
+  }
+
+  unCheckAll() {
+    this.selectAll = false;
+    this.products.map((p: any) => {
+      p.checked = false;
+    })
+  }
+
   cancelUpdate() {
     this.supplyOrderForm.patchValue({
       partNo: '',
@@ -181,6 +305,7 @@ export class SupplyOrderComponent {
     })
     this.selectedProduct = {};
     this.selectedIndex = -1
+
   }
 
   addData() {
@@ -194,6 +319,7 @@ export class SupplyOrderComponent {
         unit: this.supplyOrderForm.value.unit,
         gst: this.supplyOrderForm.value.gst,
         categoryId: this.supplyOrderForm.value.partName.category,
+        netAmount: this.supplyOrderForm.value.quantity * this.supplyOrderForm.value.rate
       }
     }
     else {
@@ -205,9 +331,12 @@ export class SupplyOrderComponent {
         unit: this.supplyOrderForm.value.unit,
         gst: this.supplyOrderForm.value.gst,
         categoryId: this.supplyOrderForm.value.partName.category,
+        netAmount: this.supplyOrderForm.value.quantity * this.supplyOrderForm.value.rate
       })
     }
     this.calculateTotal();
+    this.cancelUpdate();
+    this.partNo.focus();
   }
   setPartNo(e: any) {
     // this.supplyOrderForm.patchValue({
@@ -341,61 +470,61 @@ export class SupplyOrderComponent {
       arr.push(index + 1)
       arr.push(item.partNo)
       arr.push(item.partName)
-      arr.push(item.gst + '%')
-      arr.push(item.rate)
       arr.push(item.quantity)
       arr.push(item.unit)
-
-      // arr.push(item.netAmount)
-      // arr.push(item.categoryId);
+      arr.push(item.gst + '%')
+      arr.push(item.rate)
+      arr.push(item.netAmount ? item.netAmount.toFixed(2) : '0')
+      arr.push(item.categoryId);
       data.push(arr);
-      categoriesWiseData[item.categoryId] = [];
+      // categoriesWiseData[item.categoryId] = [];
     })
-    this.generateReport(data);
+    // this.generateReport(data);
     // console.log('cat data', categoriesWiseData);
-    // const newData: any = [];
-    // let count = 1;
+    const newData: any = [];
+    let count = 1;
     // Object.keys(categoriesWiseData).map(c => {
-    //   let arr = [];
-    //   arr.push('')
-    //   arr.push(this.categroysObj[c])
-    //   arr.push('')
-    //   arr.push('')
-    //   arr.push('')
-    //   arr.push('')
-    //   arr.push('')
-    //   // arr.push('')
-    //   newData.push(arr);
-    //   let total = 0;
-    //   data.map((item: any, index: number) => {
-    //     arr = [];
-    //     console.log(c, item[item.length - 1], index)
-    //     if (item[item.length - 1] === c) {
-    //       arr.push(count)
-    //       arr.push(item[1])
-    //       arr.push(item[2])
-    //       arr.push(item[3])
-    //       arr.push(item[4])
-    //       arr.push(item[5])
-    //       arr.push(item[6])
-    //       // arr.push(item[7])
-    //       // total = total + parseFloat(item[6])
-    //       newData.push(arr);
-    //       count++
-    //     }
-    //   })
-    //   // arr = [];
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('Total')
-    //   // arr.push(total.toFixed(2))
-    //   // newData.push(arr);
+    let arr = [];
+    // arr.push('')
+    // arr.push(this.categroysObj[c])
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // newData.push(arr);
+    let total = 0;
+    data.map((item: any, index: number) => {
+      arr = [];
+      // console.log(c, item[item.length - 1], index)
+      // if (item[item.length - 1] === c) {
+      arr.push(count)
+      arr.push(item[1])
+      arr.push(item[2])
+      arr.push(item[3])
+      arr.push(item[4])
+      arr.push(item[5])
+      arr.push(item[6])
+      arr.push(item[7])
+      // total = total + parseFloat(item[6])
+      newData.push(arr);
+      count++
+      // }
+    })
+    // arr = [];
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('Total')
+    // arr.push(total.toFixed(2))
+    // newData.push(arr);
     // })
-    // console.log(newData)
-    // this.generateReport(newData);
+    console.log(newData)
+    this.generateReport(newData);
 
   }
 
@@ -403,7 +532,7 @@ export class SupplyOrderComponent {
     const doc: any = new jsPDF({ putOnlyUsedFonts: true });
     doc.setFontSize(20);
     // doc.text("Invoice", 90, 15)
-    doc.text("SUPPLY ORDER", 100, 15, { align: 'center' })
+    doc.text("PURCHASE ORDER", 100, 15, { align: 'center' })
 
     // doc.setFontSize(8);
     // doc.text("Order By: Vishwayoddha Shetkari Multitrade", 100, 2, { align: 'center' })
@@ -417,8 +546,8 @@ export class SupplyOrderComponent {
     doc.text("Supplier Name:", 14, 30)
     doc.text(this.supplyOrderForm.value.supplierName.accountName ? this.supplyOrderForm.value.supplierName.accountName : this.supplyOrderForm.value.supplierName, 40, 30);
 
-    doc.text("Supply Order No:", 145, 30)
-    doc.text(this.supplyOrderForm.value.supplyOrderNumber.toString(), 175, 30);
+    doc.text("Purchase Order No:", 145, 30)
+    doc.text(this.supplyOrderForm.value.supplyOrderNumber.toString(), 180, 30);
 
     doc.text("Order Date: ", 14, 35)
     doc.text(this.supplyOrderForm.value.date, 40, 35);
@@ -476,18 +605,17 @@ export class SupplyOrderComponent {
         "Sr.No.",
         "Part No.",
         "Part Name",
-        "GST",
-        "Last Rate",
         "Quantity",
         "Unit",
-
-        // "Net Amount"
+        "GST%",
+        "Last Rate",
+        "Net Amount"
       ]],
       body: body,
       theme: 'striped',
       styles: {
         halign: 'right',
-        fontSize: 10
+        fontSize: 8
       },
       // headStyles: {
       //   valign: 'middle',
@@ -516,7 +644,8 @@ export class SupplyOrderComponent {
         }
       },
       columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 2: { halign: 'left' } },
-      startY: 65
+      startY: 65,
+      margin: [10, 15, 30, 15] // top left bottom left
     });
     // styles: { cellPadding: 0.5, fontSize: 8 },
     const tableHeight = doc.lastAutoTable.finalY;
@@ -528,8 +657,8 @@ export class SupplyOrderComponent {
     if (this.supplyOrderForm.value.comment) {
       doc.text('Remarks: \n' + this.supplyOrderForm.value.comment, 14, tableHeight + 15)
     }
-    // doc.text("Grand Total Amount:", 165, tableHeight + 15, { align: 'right' })
-    // doc.text(this.supplyOrderForm.value.totalNetAmount.toFixed(2), 195, tableHeight + 15, { align: 'right' })
+    doc.text("Grand Total Amount:", 165, tableHeight + 15, { align: 'right' })
+    doc.text(this.supplyOrderForm.value.totalNetAmount ? this.supplyOrderForm.value.totalNetAmount.toFixed(2) : '0', 195, tableHeight + 15, { align: 'right' })
     // doc.text("CGST Amount:", 150, tableHeight + 20, { align: 'right' })
     // const gst: number = parseFloat(this.supplyOrderForm.value.gstTotal) / 2;
     // doc.text(gst.toFixed(2), 180, tableHeight + 20, { align: 'right' })
@@ -543,7 +672,7 @@ export class SupplyOrderComponent {
     // doc.text(discount, 180, tableHeight + 30, { align: 'right' })
     // doc.line(14, tableHeight + 35, 196, tableHeight + 35);
     // doc.text("Net Amount:", 150, tableHeight + 40, { align: 'right' })
-    // doc.text(this.supplyOrderForm.value.totalNetAmount, 180, tableHeight + 40, { align: 'right' })
+    // doc.text(this.supplyOrderForm.value.totalNetAmount.toFixed(2), 180, tableHeight + 40, { align: 'right' })
     // doc.line(14, tableHeight + 45, 196, tableHeight + 45);
 
     doc.line(14, doc.internal.pageSize.height - 50, 196, doc.internal.pageSize.height - 50);

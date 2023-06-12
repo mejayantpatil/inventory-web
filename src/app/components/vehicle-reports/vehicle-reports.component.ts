@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import jsPDF from 'jspdf';
-import { SpareParts } from 'src/app/models/jobs';
+import { Job, SpareParts } from 'src/app/models/jobs';
 import { CategoryService } from 'src/app/services/category.service';
 import { JobService } from 'src/app/services/jobs.service';
 import { ProductService } from 'src/app/services/products.service';
@@ -8,14 +7,17 @@ import { SpinnerService } from 'src/app/services/spinner.service';
 import { TransactionService } from 'src/app/services/transactions.service';
 import { VehicleService } from 'src/app/services/vehicle.service';
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable'
+
 
 @Component({
-  selector: 'app-product-wise-consumption-reports',
-  templateUrl: './product-wise-consumption-reports.component.html',
-  styleUrls: ['./product-wise-consumption-reports.component.scss']
+  selector: 'app-vehicle-reports',
+  templateUrl: './vehicle-reports.component.html',
+  styleUrls: ['./vehicle-reports.component.scss']
 })
-export class ProductWiseConsumptionReportsComponent {
-  private fileName: string = 'Products Wise Consumption Report ' + new Date().toISOString().substring(0, 10) + '.xlsx';
+export class VehicleReportsComponent {
+  private fileName: string = 'Vehicle Wise Consumption Report ' + new Date().toISOString().substring(0, 10) + '.xlsx';
   public startDate: string = new Date(new Date().setDate(1)).toISOString().substring(0, 10);
   public endDate: string = new Date().toISOString().substring(0, 10);
   public categorys: any[] = []
@@ -36,7 +38,9 @@ export class ProductWiseConsumptionReportsComponent {
   public totalSaleRate = 0;
   public totalCost = 0;
   public selectedVehicle: string = '';
-  @ViewChild('mySelect') mySelect: any;
+  public originalData = [];
+  public Jobs = [];
+  public jobCardNo = ''
   constructor(private categoryService: CategoryService,
     private transactionService: TransactionService,
     private jobService: JobService,
@@ -45,9 +49,40 @@ export class ProductWiseConsumptionReportsComponent {
 
   }
   ngOnInit(): void {
-    this.getAllProducts();
-    this.getAllCategories();
+    // this.getAllProducts();
+    // this.getAllCategories();
     this.getAllVehicles();
+
+  }
+
+
+  getAllJobs() {
+    this.spinner.showSpinner();
+    this.totalCost = 0;
+    this.selectedVehicle = ''
+    this.jobService.getJobByDate(this.startDate, this.endDate).subscribe((res: any) => {
+      this.showTable = true;
+      this.spinner.hideSpinner();
+      const data: any = res;
+      this.originalData = res;
+      res.forEach((i: any) => {
+        this.totalCost = this.totalCost + parseFloat(i.netAmount)
+        //   let arr = {}
+        //   i.cardData.map((c: any, index: number) => {
+        //     if (index > 0) return;
+        //     arr = { _id: i._id, jobCardNo: i.jobCardNo, ...c };
+        //     data.push(arr);
+        //   })
+      })
+      data.sort((a: Job, b: Job) => {
+        const aa = parseInt(a.jobCardNo)
+        const bb = parseInt(b.jobCardNo)
+        return bb - aa;
+      });
+      this.jobs = data;
+      this.data = data;
+      // this.data = data.reverse();
+    });
   }
 
   getAllCategories() {
@@ -79,46 +114,10 @@ export class ProductWiseConsumptionReportsComponent {
     });
   }
 
-  formatData(catId = '') {
+  formatData() {
     let netAmount = 0;
     this.jobsData = [];
     this.totalCost = 0;
-    if (this.jobs.length > 0) {
-      this.jobs.map((j: any) => {
-        if (catId && j.spareParts.some((s: any) => s.categoryId === catId)) {
-          j.spareParts.map((s: SpareParts) => {
-            netAmount = netAmount + parseFloat(s.netAmount.toString());
-
-            this.jobsData.push({
-              jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-              modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
-            })
-          })
-        }
-
-        if (catId === '') {
-          j.spareParts.map((s: SpareParts) => {
-            netAmount = netAmount + parseFloat(s.netAmount.toString());
-
-            this.jobsData.push({
-              jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-              modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
-            })
-          })
-        }
-      });
-      this.totalCost = parseFloat(netAmount.toFixed(2));
-    } else {
-      this.jobsData = [];
-      this.totalCost = 0;
-    }
-  }
-
-  all() {
-    let netAmount = 0;
-    this.jobsData = [];
-    this.totalCost = 0;
-    this.selectedVehicle = ''
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
         j.spareParts.map((s: SpareParts) => {
@@ -137,23 +136,53 @@ export class ProductWiseConsumptionReportsComponent {
     }
   }
 
+  all() {
+    let netAmount = 0;
+    this.jobsData = [];
+    this.totalCost = 0;
+    this.selectedVehicle = ''
+    this.data = [];
+    if (this.jobs.length > 0) {
+      this.jobs.map((j: any) => {
+        this.data.push(j)
+        netAmount = netAmount + parseFloat(j.netAmount.toString());
+        // j.spareParts.map((s: SpareParts) => {
+        //   netAmount = netAmount + parseFloat(s.netAmount.toString());
+        //   console.log(j.netAmount, netAmount);
+        //   this.jobsData.push({
+        //     jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+        //     modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+        //   })
+        // })
+      });
+      this.totalCost = parseFloat(netAmount.toFixed(2));
+    } else {
+      this.jobsData = [];
+      this.totalCost = 0;
+    }
+  }
+
   busWise() {
     let netAmount = 0;
     this.jobsData = [];
     this.totalCost = 0;
+    this.data = [];
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
-        j.spareParts.map((s: SpareParts) => {
-          if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) {
-            netAmount = netAmount + parseFloat(s.netAmount.toString());
-            console.log(j.netAmount, netAmount);
-            this.jobsData.push({
-              jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-              modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
-            })
-          }
+        // j.spareParts.map((s: SpareParts) => {
+        if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) {
+          // netAmount = netAmount + j.netAmount;
+          this.data.push(j)
+          netAmount = netAmount + parseFloat(j.netAmount.toString());
+          console.log(j.netAmount, netAmount);
+          //     this.jobsData.push({
+          //       jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+          //       modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+          //     })
+        }
 
-        })
+        // })
+
       });
       this.totalCost = netAmount;
     } else {
@@ -194,7 +223,6 @@ export class ProductWiseConsumptionReportsComponent {
   }
 
   search() {
-    this.mySelect.nativeElement.value = ''
     this.showTable = true;
     this.getTransactions();
     this.getJobs();
@@ -202,25 +230,26 @@ export class ProductWiseConsumptionReportsComponent {
 
   filterResults(categoryID: string) {
     if (categoryID) {
-      this.formatData(categoryID);
+      this.spinner.showSpinner();
+      this.productService.getProductsByCategory(categoryID).subscribe((res: any) => {
+        this.spinner.hideSpinner();
+        this.data = res;
+      });
     } else {
-      this.data = this.jobs
+      this.getAllProducts();
     }
   }
 
-
   report() {
     const data: any = []
-    this.jobsData.map((item, index) => {
+    this.data.map((item, index) => {
       const arr = [];
       arr.push(index + 1)
       arr.push(item.jobCardNo)
       arr.push(item.jobCardDate)
       arr.push(item.registrationNumber)
       arr.push(item.modelName)
-      arr.push(item.partNo)
-      arr.push(item.partName)
-      arr.push(item.quantity)
+      arr.push(item.kmCovered)
       arr.push(item.netAmount)
       data.push(arr);
     })
@@ -230,7 +259,7 @@ export class ProductWiseConsumptionReportsComponent {
   generateReport(body: any[]) {
     const doc: any = new jsPDF({ putOnlyUsedFonts: true });
     doc.setFontSize(20);
-    doc.text("PRODUCT WISE CONSUMPTION REPORT", 30, 15)
+    doc.text("VEHICLE CONSUMPTION REPORT", 50, 15)
     doc.setFontSize(10);
     doc.text("Vishwayoddha Shetkari Multitrade", 80, 22);
     doc.line(14, 30, 196, 30);
@@ -255,13 +284,11 @@ export class ProductWiseConsumptionReportsComponent {
     (doc as any).autoTable({
       head: [[
         "Sr.No.",
-        "Job No.",
+        "Card No.",
         "Job Date",
         "Vehicle No.",
         "Model Name",
-        "Part No",
-        "Part Name",
-        "Qty",
+        "KM Covered",
         "Net Amount",
       ]],
       body: body,
@@ -282,19 +309,17 @@ export class ProductWiseConsumptionReportsComponent {
         if (head.cell.raw === 'Sr.No.') {
           head.cell.styles.halign = 'center'
         }
-        if (head.cell.raw === 'GST' || head.cell.raw === 'Qty' || head.cell.raw === 'Net Amount') {
+        if (head.cell.raw === 'KM Covered' || head.cell.raw === 'Net Amount') {
           head.cell.styles.halign = 'right'
         }
       },
-      columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 7: { halign: 'right' }, 8: { halign: 'right' } },
+      columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 5: { halign: 'right' }, 6: { halign: 'right' } },
       startY: 45,
       margin: [10, 15, 30, 15] // top left bottom left
     });
     // styles: { cellPadding: 0.5, fontSize: 8 },
     const tableHeight = doc.lastAutoTable.finalY;
     doc.line(14, tableHeight + 5, 196, tableHeight + 5);
-    // doc.text("Total Quantiy:", 175, tableHeight + 10, { align: 'right' })
-    // doc.text(this.totalQuantity.toString(), 195, tableHeight + 10, { align: 'right' })
     doc.text("Net Amount:", 175, tableHeight + 10, { align: 'right' })
     doc.text(this.totalCost.toFixed(2), 195, tableHeight + 10, { align: 'right' })
     // doc.line(14, tableHeight + 45, 196, tableHeight + 45);
@@ -323,7 +348,6 @@ export class ProductWiseConsumptionReportsComponent {
     return str;
   }
 
-
   exportToExcel(): void {
     /* pass here the table id */
     let element = document.getElementById('excel-table');
@@ -338,4 +362,3 @@ export class ProductWiseConsumptionReportsComponent {
 
   }
 }
-

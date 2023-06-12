@@ -1,95 +1,184 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
-  <div class="container">
-    <a class="navbar-brand" routerLink="/dashboard" routerLinkActive="active">Vishwayoddha Shetkari Multitrade</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
-      aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light drop-shadow" *ngIf="!loginMenu">
+  <div class="container-fluid">
+    <a class="navbar-brand  bold-600 d-none d-sm-none d-lg-block d-xl-block d-md-block" routerLink="/dashboard"
+      routerLinkActive="active">Vishwayoddha
+      Shetkari
+      Multitrade</a>
+    <a class="navbar-brand  bold-600 d-block d-lg-none d-xl-none d-md-none" routerLink="/dashboard"
+      routerLinkActive="active">Vishwayoddha
+      Multitrade</a>
+    <!-- <a class="navbar-brand" href="#">Navbar</a> -->
+    <button class="navbar-toggler" type="button" #mobileToggle data-bs-toggle="collapse"
+      data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+      aria-label="Toggle navigation" *ngIf="!loginMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div class="collapse navbar-collapse" id="navbarTogglerDemo02" *ngIf="path !== '/login'">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02" *ngIf="!loginMenu">
+      <ul class="d-none d-sm-none d-lg-flex d-md-none navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/dashboard" routerLinkActive="active">Dashbord</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/dashboard" routerLinkActive="active"><i
+              class="bi bi-house"></i> Dashbord</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
+          <a class="nav-link mx-1 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false"><i class="bi bi-journal"></i>
             Reports
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <!-- <li><a class="dropdown-item" routerLink="/purchase-reports">Purchase Reports</a></li>
-                    <li><a class="dropdown-item" routerLink="/consumption-reports">Consumption Report</a></li>-->
-            <li><a class="dropdown-item" routerLink="/purchase-reports">Purchase Reports</a></li>
-            <li><a class="dropdown-item" routerLink="/product-wise-consumption-reports">Product Wise Consumption
-                Reports</a></li>
-            <li><a class="dropdown-item" routerLink="/stock-wise-reports">Stock Wise Reports</a></li>
-            <!-- <li><a class="dropdown-item" href="#">Another action</a></li> -->
-            <!-- <li>
-                      <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+            <li><a class="dropdown-item" routerLink="/purchase-reports"><i class="bi bi-card-list"></i>
+                Purchase
+                Report</a></li>
+            <li><a class="dropdown-item" routerLink="/stock-wise-reports"><i class="bi bi-card-list"></i> Stock Wise
+                Report</a></li>
+            <li><a class="dropdown-item" routerLink="/job-wise-consumption-reports"><i class="bi bi-card-list"></i>
+                Job Wise Consumption Report</a></li>
+            <li><a class="dropdown-item" routerLink="/product-wise-consumption-reports"><i class="bi bi-card-list"></i>
+                Product Wise Consumption Report</a></li>
+            <li><a class="dropdown-item" routerLink="/vehicle-wise-consumption-report"><i class="bi bi-card-list"></i>
+                Vehicle wise Consumption Report</a></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/accounts" routerLinkActive="active">Accounts</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/accounts" routerLinkActive="active"><i
+              class="bi bi-people"></i> Accounts</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/products" routerLinkActive="active">Products</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/products" routerLinkActive="active"><i
+              class="bi bi-box"></i>
+            Products</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/jobs" routerLinkActive="active">Jobs</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/transactions" routerLinkActive="active"><i
+              class="bi bi-boxes"></i>Parts</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/transactions" routerLinkActive="active">Parts</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/jobs" routerLinkActive="active"><i
+              class="bi bi-tools"></i>
+            Jobs</a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/supply-order" routerLinkActive="active">Supply Orders</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/work-orders" routerLinkActive="active">Work Orders</a>
-        </li> -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
+          <a class="nav-link mx-1 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false"><i class="bi bi-clipboard2-check"></i>
             Orders
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" routerLink="/supply-order">Supply Orders</a></li>
-            <li><a class="dropdown-item" routerLink="/work-orders">Work Orders</a></li>
+            <li><a class="dropdown-item" routerLink="/purchase-order"><i class="bi bi-journal-check"></i> Purchase
+                Orders</a>
+            </li>
+            <li><a class="dropdown-item" routerLink="/work-orders"><i class="bi bi-journal-check"></i>
+                Work
+                Orders</a>
+            </li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/groups" routerLinkActive="active">Groups</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/groups" routerLinkActive="active"><i
+              class="bi bi-columns-gap"></i> Groups</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/categorys" routerLinkActive="active">Category</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/categorys" routerLinkActive="active"><i
+              class="bi bi-layout-text-sidebar-reverse"></i> Category</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/vehicles" routerLinkActive="active">Vehicles</a>
+          <a class="nav-link mx-1" aria-current="page" routerLink="/vehicles" routerLinkActive="active"><i
+              class="bi bi-bus-front-fill"></i> Vehicles</a>
         </li>
-
-        <li class="nav-item">
-          <a class="nav-link link" aria-current="page" routerLinkActive="active" (click)="backup()">Backup</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link mx-1 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false"><i class="bi bi-gear"></i>
+            Settings
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" (click)="backup()"><i class="bi bi-database-fill-down"></i>
+                Backup</a></li>
+          </ul>
         </li>
-
-
-        <!--<li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/chat" routerLinkActive="active">Transactions</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/profile" routerLinkActive="active">Utility</a>
-        </li> -->
-        <!-- <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/shortlist" routerLinkActive="active">Reports</a>
-        </li> -->
-
-
-
       </ul>
-      <!-- <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="button" (click)="search()">Search</button>
-      </form> -->
+      <ul class="d-flex d-lg-none d-xl-none d-md-flex navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/dashboard" routerLinkActive="active"><i
+              class="bi bi-house"></i> Dashbord</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link mx-1 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false"><i class="bi bi-journal"></i>
+            Reports
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li (click)="toggleMenu()"><a class="dropdown-item" routerLink="/purchase-reports"><i
+                  class="bi bi-card-list"></i> Purchase
+                Report</a></li>
+            <li (click)="toggleMenu()"><a class="dropdown-item" routerLink="/stock-wise-reports"><i
+                  class="bi bi-card-list"></i> Stock Wise
+                Report</a></li>
+            <li (click)="toggleMenu()"><a class="dropdown-item" routerLink="/job-wise-consumption-reports"><i
+                  class="bi bi-card-list"></i>
+                Job Wise Consumption Report</a></li>
+            <li (click)="toggleMenu()"><a class="dropdown-item" routerLink="/product-wise-consumption-reports"><i
+                  class="bi bi-card-list"></i>
+                Product Wise Consumption Report</a></li>
+            <li (click)="toggleMenu()"><a class="dropdown-item" routerLink="/vehicle-wise-consumption-report"><i
+                  class="bi bi-card-list"></i>
+                Vehicle wise Consumption Report</a></li>
+          </ul>
+        </li>
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/accounts" routerLinkActive="active"><i
+              class="bi bi-people"></i> Accounts</a>
+        </li>
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/products" routerLinkActive="active"><i
+              class="bi bi-box"></i>
+            Products</a>
+        </li>
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/transactions" routerLinkActive="active"><i
+              class="bi bi-boxes"></i>Parts</a>
+        </li>
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/jobs" routerLinkActive="active"><i
+              class="bi bi-tools"></i>
+            Jobs</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link mx-1 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false"><i class="bi bi-clipboard2-check"></i>
+            Orders
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li (click)="toggleMenu()"><a class="dropdown-item" routerLink="/purchase-order"><i
+                  class="bi bi-journal-check"></i> Purchase
+                Orders</a>
+            </li>
+            <li (click)="toggleMenu()"><a class="dropdown-item" routerLink="/work-orders"><i
+                  class="bi bi-journal-check"></i> Work
+                Orders</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/groups" routerLinkActive="active"><i
+              class="bi bi-columns-gap"></i> Groups</a>
+        </li>
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/categorys" routerLinkActive="active"><i
+              class="bi bi-layout-text-sidebar-reverse"></i> Category</a>
+        </li>
+        <li class="nav-item" (click)="toggleMenu()">
+          <a class="nav-link mx-1" aria-current="page" routerLink="/vehicles" routerLinkActive="active"><i
+              class="bi bi-bus-front-fill"></i> Vehicles</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link mx-1 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false"><i class="bi bi-gear"></i>
+            Settings
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li (click)="toggleMenu()"><a class="dropdown-item" (click)="backup()"><i
+                  class="bi bi-database-fill-down"></i> Backup</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>

@@ -30,6 +30,6 @@ export interface CardData {
 }
 export interface Job {
     _id?: string
-    jobCardNo: number,
+    jobCardNo: string,
     cardData: CardData[]
 }

@@ -6,8 +6,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class FilterJob implements PipeTransform {
 
     transform(array: any[], searchWord: string): any {
-        return array.filter(a => searchWord ? a.jobCardNo.includes(searchWord) ||
-            a.registrationNumber.toLowerCase().includes(searchWord) : a);
+        return array.filter(a => a.jobCardNo.includes(searchWord))
+        // a.registrationNumber.toLowerCase().includes(searchWord.toLowerCase()) : a);
     }
 
 }

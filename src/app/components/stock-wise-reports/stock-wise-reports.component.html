@@ -3,36 +3,39 @@
     <div class="col-12">
         <h3><a href="#" routerLink="/dashboard">
                 <i class="bi bi-arrow-left-square-fill"></i>
-            </a> Parts - stock wise report</h3>
+            </a> Parts - Stock wise report</h3>
     </div>
 </div>
 <br>
 <div class="row">
-    <div class="col-2">
+    <div class="col-lg-2 col-md-2 col-xs-12">
         Start Date
         <input class="form-control" type="date" [(ngModel)]="startDate" />
     </div>
-    <div class="col-2">
+    <div class="col-lg-2 col-md-2 col-xs-12">
         End Date
         <input class="form-control" type="date" [(ngModel)]="endDate" />
     </div>
-    <div class="col-1">
-        <br>
-        <button type="button" class="btn btn-primary" (click)="search()">Show</button>
-    </div>
-    <div class="col-3" *ngIf="showTable">
+    <div class="col-lg-3 col-md-3 col-xs-12">
         <span>Filter By Category</span>
-        <select #mySelect (change)='filterResults(mySelect.value)' class="form-select form-control"
-            aria-label="Default select">
+        <select [disabled]="!showTable" #mySelect (change)='filterResults(mySelect.value)'
+            class="form-select form-control" aria-label="Default select">
             <option selected value="">All Category</option>
             <option [value]="cat._id" *ngFor="let cat of categorys; let i = index">
                 {{cat.categoryName}}
             </option>
         </select>
     </div>
-    <div class="col-4 text-end">
+    <div class="col-lg-1 col-md-1 col-xs-12 text-end">
         <br>
-        <button type="button" *ngIf="showTable" class="btn btn-warning" (click)="exportToExcel()"><i
+        <button type="button" class="btn btn-primary" (click)="search()">Show</button>
+    </div>
+    <div class="col-lg-4 col-md-4 col-xs-12 text-end">
+        <br>
+        <button type="button" class="btn btn-primary" [disabled]="!showTable" (click)="report()"><i
+                class="bi bi-printer"></i>
+            Print</button>&nbsp;
+        <button type="button" [disabled]="!showTable" class="btn btn-warning" (click)="exportToExcel()"><i
                 class="bi bi-box-arrow-in-down"></i> Export
             to Excel</button>
     </div>
@@ -40,57 +43,62 @@
 </div>
 <div class="row">
     <div class="col-12">
-
+        <hr>
     </div>
     <div class="col-12" *ngIf="showTable">
-        <hr>
-        <table class="table table-striped table-hover" id="excel-table">
-            <thead>
-                <tr>
-                    <th scope="col" width="50">#</th>
-                    <th scope="col">Part No</th>
-                    <th scope="col" width="200">Part Name</th>
-                    <th scope="col">Opening</th>
-                    <th scope="col">Stock Purchased</th>
-                    <th scope="col">Stock Consumption</th>
-                    <th scope="col">Closing Stock</th>
-                    <th scope="col">Closing Purchase Rate</th>
-                    <th scope="col">Closing Sale Rate</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let product of newData;let i=index">
-                    <th scope="row" width="50">{{i+1}}</th>
-                    <td>{{product.partNumber}}</td>
-                    <td width="200">{{product.partName}}</td>
-                    <!-- <td>{{categroysObj[product.category]}}</td> -->
-                    <td>{{product.opening}}</td>
-                    <td>{{product.purchasedQty}}</td>
-                    <td>{{product.consumedQty}}</td>
-                    <td>{{product.closingQty}}</td>
-                    <td>{{product.saleRate}}</td>
-                    <td>
-                        {{product.closingRate}}
-                        <!-- <i class="bi bi-pencil-square" (click)="editProduct(product)"></i>&nbsp; -->
-                        <!-- <i class="bi bi-trash3" (click)="deleteProduct(product._id)"></i> -->
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="row">
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="excel-table">
+                <thead>
+                    <tr>
+                        <th scope="col" width="50">#</th>
+                        <th scope="col">Part No</th>
+                        <th scope="col" width="200">Part Name</th>
+                        <th scope="col" width="100">Unit</th>
+                        <th scope="col" width="100">Opening</th>
+                        <th scope="col">Open Stock Value</th>
+
+                        <th scope="col">Stock Purchased</th>
+                        <th scope="col">Stock Consumption</th>
+                        <th scope="col">Clos Stock</th>
+                        <th scope="col">Clos Pur Rate</th>
+                        <th scope="col">Clos Stock Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let product of newData;let i=index">
+                        <th scope="row" width="50">{{i+1}}</th>
+                        <td>{{product.partNumber}}</td>
+                        <td width="200">{{product.partName}}</td>
+                        <td width="100">{{product.unit}}</td>
+                        <!-- <td>{{categroysObj[product.category]}}</td> -->
+                        <td>{{product.opening}}</td>
+                        <td>{{product.openingStockValue}}</td>
+                        <td>{{product.purchasedQty}}</td>
+                        <td>{{product.consumedQty}}</td>
+                        <td>{{product.closingQty}}</td>
+                        <td>{{product.saleRate}}</td>
+                        <td>{{product.closingStockValue}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
             <table class="table  table-borderless">
                 <tbody>
                     <tr class="text-danger">
                         <td width="50"></td>
                         <td></td>
+                        <td></td>
                         <td width="200">Total</td>
                         <td>{{openingQuantity}}</td>
+                        <td>{{totalOpeningStockValue| number :
+                            '1.2-2'}}</td>
                         <td>{{totalPurchasedQty}}</td>
                         <td>{{totalConsumedQty}}</td>
                         <td>{{closingQuanity}}</td>
                         <td>{{totalItemSaleRate | number :
                             '1.2-2'}}</td>
-                        <td>{{totalSaleRate | number :
+                        <td>{{totalClosingStockValue | number :
                             '1.2-2'}}</td>
                     </tr>
                 </tbody>

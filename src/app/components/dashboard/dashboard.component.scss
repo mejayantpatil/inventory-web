@@ -6,10 +6,18 @@
     overflow-y: auto;
     height: 150px;
     font-size: 10pt;
+
+    @media (max-width: 599px) {
+        table {
+            width: 500px;
+        }
+    }
 }
 
 .custom-btn {
     z-index: 0;
+    height: 200px;
+    overflow: auto;
 
     button {
         width: 50px;

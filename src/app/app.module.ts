@@ -40,6 +40,8 @@ import { ProductWiseConsumptionReportsComponent } from './components/product-wis
 import { SupplyOrderComponent } from './components/supply-order/supply-order.component';
 import { AccountsMasterComponent } from './components/accounts-master/accounts-master.component';
 import { WorkOrdersComponent } from './components/work-orders/work-orders.component';
+import { JobWiseConsumptionReportsComponent } from './components/job-wise-consumption-reports/job-wise-consumption-reports.component';
+import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-reports.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +78,9 @@ import { WorkOrdersComponent } from './components/work-orders/work-orders.compon
     ProductWiseConsumptionReportsComponent,
     SupplyOrderComponent,
     AccountsMasterComponent,
-    WorkOrdersComponent
+    WorkOrdersComponent,
+    JobWiseConsumptionReportsComponent,
+    VehicleReportsComponent
   ],
   imports: [
     BrowserModule,

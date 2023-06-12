@@ -6,25 +6,25 @@
     <div class="col-12">
         <div *ngIf="!showNewProductForm">
             <h2>Products</h2>
-            <br>
             <div class="row">
-                <div class="col-3">
-                    <span>Filter By Category</span>
+                <div class="col-lg-3 col-sm-6 col-md-3 col-xs-12">
+                    <!-- <span>Filter By Category</span> -->
                     <select #mySelect (change)='filterResults(mySelect.value)' class="form-select form-control"
                         aria-label="Default select">
-                        <option selected value="">All Category</option>
+                        <option selected value="">Filter By Category</option>
                         <option [value]="cat._id" *ngFor="let cat of categorys; let i = index">
                             {{cat.categoryName}}
                         </option>
                     </select>
                 </div>
-                <div class="col-3">
-                    <span>Filter</span>
+                <div class="col-lg-3 col-sm-6 col-md-3 col-xs-12">
+                    <!-- <span>Filter</span> -->
                     <input placeholder="Filter By Part No or Part Name" type="text" class="form-control"
                         [(ngModel)]="partNo">
+                    <br>
                 </div>
-                <div class="col-6">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <div class="col-lg-6 col-sm-12 col-md-6 col-xs-12">
+                    <div class="d-grid gap-2 d-sm-flex  d-md-flex justify-content-md-end">
                         <input *ngIf="showFileUpload" type="file" class="file-upload" (change)="onFileChange($event)">
                         <button *ngIf="showFileUpload" type="button" class="btn btn-danger"
                             (click)="uploadFile()">Upload</button>
@@ -47,120 +47,125 @@
                 <li class="list-group-item">A fourth item</li>
                 <li class="list-group-item">And a fifth one</li>
             </ul> -->
-            <table class="table table-striped table-hover" id="excel-table">
-                <thead>
-                    <tr>
-                        <th scope="col" width="50">#</th>
-                        <th scope="col">Part No</th>
-                        <th scope="col" width="200">Part Name</th>
-                        <th scope="col" width="120">Category</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Sale Rate</th>
-                        <th scope="col">Purchase Rate</th>
-                        <th scope="col">Unit</th>
-                        <th scope="col">Store Loc.</th>
-                        <th scope="col">L. Page No.</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <ng-container *ngFor="let product of data| filterPipe : partNo;let i=index">
-                        <tr (click)="toggleDetails(i, product)" [ngClass]="{'table-info': selectedRowIndex === i}">
-                            <th scope=" row" width="50">{{i+1}}</th>
-                            <td>{{product.partNumber}}</td>
-                            <td width="200">{{product.partName}}</td>
-                            <td width="120">{{categroysObj[product.category]}}</td>
-                            <td>{{(product.quantity?product.quantity:0) + (stockPurchased[product.partNumber] ?
-                                stockPurchased[product.partNumber]:0) -
-                                (stockConsumed[product.partNumber]? stockConsumed[product.partNumber]:0)}}</td>
-                            <td>{{product.saleRate}}</td>
-                            <td>{{product.newRate?product.newRate.toFixed(2):0}}</td>
-                            <td>{{product.unit}}</td>
-                            <td>{{product.storeLocation}}</td>
-                            <td>{{product.ledgerPageNumber}}</td>
-                            <td>
-                                <i class="bi bi-pencil-square" (click)="editProduct(product)"
-                                    title="Edit"></i>&nbsp;&nbsp;
-                                <i class="bi bi-trash3" (click)="deleteProduct(product._id)" title="Delete"></i>
-                            </td>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="excel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="50">#</th>
+                            <th scope="col">Part No</th>
+                            <th scope="col" width="200">Part Name</th>
+                            <th scope="col" width="120">Category</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Rate</th>
+                            <th scope="col">Purchase Rate</th>
+                            <th scope="col">Unit</th>
+                            <th scope="col">Store Loc.</th>
+                            <th scope="col">L. Page No.</th>
+                            <th scope="col">Action</th>
                         </tr>
-                        <tr *ngIf="selectedRowIndex === i" class="table-light">
-                            <td colspan="5">
-                                <label>Purchased Details:</label>
-                                <table class="table " *ngIf="stockPurchasedData[product.partNumber]">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">#</th>
-                                            <th width="50">Trans. No</th>
-                                            <th>Date</th>
-                                            <th>Supplier</th>
-                                            <th>Qunaity</th>
-                                            <th>Net Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let item of stockPurchasedData[product.partNumber]; let j=index">
-                                            <th width="50">{{j+1}}</th>
-                                            <td width="50">{{item.transactionNo}}</td>
-                                            <td>{{item.date}}</td>
-                                            <td>{{item.supplierName}}</td>
-                                            <td>{{item.quantity}}</td>
-                                            <td>{{item.total}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="4"></td>
-                                            <td colspan="2">
-                                                <strong>Total: {{stockPurchasedTotal[product.partNumber] | number :
-                                                    '1.2-2'}}</strong>
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let product of data| filterPipe : partNo;let i=index">
+                            <tr (click)="toggleDetails(i, product)" [ngClass]="{'table-info': selectedRowIndex === i}">
+                                <th scope=" row" width="50">{{i+1}}</th>
+                                <td>{{product.partNumber}}</td>
+                                <td width="200">{{product.partName}}</td>
+                                <td width="120">{{categroysObj[product.category]}}</td>
+                                <td>{{(product.quantity?product.quantity:0) + (stockPurchased[product.partNumber] ?
+                                    stockPurchased[product.partNumber]:0) -
+                                    (stockConsumed[product.partNumber]? stockConsumed[product.partNumber]:0)}}</td>
+                                <td>{{product.saleRate}}</td>
+                                <td>{{product.newRate?product.newRate.toFixed(2):0}}</td>
+                                <td>{{product.unit}}</td>
+                                <td>{{product.storeLocation}}</td>
+                                <td>{{product.ledgerPageNumber}}</td>
+                                <td>
+                                    <i class="bi bi-pencil-square" (click)="editProduct(product)"
+                                        title="Edit"></i>&nbsp;&nbsp;
+                                    <i class="bi bi-trash3" (click)="deleteProduct(product._id)" title="Delete"></i>
+                                </td>
+                            </tr>
+                            <tr *ngIf="selectedRowIndex === i" class="table-light">
+                                <td colspan="5">
+                                    <label>Purchased Details:</label>
+                                    <table class="table " *ngIf="stockPurchasedData[product.partNumber]">
+                                        <thead>
+                                            <tr>
+                                                <th width="50">#</th>
+                                                <th width="50">Tr. No.</th>
+                                                <th>Invoice No.</th>
+                                                <th>Date</th>
+                                                <th>Supplier</th>
+                                                <th class="text-end">Qty</th>
+                                                <th class="text-end">Net Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr
+                                                *ngFor="let item of stockPurchasedData[product.partNumber]; let j=index">
+                                                <th width="50">{{j+1}}</th>
+                                                <td width="50">{{item.transactionNo}}</td>
+                                                <td>{{item.supplierInvoiceNo}}</td>
+                                                <td>{{item.date}}</td>
+                                                <td>{{item.supplierName}}</td>
+                                                <td class="text-end">{{item.quantity}}</td>
+                                                <td class="text-end">{{item.total}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4"></td>
+                                                <td colspan="2">
+                                                    <strong>Total: {{stockPurchasedTotal[product.partNumber] | number :
+                                                        '1.2-2'}}</strong>
+                                                </td>
+                                            </tr>
+                                        </tbody>
 
-                                </table>
-                                <label class="alert" *ngIf="!stockPurchasedData[product.partNumber]">No Purchase Data
-                                    Found</label>
-                            </td>
-                            <td colspan="6">
-                                <label>Consumed Details:</label>
+                                    </table>
+                                    <label class="alert" *ngIf="!stockPurchasedData[product.partNumber]">No Purchase
+                                        Data
+                                        Found</label>
+                                </td>
+                                <td colspan="6">
+                                    <label>Consumed Details:</label>
 
-                                <table class="table " *ngIf="stockConsumedData[product.partNumber]">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">#</th>
-                                            <th width="50">Job No</th>
-                                            <th width="100">Date</th>
-                                            <th>Vehicle</th>
-                                            <th>Qunaity</th>
-                                            <th>Net Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let item of stockConsumedData[product.partNumber]; let j=index">
-                                            <th width="50">{{j+1}}</th>
-                                            <td width="50">{{item.jobCardNo}}</td>
-                                            <td width="100">{{item.jobCardDate}}</td>
-                                            <td>{{item.registrationNumber}}</td>
-                                            <td>{{item.quantity}}</td>
-                                            <td>{{item.total}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="4">
-                                            </td>
-                                            <td colspan="2">
-                                                <strong>Total {{stockConsumedTotal[product.partNumber] | number :
-                                                    '1.2-2'}}</strong>
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                    <table class="table " *ngIf="stockConsumedData[product.partNumber]">
+                                        <thead>
+                                            <tr>
+                                                <th width="50">#</th>
+                                                <th width="50">Job No</th>
+                                                <th width="100">Date</th>
+                                                <th>Vehicle</th>
+                                                <th>Qunaity</th>
+                                                <th>Net Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of stockConsumedData[product.partNumber]; let j=index">
+                                                <th width="50">{{j+1}}</th>
+                                                <td width="50">{{item.jobCardNo}}</td>
+                                                <td width="100">{{item.jobCardDate}}</td>
+                                                <td>{{item.registrationNumber}}</td>
+                                                <td>{{item.quantity}}</td>
+                                                <td>{{item.total}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                </td>
+                                                <td colspan="2">
+                                                    <strong>Total {{stockConsumedTotal[product.partNumber] | number :
+                                                        '1.2-2'}}</strong>
+                                                </td>
+                                            </tr>
+                                        </tbody>
 
-                                </table>
-                                <label class="alert" *ngIf="!stockConsumedData[product.partNumber]">No Consumed Data
-                                    Found</label>
-                            </td>
-                        </tr>
-                    </ng-container>
+                                    </table>
+                                    <label class="alert" *ngIf="!stockConsumedData[product.partNumber]">No Consumed Data
+                                        Found</label>
+                                </td>
+                            </tr>
+                        </ng-container>
 
-                    <!-- <tr *ngFor="let product of data| filterPipe : partNo;let i=index" (mouseover)="showPopup = i"
+                        <!-- <tr *ngFor="let product of data| filterPipe : partNo;let i=index" (mouseover)="showPopup = i"
                         (mouseout)="showPopup=-1">
                         <th scope=" row" width="50">{{i+1}}</th>
                         <td>{{product.partNumber}}</td>
@@ -179,8 +184,9 @@
                             <i class="bi bi-trash3" (click)="deleteProduct(product._id)" title="Delete"></i>
                         </td>
                     </tr> -->
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
@@ -193,7 +199,7 @@
                 </nav>
             </div>
         </div>
-        <div *ngIf="showNewProductForm">
+        <div *ngIf="showNewProductForm" class="col-lg-4 col-md-4 col-xs-12">
             <h2>Products</h2>
             <form [formGroup]="productForm">
                 <ul class="list-group list-group-flush">
@@ -208,7 +214,7 @@
                         <input *ngIf="editProductFlag" id="partName" class="form-control" type="text"
                             formControlName="partName" />
                     </li>
-                    <li class="list-group-item">Sale Rate:
+                    <li class="list-group-item">Rate:
                         <span *ngIf="!editProductFlag">{{product.saleRate}}</span>
                         <input *ngIf="editProductFlag" id="saleRate" class="form-control" type="text"
                             formControlName="saleRate" />

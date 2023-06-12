@@ -6,7 +6,6 @@
     <div class="col-12">
         <div *ngIf="!showNewTransactionForm">
             <h2>Part Inwards Transactions</h2>
-            <br>
             <!-- <div class="row">
                 <div class="col-6">
                     <span>Filter By Category</span>
@@ -19,12 +18,13 @@
                     </select>
                 </div>
             </div> -->
-            <br>
+            <hr>
             <div class="row">
-                <div class="col-3">
-                    <input placeholder="Filter By invoiceNo" type="text" class="form-control" [(ngModel)]="invoiceNo">
+                <div class="col-lg-3 col-xs-12">
+                    <input placeholder="Filter By Tr. No. or Invoice No" type="text" class="form-control"
+                        [(ngModel)]="invoiceNo">
                 </div>
-                <div class="col-9">
+                <div class="col-lg-9 col-xs-12">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <!-- <input *ngIf="showFileUpload" type="file" class="file-upload" (change)="onFileChange($event)">
                 <button *ngIf="showFileUpload" type="button" class="btn btn-danger"
@@ -45,60 +45,100 @@
             </div>
 
             <hr>
-            <table class="table table-striped table-hover" id="excel-table">
-                <thead>
-                    <tr>
-                        <th scope="col" width="50">#</th>
-                        <th scope="col">TRN No</th>
-                        <th scope="col">Mode</th>
-                        <th scope="col" width="120">S.Invoice No</th>
-                        <th scope="col" width="200">Supplier Name</th>
-                        <th scope="col">Date</th>
-                        <th scope="col" class="text-right">Gross</th>
-                        <th scope="col" class="text-right">GST</th>
-                        <th scope="col" class="text-right">Discount</th>
-                        <th scope="col" class="text-right">Grand Total</th>
-                        <!-- <th scope="col" class="text-right">Cash Discount</th>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="excel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="50">#</th>
+                            <th scope="col">TRN No</th>
+                            <th scope="col">Mode</th>
+                            <th scope="col" width="120">S.Invoice No</th>
+                            <th scope="col" width="200">Supplier Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col" class="text-right">Gross</th>
+                            <th scope="col" class="text-right">GST</th>
+                            <th scope="col" class="text-right">Discount</th>
+                            <!-- <th scope="col" class="text-right">Grand Total</th> -->
+                            <!-- <th scope="col" class="text-right">Cash Discount</th>
                         <th scope="col" class="text-right">Other Charges</th> -->
-                        <th scope="col" class="text-right">Net Amount</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let transaction of data| filterInvoice: invoiceNo;let i=index">
-                        <th scope="row" width="50">{{i+1}}</th>
-                        <td>{{transaction.transactionNo}}</td>
-                        <td>{{transaction.paymentMode}}</td>
-                        <td width="120">{{transaction.supplierInvoiceNo}}</td>
-                        <td width="200">{{transaction.supplierName}}</td>
-                        <td>{{transaction.date| date: 'dd/MM/yyyy'}}</td>
-                        <td class="text-right">{{transaction.grossAmount}}</td>
-                        <td class="text-right">{{transaction.gst}}</td>
-                        <td class="text-right">{{transaction.tradeDiscount}}</td>
-                        <td class="text-right">{{transaction.grandTotal}}</td>
-                        <!-- <td class="text-right">{{transaction.cashDiscount}}</td>
+                            <th scope="col" class="text-right">Net Amount</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let transaction of data| filterInvoice: invoiceNo;let i=index">
+                            <tr (click)="toggleDetails(i, transaction)"
+                                [ngClass]="{'table-info': selectedRowIndex === i}">
+
+                                <th scope="row" width="50">{{i+1}}</th>
+                                <td>{{transaction.transactionNo}}</td>
+                                <td>{{transaction.paymentMode}}</td>
+                                <td width="120">{{transaction.supplierInvoiceNo}}</td>
+                                <td width="200">{{transaction.supplierName}}</td>
+                                <td>{{transaction.date| date: 'dd/MM/yyyy'}}</td>
+                                <td class="text-right">{{transaction.grossAmount}}</td>
+                                <td class="text-right">{{transaction.gst}}</td>
+                                <td class="text-right">{{transaction.tradeDiscount}}</td>
+                                <!-- <td class="text-right">{{transaction.grandTotal}}</td> -->
+                                <!-- <td class="text-right">{{transaction.cashDiscount}}</td>
                         <td class="text-right">{{transaction.otherCharges}}</td> -->
-                        <td class="text-right">{{transaction.netAmount}}</td>
-                        <td class="text-center">
-                            <!-- <i class="bi bi-pencil-square" (click)="editTransaction(transaction)"></i>&nbsp; -->
-                            <!-- <i class="bi bi-trash3" (click)="deleteTransaction(transaction._id)"></i> -->
-                            <i class="bi bi-pencil-square cursor-pointer" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" (click)="setSelectedTransaction(transaction)"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                </tbody>
-            </table>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </nav>
+                                <td class="text-right">{{transaction.netAmount}}</td>
+                                <td class="text-center">
+                                    <!-- <i class="bi bi-pencil-square" (click)="editTransaction(transaction)"></i>&nbsp; -->
+                                    <!-- <i class="bi bi-trash3" (click)="deleteTransaction(transaction._id)"></i> -->
+                                    <i class="bi bi-pencil-square cursor-pointer" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal" (click)="setSelectedTransaction(transaction)"></i>
+                                </td>
+                            </tr>
+                            <tr *ngIf="selectedRowIndex === i" class="table-light">
+                                <td></td>
+                                <td colspan="10">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th width="50">#</th>
+                                                <th>Part No</th>
+                                                <th>Product Name</th>
+                                                <th>Quantity</th>
+                                                <th>Ledger No.</th>
+                                                <th>Rate</th>
+                                                <th>GST</th>
+                                                <th>Net Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of transaction.data; let j=index">
+                                                <th width="50">{{j+1}}</th>
+                                                <td>{{item.partNo}}</td>
+                                                <td>{{item.partName}}</td>
+                                                <td>{{item.quantity}}</td>
+                                                <td>{{item.ledgerPageNumber}}</td>
+                                                <td>{{item.rate}}</td>
+                                                <td>{{item.cgstPercentage*2}}
+                                                </td>
+                                                <td>{{item.netAmount}}</td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </ng-container>
+
+                    </tbody>
+                </table>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
         <div *ngIf="showNewTransactionForm">

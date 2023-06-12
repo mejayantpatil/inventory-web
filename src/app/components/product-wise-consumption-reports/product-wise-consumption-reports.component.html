@@ -8,85 +8,82 @@
 </div>
 <br>
 <div class="row">
-    <div class="col-2">
+    <div class="col-lg-2 col-md-2 col-xs-12">
         Start Date
         <input class="form-control" type="date" [(ngModel)]="startDate" />
     </div>
-    <div class="col-2">
+    <div class="col-lg-2 col-md-2 col-xs-12">
         End Date
         <input class="form-control" type="date" [(ngModel)]="endDate" />
     </div>
-    <div class="col-1">
-        <br>
-        <button type="button" class="btn btn-primary" (click)="search()">Show</button>
-    </div>
-    <div class="col-2" *ngIf="showTable">Select for vehicle wise
-        <select class="form-control" [(ngModel)]="selectedVehicle">
-            <option selected value="">Select Vehicle</option>
+    <div class="col-lg-2 col-md-2 col-xs-12">Filter vehicle wise
+        <select [disabled]="!showTable" class="form-control" [(ngModel)]="selectedVehicle" (change)="busWise()">
+            <option selected value="">Filter By Vehicle</option>
             <option *ngFor="let vehicle of vehicles; let i =index">{{vehicle.vehicleNumber}}
             </option>
         </select>
     </div>
-    <div class="col-1" *ngIf="showTable"><br>
-        <button type="button" class="btn btn-primary" (click)="busWise()">Show</button>
-    </div>
-    <div class="col-2" *ngIf="showTable">
-        <br>
-        <button type="button" class="btn btn-primary" *ngIf="selectedVehicle" (click)="all()">Show All</button>
-    </div>
-    <div class="col-2 text-end" *ngIf="showTable">
-        <br>
-        <button type="button" *ngIf="showTable" class="btn btn-warning" (click)="exportToExcel()"><i
-                class="bi bi-box-arrow-in-down"></i> Export
-            to Excel</button>
-    </div>
-    <!-- <div class="col-2">
-        <span>Filter By Category</span>
-        <select #mySelect (change)='filterResults(mySelect.value)' class="form-select form-control"
-            aria-label="Default select">
-            <option selected value="">All Category</option>
+    <div class="col-2">
+        Filter By Category
+        <select #mySelect (change)='filterResults(mySelect.value)' [disabled]="!showTable"
+            class="form-select form-control" aria-label="Default select">
+            <option selected value="">Filter By Category</option>
             <option [value]="cat._id" *ngFor="let cat of categorys; let i = index">
                 {{cat.categoryName}}
             </option>
         </select>
-    </div> -->
+    </div>
+    <div class="col-lg-1 col-md-1 col-xs-12">
+        <br>
+        <button type="button" class="btn btn-primary" (click)="search()">Show</button>
+    </div>
+    <div class="col-lg-3 col-md-3 col-xs-12 text-end">
+        <br>
+        <button type="button" class="btn btn-primary" [disabled]="!showTable" (click)="report()"><i
+                class="bi bi-printer"></i>
+            Print</button>&nbsp;
+        <button type="button" [disabled]="!showTable" class="btn btn-warning" (click)="exportToExcel()"><i
+                class="bi bi-box-arrow-in-down"></i> Export
+            to Excel</button>
+    </div>
 </div>
 <div class="row">
     <div class="col-12">
-
+        <hr>
     </div>
     <div class="col-12" *ngIf="showTable">
-        <hr>
-        <table class="table table-striped table-hover" id="excel-table">
-            <thead>
-                <tr>
-                    <th scope="col" width="50">#</th>
-                    <th scope="col" width="100">Job Date</th>
-                    <th scope="col">Job Card No</th>
-                    <th scope="col">Vehicle No.</th>
-                    <th scope="col">Model Name</th>
-                    <th scope="col">Part No.</th>
-                    <th scope="col" width="200">Part Name</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Net Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let jobCard of jobsData;let i=index">
-                    <th scope="row" width="50">{{i+1}}</th>
-                    <td width="100">{{jobCard.jobCardDate}}</td>
-                    <td>{{jobCard.jobCardNo}}</td>
-                    <td>{{jobCard.registrationNumber}}</td>
-                    <td>{{jobCard.modelName}}</td>
-                    <td>{{jobCard.partNo}}</td>
-                    <td width="200">{{jobCard.partName}}</td>
-                    <td>{{jobCard.quantity}}</td>
-                    <td>{{jobCard.netAmount}}</td>
 
-                </tr>
-            </tbody>
-        </table>
-        <div class="row">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="excel-table">
+                <thead>
+                    <tr>
+                        <th scope="col" width="50">#</th>
+                        <th scope="col">Job Card No</th>
+                        <th scope="col" width="100">Job Date</th>
+                        <th scope="col">Vehicle No.</th>
+                        <th scope="col">Model Name</th>
+                        <th scope="col">Part No.</th>
+                        <th scope="col" width="200">Part Name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Net Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let jobCard of jobsData;let i=index">
+                        <th scope="row" width="50">{{i+1}}</th>
+                        <td>{{jobCard.jobCardNo}}</td>
+                        <td width="100">{{jobCard.jobCardDate}}</td>
+                        <td>{{jobCard.registrationNumber}}</td>
+                        <td>{{jobCard.modelName}}</td>
+                        <td>{{jobCard.partNo}}</td>
+                        <td width="200">{{jobCard.partName}}</td>
+                        <td>{{jobCard.quantity}}</td>
+                        <td>{{jobCard.netAmount}}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+
             <table class="table  table-borderless">
                 <tbody>
                     <tr class="text-danger">

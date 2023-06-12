@@ -6,110 +6,147 @@
     <div class="col-12">
         <div *ngIf="!showNewWorkOrderForm">
             <h2>Work Orders</h2>
-            <br>
-            <div class="row">
-                <div class="col-6">
-                    <!-- <span>Filter By Category</span>
-                    <select #mySelect (change)='filterResults(mySelect.value)' class="form-select form-control"
-                        aria-label="Default select">
-                        <option selected value="">All Category</option>
-                        <option [value]="cat._id" *ngFor="let cat of categorys; let i = index">
-                            {{cat.categoryName}}
-                        </option>
-                    </select> -->
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-4">
-                    <!-- <span>filter</span> -->
-                    <!-- <input placeholder="Filter By Part No or Part Name" type="text" class="form-control"
-                        [(ngModel)]="partNo"> -->
-                </div>
-                <div class="col-8">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="button" class="btn btn-warning" (click)="exportToExcel()"><i
-                                class="bi bi-box-arrow-in-down"></i> Export
-                            WorkOrders</button>
-                        <button type="button" class="btn btn-primary pull-right" (click)="newWorkOrder()">New Work
-                            Order
-                        </button>
+            <div class="col-12 mt-1">
+                <br>
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link" id="nav-home-tab" data-bs-toggle="tab" (click)="getAllProducts()"
+                            data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+                            aria-selected="true">Products with Low Quantity</button>
+                        <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile"
+                            (click)="getAllOrders()" aria-selected="false">Work Order List</button>
+                        <!-- <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab"
+                                            data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact"
+                                            aria-selected="false">Contact</button> -->
                     </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fademt-5" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <br>
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="responsive-table">
+                                    <table class="table table-striped table-hover table-sm" id="excel-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col"><input class="form-check-input" [(ngModel)]="selectAll"
+                                                        type="checkbox" (change)="checkAll()" value="All">
+                                                </th>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Part No</th>
+                                                <th scope="col">Part Name</th>
+                                                <th scope="col">Qty</th>
+                                                <th scope="col">Supplier</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let product of productsWithLowQty; let i=index">
+                                                <td scope="col"><input class="form-check-input" type="checkbox"
+                                                        (change)="product.checked = !product.checked"
+                                                        [checked]="product.checked" value="product.checked"></td>
+                                                <th scope="row">{{i+1}}</th>
+                                                <td>{{product.partNumber}}</td>
+                                                <td>{{product.partName}}</td>
+                                                <td>{{product.quantity}}</td>
+                                                <td>{{product.supplierName}}</td>
+                                            </tr>
+                                            <tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="text-end col-12 mt-2">
+                                        <button type="button" class="btn btn-warning" (click)="addToWorkOrder()">
+                                            Add to Purchase Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade  show active " id="nav-profile" role="tabpanel"
+                        aria-labelledby="nav-profile-tab">
+                        <br>
+                        <div class="row">
+                            <div class="col-4">
+                                <!-- <span>filter</span> -->
+                                <!-- <input placeholder="Filter By Part No or Part Name" type="text" class="form-control"
+                                                            [(ngModel)]="partNo"> -->
+                            </div>
+                            <div class="col-8">
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" class="btn btn-warning" (click)="exportToExcel()"> <i
+                                            class="bi bi-box-arrow-in-down"></i> Export
+                                        Work Orders</button>
+                                    <button type="button" class="btn btn-primary pull-right"
+                                        (click)="newWorkOrder()">New Supply
+                                        Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-10">
+                            <table class="table table-striped table-hover" id="excel-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" width="50">#</th>
+                                        <th scope="col">Order No</th>
+                                        <th scope="col">Order Date</th>
+                                        <th scope="col">Service Provider Name</th>
+                                        <th scope="col">Total Quantity</th>
+                                        <th scope="col">Order Status</th>
+
+                                        <th scope="col" width="200">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr *ngFor="let order of workOrders;let i=index">
+                                        <th scope=" row" width="50">{{i+1}}</th>
+                                        <td>{{order.workOrderNumber}}</td>
+                                        <td>{{order.date}}</td>
+                                        <td>{{order.serviceProviderName}}</td>
+                                        <td>{{order.totalQuantity}}</td>
+                                        <td
+                                            [ngClass]="{'text-success': order.status === 'Complete', 'text-primary': order.status === 'Pending'}">
+                                            {{order.status}}</td>
+
+                                        <td width="200">
+                                            <i class="bi bi-pencil-square" (click)="editWorkOrder(order)"
+                                                title="Edit"></i>&nbsp;&nbsp;
+                                            <i class="bi bi-trash3" (click)="deleteWorkOrder(order._id)"
+                                                title="Delete"></i>&nbsp;&nbsp;
+                                            <i class="bi bi-check-circle" *ngIf="order.status !== 'Complete'"
+                                                [ngClass]="{'complete': order.status === 'Complete', 'pending': order.status === 'Pending'}"
+                                                (click)="completeOrder(order)" title="Click to Complete"></i>
+                                            <!--                                 
+                                                            <button type="button" class="btn btn-success pull-right" (click)="completeOrder(order)"
+                                                                *ngIf="order.status !== 'Complete'">Complete</button> -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <!-- <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                                        ...</div> -->
                 </div>
             </div>
-            <hr>
-            <!-- <ul class="list-group pop-up" *ngIf="1 === showPopup">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item">And a fifth one</li>
-            </ul> -->
-            <div class="col-10">
-                <table class="table table-striped table-hover" id="excel-table">
-                    <thead>
-                        <tr>
-                            <th scope="col" width="50">#</th>
-                            <th scope="col">Order No</th>
-                            <th scope="col">Order Date</th>
-                            <th scope="col">Service Provider Name</th>
-                            <th scope="col">Total Quantity</th>
-                            <th scope="col">Order Status</th>
-                            <!-- <th scope="col">Quantity</th>
-                        <th scope="col">Sale Rate</th>
-                        <th scope="col">Purchase Rate</th>
-                        <th scope="col">Unit</th>
-                        <th scope="col">Store Loc.</th> -->
 
-                            <th scope="col" width="200">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        <tr *ngFor="let order of workOrders;let i=index">
-                            <th scope=" row" width="50">{{i+1}}</th>
-                            <td>{{order.workOrderNumber}}</td>
-                            <td>{{order.date}}</td>
-                            <td>{{order.serviceProviderName}}</td>
-                            <td>{{order.totalQuantity}}</td>
-                            <td
-                                [ngClass]="{'text-success': order.status === 'Complete', 'text-primary': order.status === 'Pending'}">
-                                {{order.status}}</td>
-                            <!-- <td>{{(workOrder.quantity?workOrder.quantity:0) + (stockPurchased[workOrder.partNumber] ?
-                            stockPurchased[workOrder.partNumber]:0) -
-                            (stockConsumed[workOrder.partNumber]? stockConsumed[workOrder.partNumber]:0)}}</td>
-                        <td>{{workOrder.saleRate}}</td>
-                         <td>{{workOrder.newRate}}</td>
-                        <td>{{workOrder.unit}}</td>
-                        <td>{{workOrder.storeLocation}}</td> -->
-
-                            <td width="200">
-                                <i class="bi bi-pencil-square" (click)="editWorkOrder(order)"
-                                    title="Edit"></i>&nbsp;&nbsp;
-                                <i class="bi bi-trash3" (click)="deleteWorkOrder(order._id)"
-                                    title="Delete"></i>&nbsp;&nbsp;
-                                <i class="bi bi-check-circle" *ngIf="order.status !== 'Complete'"
-                                    [ngClass]="{'complete': order.status === 'Complete', 'pending': order.status === 'Pending'}"
-                                    (click)="completeOrder(order)" title="Click to Complete"></i>
-                                <!--                                 
-                                <button type="button" class="btn btn-success pull-right" (click)="completeOrder(order)"
-                                    *ngIf="order.status !== 'Complete'">Complete</button> -->
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </nav>
-            </div>
         </div>
         <div *ngIf="showNewWorkOrderForm">
             <h2>Work Order </h2>
@@ -152,8 +189,8 @@
                                             {{product.partNumber}}
                                         </option>
                                     </select> -->
-                        <ng-autocomplete [data]="products" formControlName="partNo" [searchKeyword]="'partNumber'"
-                            placeholder="Select Part No" [itemTemplate]="partNoTemplate"
+                        <ng-autocomplete #partNo [data]="products" formControlName="partNo"
+                            [searchKeyword]="'partNumber'" placeholder="Select Part No" [itemTemplate]="partNoTemplate"
                             [initialValue]="selectedProduct" [notFoundTemplate]="notFoundTemplate"
                             (selected)='setPartNo($event)'>
                         </ng-autocomplete>

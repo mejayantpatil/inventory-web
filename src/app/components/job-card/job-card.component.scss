@@ -21,7 +21,7 @@ table {
             position: relative;
             // color: aqua;
             right: 7px;
-            top: -48px;
+            top: -49px;
             display: block;
             height: 0;
             font-size: 40pt;
@@ -67,4 +67,10 @@ thead {
 
 .top-10 {
     top: 10%
+}
+
+@media (max-width: 599px) {
+    table {
+        width: 1000px;
+    }
 }

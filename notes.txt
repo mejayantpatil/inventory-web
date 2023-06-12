@@ -109,3 +109,29 @@ purchase report madhe
 supllier name 
 service provdier 
 in filter
+
+
+supplied date
+available stock showing minus - done
+
+
+new 
+
+repaired new rate=net/qty issue in product table -done
+vehicle km set in job done
+report bus service reports -done
+job wise report done
+oil change 20k and total service 60k done
+sort issue done
+
+purchase order madhe table anane wip
+
+stock
+Purchased
+product wise
+job wise
+bus wise
+
+filte by running and completed done
+
+product wise report madhe category filter - 

@@ -52,22 +52,22 @@ export class PartsInwardComponent {
     this.activatedRoute.params.subscribe((params: any) => {
       this.transactionNumber = params.transactionNumber;
       this.getAllTransactions();
-      this.getTransaction(this.transactionNumber);
+      // this.getTransaction(this.transactionNumber);
     })
     this.transaction = {};
     this.modes = ['Cash', 'Credit']
     this.partInwardForm = new FormGroup({
       transactionNo: new FormControl(this.transactionNumber),
-      paymentMode: new FormControl(''),
-      supplierInvoiceNo: new FormControl(''),
-      supplierName: new FormControl(''),
+      paymentMode: new FormControl('', Validators.required),
+      supplierInvoiceNo: new FormControl('', Validators.required),
+      supplierName: new FormControl('', Validators.required),
       date: new FormControl(new Date().toISOString().substring(0, 10)),
-      partNo: new FormControl('', Validators.required),
-      partName: new FormControl('', Validators.required),
-      rate: new FormControl('', Validators.required),
+      partNo: new FormControl(''),
+      partName: new FormControl(''),
+      rate: new FormControl(''),
       newRate: new FormControl(),
       unit: new FormControl(''),
-      quantity: new FormControl('', Validators.required),
+      quantity: new FormControl(''),
       discountPercentage: new FormControl(''),
       discount: new FormControl(''),
       gstPercentage: new FormControl(''),
@@ -126,7 +126,7 @@ export class PartsInwardComponent {
   getAllProducts() {
     this.productService.getProducts().subscribe((res: any) => {
       this.products = res;
-      this.products = this.products.filter((p: Product) => !p.partName.toLowerCase().includes('repair'));
+      this.products = this.products.filter((p: Product) => !p.partName.toLowerCase().includes('repaired'));
     })
   }
 
@@ -148,6 +148,7 @@ export class PartsInwardComponent {
       // this.spinner.hideSpinner();
       this.accounts = res;
       this.accounts = this.accounts.filter((a: Account) => a.groupName === this.supplierGroupID);
+      this.getTransaction(this.transactionNumber);
     });
   }
 
@@ -175,25 +176,25 @@ export class PartsInwardComponent {
         this.data = res.data;
         this.partInwardForm = new FormGroup({
           transactionNo: new FormControl(this.transactionNumber),
-          paymentMode: new FormControl(res.paymentMode),
-          supplierInvoiceNo: new FormControl(res.supplierInvoiceNo),
-          supplierName: new FormControl(''),
+          paymentMode: new FormControl(res.paymentMode, Validators.required),
+          supplierInvoiceNo: new FormControl(res.supplierInvoiceNo, Validators.required),
+          supplierName: new FormControl('', Validators.required),
           date: new FormControl(res.date ? res.date : new Date().toISOString().substring(0, 10)),
-          partNo: new FormControl('', Validators.required),
-          partName: new FormControl('', Validators.required),
+          partNo: new FormControl(''),
+          partName: new FormControl(''),
           rate: new FormControl(''),
           newRate: new FormControl(''),
           unit: new FormControl(''),
-          quantity: new FormControl('', Validators.required),
+          quantity: new FormControl(''),
           discountPercentage: new FormControl(''),
           discount: new FormControl(''),
           gstPercentage: new FormControl(''),
           gst: new FormControl(''),
-          netAmount: new FormControl('', Validators.required),
+          netAmount: new FormControl(''),
           grossAmount: new FormControl(res.grossAmount.toFixed(2)),
           gstTotal: new FormControl(res.gst.toFixed(2)),
-          tradeDiscount: new FormControl(res.tradeDiscount.toFixed(2)),
-          igst: new FormControl(''),
+          tradeDiscount: new FormControl(res.tradeDiscount ? res.tradeDiscount.toFixed(2) : '0'),
+          igst: new FormControl(res.igst ? res.igst.toFixed(2) : ''),
           grandTotal: new FormControl(res.grandTotal.toFixed(2)),
           cashDiscount: new FormControl(''),
           otherCharges: new FormControl(''),
@@ -211,22 +212,22 @@ export class PartsInwardComponent {
         this.transaction = {};
         this.data = [];// res.data;
         this.partInwardForm = new FormGroup({
-          transactionNo: new FormControl(this.transactionNumber),
-          paymentMode: new FormControl(''),
-          supplierInvoiceNo: new FormControl(''),
-          supplierName: new FormControl(''),
-          date: new FormControl(new Date().toISOString().substring(0, 10)),
-          partNo: new FormControl('', Validators.required),
-          partName: new FormControl('', Validators.required),
+          transactionNo: new FormControl(this.transactionNumber, Validators.required),
+          paymentMode: new FormControl('', Validators.required),
+          supplierInvoiceNo: new FormControl('', Validators.required),
+          supplierName: new FormControl('', Validators.required),
+          date: new FormControl(new Date().toISOString().substring(0, 10), Validators.required),
+          partNo: new FormControl(''),
+          partName: new FormControl(''),
           rate: new FormControl(''),
           newRate: new FormControl(''),
           unit: new FormControl(''),
-          quantity: new FormControl('', Validators.required),
+          quantity: new FormControl(''),
           discountPercentage: new FormControl(''),
           discount: new FormControl(''),
           gstPercentage: new FormControl(''),
           gst: new FormControl(''),
-          netAmount: new FormControl('', Validators.required),
+          netAmount: new FormControl(''),
           grossAmount: new FormControl(''),
           gstTotal: new FormControl(''),
           tradeDiscount: new FormControl(''),
@@ -269,6 +270,7 @@ export class PartsInwardComponent {
   }
 
   saveTransaction() {
+    if (this.partInwardForm.invalid) return;
 
     if (this.partInwardForm.value.supplierName.accountName && this.data.length > 0 && this.partInwardForm.value.totalNetAmount) {
       const payload = {
@@ -474,6 +476,7 @@ export class PartsInwardComponent {
       this.data[this.selectedIndex] = {
         partNo: this.partInwardForm.value.partNo?.partNumber,
         partName: this.partInwardForm.value.partName?.partName,
+        ledgerPageNumber: this.partInwardForm.value.partName?.ledgerPageNumber,
         quantity: this.partInwardForm.value.quantity,
         rate: this.partInwardForm.value.rate,
         newRate: this.partInwardForm.value.newRate,
@@ -492,6 +495,7 @@ export class PartsInwardComponent {
       this.data.push({
         partNo: this.partInwardForm.value.partNo?.partNumber,
         partName: this.partInwardForm.value.partName?.partName,
+        ledgerPageNumber: this.partInwardForm.value.partName?.ledgerPageNumber,
         quantity: this.partInwardForm.value.quantity,
         rate: this.partInwardForm.value.rate.toFixed(2),
         newRate: this.partInwardForm.value.newRate,
@@ -543,6 +547,7 @@ export class PartsInwardComponent {
       arr.push(index + 1)
       arr.push(item.partNo + ' ' + item.partName)
       arr.push(item.quantity)
+      arr.push(item.ledgerPageNumber)
       arr.push(item.unit)
       arr.push(item.rate)
       arr.push(item.grossAmount)
@@ -580,7 +585,6 @@ export class PartsInwardComponent {
     doc.setFontSize(20);
     doc.text("INVOICE", 90, 15)
     // doc.autoTable({ html: '#my-table' })
-    // doc.text("Wishvayodha Multitrade", 14, 20);
     doc.setFontSize(8);
     doc.text("Supplier Invoice No:", 140, 30)
     // doc.setFont('', 'bold');
@@ -614,6 +618,7 @@ export class PartsInwardComponent {
         "Sr.No.",
         "Particulars",
         "Quantity",
+        "Ledger No.",
         "Unit",
         "Rate",
         "Amount",
@@ -627,6 +632,9 @@ export class PartsInwardComponent {
       styles: {
         halign: 'right',
         fontSize: 8
+      },
+      headStyles: {
+        fontSize: 7
       },
       // headStyles: {
       //   valign: 'middle',
@@ -642,7 +650,8 @@ export class PartsInwardComponent {
         }
       },
       columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' } },
-      startY: 55
+      startY: 55,
+      margin: [10, 15, 30, 15] // top left bottom left
     });
     // styles: { cellPadding: 0.5, fontSize: 8 },
     const tableHeight = doc.lastAutoTable.finalY;
@@ -684,7 +693,7 @@ export class PartsInwardComponent {
 
   test1() {
     const num = parseInt(this.partInwardForm.value.totalNetAmount);
-    console.log(this.inWords(num), this.partInwardForm.value.totalNetAmount)
+    // console.log(this.inWords(num), this.partInwardForm.value.totalNetAmount)
   }
 
   inWords(num: any) {

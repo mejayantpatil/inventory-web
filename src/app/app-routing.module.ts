@@ -25,6 +25,8 @@ import { PartsRepairedComponent } from './components/parts-repaired/parts-repair
 import { ProductWiseConsumptionReportsComponent } from './components/product-wise-consumption-reports/product-wise-consumption-reports.component';
 import { SupplyOrderComponent } from './components/supply-order/supply-order.component';
 import { WorkOrdersComponent } from './components/work-orders/work-orders.component';
+import { JobWiseConsumptionReportsComponent } from './components/job-wise-consumption-reports/job-wise-consumption-reports.component';
+import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-reports.component';
 
 const routes: Routes = [
   {
@@ -67,6 +69,12 @@ const routes: Routes = [
     path: 'product-wise-consumption-reports', component: ProductWiseConsumptionReportsComponent
   },
   {
+    path: 'job-wise-consumption-reports', component: JobWiseConsumptionReportsComponent
+  },
+  {
+    path: 'vehicle-wise-consumption-report', component: VehicleReportsComponent
+  },
+  {
     path: 'consumption-reports', component: ConsumptionReportsComponent
   },
   {
@@ -82,7 +90,7 @@ const routes: Routes = [
     path: 'transactions', component: TransactionComponent
   },
   {
-    path: 'supply-order', component: SupplyOrderComponent
+    path: 'purchase-order', component: SupplyOrderComponent
   },
   {
     path: 'login', component: LoginComponent

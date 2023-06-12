@@ -29,3 +29,9 @@ thead {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+@media (max-width: 599px) {
+    table {
+        width: 1000px;
+    }
+}

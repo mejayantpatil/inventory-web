@@ -108,7 +108,8 @@ export class ReportsComponent {
         // ...
       ],
       theme: 'striped',
-      startY: 55
+      startY: 55,
+      margin: [10, 15, 30, 15] // top left bottom left
     });
     const tableHeight = doc.autoTableEndPosY();
 

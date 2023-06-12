@@ -24,7 +24,7 @@ export class JobService {
         return this.http.get(this.baseUrl + '/category/' + categoryID);
     }
 
-    getJob(id: number) {
+    getJob(id: string) {
         return this.http.get(this.baseUrl + '/' + id);
         // return this.data.find(job => job.id === id);
     }

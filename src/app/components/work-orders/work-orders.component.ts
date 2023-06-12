@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import jsPDF from 'jspdf';
 import { Account } from 'src/app/models/account';
@@ -6,6 +6,7 @@ import { Product } from 'src/app/models/product';
 import { AccountService } from 'src/app/services/accounts.service';
 import { CategoryService } from 'src/app/services/category.service';
 import { GroupService } from 'src/app/services/groups.service';
+import { JobService } from 'src/app/services/jobs.service';
 import { ProductService } from 'src/app/services/products.service';
 import { TransactionService } from 'src/app/services/transactions.service';
 import { WorkOrderService } from 'src/app/services/work-order.service';
@@ -31,9 +32,18 @@ export class WorkOrdersComponent {
   public newOrder: boolean = false;
   public selectedOrderId = ''
   public transactions: any = [];
+  public selectAll = false;
+  public productsWithLowQty: any[] = []
+  public stockPurchased: any = {}
+  public supplierNameObj: any = {}
+  public stockConsumed: any = {}
+
+  @ViewChild('partNo') partNo: any;
+
   constructor(private workOrderService: WorkOrderService,
     private categoryService: CategoryService,
     private groupService: GroupService,
+    private jobService: JobService,
     private productService: ProductService,
     private transactionService: TransactionService,
     private accountSerivce: AccountService) {
@@ -48,6 +58,7 @@ export class WorkOrdersComponent {
       quantity: new FormControl(''),
       unit: new FormControl(''),
       rate: new FormControl(''),
+      netAmount: new FormControl(''),
       date: new FormControl(new Date().toISOString().substring(0, 10)),
       totalNetAmount: new FormControl(''),
       status: new FormControl('Pending'),
@@ -57,11 +68,11 @@ export class WorkOrdersComponent {
     })
   }
   ngOnInit() {
-    this.getAllProducts();
+    // this.getAllProducts();
     this.getGRoups();
     this.getAllOrders();
     this.getAllCategories();
-    // this.getAllTransactions();
+    this.getAllTransactions();
   }
 
   getAllOrders() {
@@ -78,9 +89,35 @@ export class WorkOrdersComponent {
       });
     })
   }
+
+  getAllJobs() {
+    this.jobService.getJobs().subscribe((res: any) => {
+      res.map((t: any) => {
+        t.cardData.map((c: any) => {
+          c?.spareParts && c?.spareParts.map((i: any) => {
+            // if (t.status === 'Complete') {
+            this.stockConsumed[i.partNo] = parseInt(this.stockConsumed[i.partNo] ? this.stockConsumed[i.partNo] : 0) + parseInt(i.quantity);
+            // this.totalConsumedQty = this.totalConsumedQty + i.quantity;
+            // }
+          })
+        })
+      })
+    })
+  }
+
+
   getAllTransactions() {
     this.transactionService.getTransactions().subscribe((res: any) => {
       this.transactions = res.filter((r: any) => r.supplierName === this.workOrderForm.value.serviceProviderName?.accountName);
+      res.map((t: any) => {
+        t.data.map((i: any) => {
+
+          this.stockPurchased[i.partNo] = parseInt(this.stockPurchased[i.partNo] ? this.stockPurchased[i.partNo] : '0') + parseInt(i.quantity);
+          // this.stockPuchasedValues[i.partNo] = i.newRate ? i.newRate : 0
+          this.supplierNameObj[i.partNo] = { gst: i.cgstPercentage + i.sgstPercentage, supplierName: t.supplierName }
+        })
+      });
+      this.getAllProducts();
     })
   }
 
@@ -91,6 +128,21 @@ export class WorkOrdersComponent {
       // this.openingStock[p.partNumber] = p.quantity;
       // })
       this.products = this.products.filter((p: Product) => p.partName.toLocaleLowerCase().includes('repair'));
+      this.products.map((p: any) => {
+        const qty = (p.quantity ? p.quantity : 0) + (this.stockPurchased[p.partNumber] ? this.stockPurchased[p.partNumber] : 0) - (this.stockConsumed[p.partNumber] ? this.stockConsumed[p.partNumber] : 0)
+        if (qty <= 10) {
+          this.productsWithLowQty.push({
+            checked: false,
+            partName: p.partName,
+            partNumber: p.partNumber,
+            quantity: qty,
+            rate: p.newRate ? p.newRate : p.saleRate,
+            unit: p.unit,
+            gst: this.supplierNameObj[p.partNumber] ? this.supplierNameObj[p.partNumber].gst : 0,
+            supplierName: this.supplierNameObj[p.partNumber] ? this.supplierNameObj[p.partNumber].supplierName : ''
+          })
+        }
+      })
     })
   }
 
@@ -107,7 +159,6 @@ export class WorkOrdersComponent {
     this.transactions.map((t: any) => {
       t.data && t.data.map((p: any) => {
         if (this.selectedProduct.partNumber === p.partNo && lastGst === 0) {
-          console.log(p.partNo, p.sgstPercentage, p.cgstPercentage)
           lastGst = p.sgstPercentage + p.cgstPercentage;
         }
       })
@@ -141,12 +192,11 @@ export class WorkOrdersComponent {
     let totalQuantity = 0;
     this.partsData.map((p: any) => {
       totalQuantity = totalQuantity + parseFloat(p.quantity);
-      // netAmount = netAmount + parseFloat(d.netAmount.toString(2))
+      netAmount = netAmount + p.netAmount
     })
-    console.log(totalQuantity)
     this.workOrderForm.patchValue({
       totalQuantity: totalQuantity,
-      // totalNetAmount: parseFloat(netAmount.toString()).toFixed(2),
+      totalNetAmount: netAmount
     })
     // this.cancelUpdate();
 
@@ -155,7 +205,6 @@ export class WorkOrdersComponent {
   editData(index: number) {
     const spareParts = this.partsData[index];
     this.selectedIndex = index;
-    console.log(spareParts)
     this.setProductField({ partNumber: spareParts.partNo });
     setTimeout(() => {
       this.workOrderForm.patchValue({
@@ -167,6 +216,8 @@ export class WorkOrdersComponent {
     }, 100)
 
   }
+
+
 
   cancelUpdate() {
     this.workOrderForm.patchValue({
@@ -193,6 +244,7 @@ export class WorkOrdersComponent {
         unit: this.workOrderForm.value.unit,
         gst: this.workOrderForm.value.gst,
         categoryId: this.workOrderForm.value.partName.category,
+        netAmount: parseFloat(this.workOrderForm.value.rate) * this.workOrderForm.value.quantity
       }
     }
     else {
@@ -204,9 +256,13 @@ export class WorkOrdersComponent {
         unit: this.workOrderForm.value.unit,
         gst: this.workOrderForm.value.gst,
         categoryId: this.workOrderForm.value.partName.category,
+        netAmount: parseFloat(this.workOrderForm.value.rate) * this.workOrderForm.value.quantity
       })
     }
     this.calculateTotal();
+    this.cancelUpdate();
+    // this.partNo.focus();
+    this.partNo.open();
   }
   setPartNo(e: any) {
     // this.workOrderForm.patchValue({
@@ -279,7 +335,6 @@ export class WorkOrdersComponent {
       comment: workOrder.comment,
       totalNetAmount: workOrder.totalAmount
     })
-    console.log(workOrder)
   }
 
   deleteWorkOrder(id: string) {
@@ -330,71 +385,85 @@ export class WorkOrdersComponent {
     }
 
   }
+  checkAll() {
+    this.products.map((p: any) => {
+      p.checked = !p.checked;
+    })
+  }
+
+  unCheckAll() {
+    this.selectAll = false;
+    this.products.map((p: any) => {
+      p.checked = false;
+    })
+  }
+
+  addToWorkOrder() {
+
+  }
 
   printOrder() {
     const data: any = []
     const categoriesWiseData: any = {}
-    console.log('partsData', this.partsData);
     this.partsData.map((item: any, index: number) => {
       const arr = [];
       arr.push(index + 1)
       arr.push(item.partNo)
       arr.push(item.partName)
+      arr.push(item.unit)
+      arr.push(item.quantity)
       arr.push(item.gst + '%')
       arr.push(item.rate)
-      arr.push(item.quantity)
-      arr.push(item.unit)
-
-      // arr.push(item.netAmount)
+      arr.push(item.netAmount ? item.netAmount.toFixed(2) : parseFloat(item.rate) * item.quantity)
       // arr.push(item.categoryId);
       data.push(arr);
-      categoriesWiseData[item.categoryId] = [];
+      // categoriesWiseData[item.categoryId] = [];
     })
-    this.generateReport(data);
+    // this.generateReport(data);
     // console.log('cat data', categoriesWiseData);
-    // const newData: any = [];
-    // let count = 1;
+    const newData: any = [];
+    let count = 1;
     // Object.keys(categoriesWiseData).map(c => {
-    //   let arr = [];
-    //   arr.push('')
-    //   arr.push(this.categroysObj[c])
-    //   arr.push('')
-    //   arr.push('')
-    //   arr.push('')
-    //   arr.push('')
-    //   arr.push('')
-    //   // arr.push('')
-    //   newData.push(arr);
-    //   let total = 0;
-    //   data.map((item: any, index: number) => {
-    //     arr = [];
-    //     console.log(c, item[item.length - 1], index)
-    //     if (item[item.length - 1] === c) {
-    //       arr.push(count)
-    //       arr.push(item[1])
-    //       arr.push(item[2])
-    //       arr.push(item[3])
-    //       arr.push(item[4])
-    //       arr.push(item[5])
-    //       arr.push(item[6])
-    //       // arr.push(item[7])
-    //       // total = total + parseFloat(item[6])
-    //       newData.push(arr);
-    //       count++
-    //     }
-    //   })
-    //   // arr = [];
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('')
-    //   // arr.push('Total')
-    //   // arr.push(total.toFixed(2))
-    //   // newData.push(arr);
+    let arr = [];
+    // arr.push('')
+    // arr.push(this.categroysObj[c])
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // newData.push(arr);
+    let total = 0;
+    data.map((item: any, index: number) => {
+      arr = [];
+      // console.log(c, item[item.length - 1], index)
+      // if (item[item.length - 1] === c) {
+      arr.push(count)
+      arr.push(item[1])
+      arr.push(item[2])
+      arr.push(item[3])
+      arr.push(item[4])
+      arr.push(item[5])
+      arr.push(item[6])
+      arr.push(item[7])
+      // total = total + parseFloat(item[6])
+      newData.push(arr);
+      count++
+      // }
+    })
+    // arr = [];
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('')
+    // arr.push('Total')
+    // arr.push(total.toFixed(2))
+    // newData.push(arr);
     // })
-    // console.log(newData)
-    // this.generateReport(newData);
+    console.log(newData)
+    this.generateReport(newData);
 
   }
 
@@ -475,18 +544,17 @@ export class WorkOrdersComponent {
         "Sr.No.",
         "Part No.",
         "Part Name",
+        "Unit",
+        "Quantity",
         "GST",
         "Last Rate",
-        "Quantity",
-        "Unit",
-
-        // "Net Amount"
+        "Net Amount"
       ]],
       body: body,
       theme: 'striped',
       styles: {
         halign: 'right',
-        fontSize: 10
+        fontSize: 8
       },
       // headStyles: {
       //   valign: 'middle',
@@ -515,7 +583,8 @@ export class WorkOrdersComponent {
         }
       },
       columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 2: { halign: 'left' } },
-      startY: 65
+      startY: 65,
+      margin: [10, 15, 30, 15] // top left bottom left
     });
     // styles: { cellPadding: 0.5, fontSize: 8 },
     const tableHeight = doc.lastAutoTable.finalY;
@@ -527,8 +596,8 @@ export class WorkOrdersComponent {
     if (this.workOrderForm.value.comment) {
       doc.text('Remarks: \n' + this.workOrderForm.value.comment, 14, tableHeight + 15)
     }
-    // doc.text("Grand Total Amount:", 165, tableHeight + 15, { align: 'right' })
-    // doc.text(this.workOrderForm.value.totalNetAmount.toFixed(2), 195, tableHeight + 15, { align: 'right' })
+    doc.text("Grand Total Amount:", 165, tableHeight + 15, { align: 'right' })
+    doc.text(this.workOrderForm.value.totalNetAmount ? this.workOrderForm.value.totalNetAmount.toFixed(2) : '0', 195, tableHeight + 15, { align: 'right' })
     // doc.text("CGST Amount:", 150, tableHeight + 20, { align: 'right' })
     // const gst: number = parseFloat(this.workOrderForm.value.gstTotal) / 2;
     // doc.text(gst.toFixed(2), 180, tableHeight + 20, { align: 'right' })

@@ -30,6 +30,7 @@ export class TransactionComponent {
   public invoiceNo: string = '';
   public selectedTransaction: any = {}
   public editPassword: string = ''
+  public selectedRowIndex = -1;
   @ViewChild('closeModal') closeModal: any;
   @ViewChild('pwd') pwd: any;
   constructor(private TransactionSerivce: TransactionService,
@@ -119,6 +120,13 @@ export class TransactionComponent {
     }
     // this.getAllTransactions();
     // })
+  }
+
+  toggleDetails(i: number, transaction: Transaction) {
+    this.selectedRowIndex = this.selectedRowIndex !== i ? i : -1
+    // console.log(this.data[this.selectedRowIndex].partNumber);
+    // this.getPartNoTransactions(product.partNumber);
+    // this.getJobsData(product.partNumber)
   }
 
   setSelectedTransaction(transaction: Transaction) {

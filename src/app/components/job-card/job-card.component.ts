@@ -16,6 +16,7 @@ import { Vehicle } from 'src/app/models/vehicle';
 import { TransactionService } from 'src/app/services/transactions.service';
 import { CardService } from 'src/app/services/cards.service';
 import { SupplyOrderService } from 'src/app/services/supplyOrderService';
+import { WorkOrderService } from 'src/app/services/work-order.service';
 
 @Component({
   selector: 'app-job-card',
@@ -57,7 +58,9 @@ export class JobCardComponent {
   public cardsStatus: any = {};
   public activeCards: any = {}
   public prodcutSupplier: any = {}
+  public prodcutProvider: any = {}
   public orders: any = []
+  public workOrders: any = [];
   @ViewChild('closebutton') closebutton: any;
   @ViewChild('toast') toast: any;
   @ViewChild('jobCardDateElement') jobCardDateElement: any;
@@ -75,6 +78,7 @@ export class JobCardComponent {
     private transactionService: TransactionService,
     private cardService: CardService,
     private supplyOrderService: SupplyOrderService,
+    private workOrderService: WorkOrderService,
     private groupService: GroupService) {
 
 
@@ -100,12 +104,12 @@ export class JobCardComponent {
       rate: new FormControl(''),
       unit: new FormControl(''),
       quantity: new FormControl(''),
-      oilChange: new FormControl(''),
+      oilChange: new FormControl('No'),
       problem: new FormControl('Servicing'),
       netAmount: new FormControl(''),
       totalNetAmount: new FormControl(''),
       comment: new FormControl(''),
-      status: new FormControl('')
+      status: new FormControl('Running')
     })
     this.productForm = new FormGroup({
       partNumber: new FormControl(''),
@@ -164,6 +168,7 @@ export class JobCardComponent {
   }
 
   getAllTransactions() {
+    this.stockPurchased = {}
     this.transactionService.getTransactions().subscribe((res: any) => {
       this.transactions = res;
       res.map((t: any) => {
@@ -180,6 +185,7 @@ export class JobCardComponent {
   getAllJobs() {
     this.loadedAllJob = false;
     this.cardsStatus = [];
+    this.stockConsumed = {}
     this.jobService.getJobs().subscribe((res: any) => {
       this.jobs = res;
       this.loadedAllJob = true;
@@ -197,7 +203,6 @@ export class JobCardComponent {
         })
 
       });
-      console.log(this.cardsStatus)
     })
   }
 
@@ -234,6 +239,14 @@ export class JobCardComponent {
       })
       this.getAllAccounts();
     })
+  }
+  updateVehicle() {
+    let vehicle = this.vehicles.find(v => v.vehicleNumber === this.jobCardForm.value.registrationNumber?.vehicleNumber)
+    if (vehicle) {
+      vehicle.currentKM = this.jobCardForm.value.kmCovered;
+      this.vehicleService.updateVehicle(vehicle._id || '', vehicle).subscribe(res => { })
+
+    }
   }
 
   getActiveCards() {
@@ -281,7 +294,7 @@ export class JobCardComponent {
 
   getAvailableQuantity(product: Product) {
     if (product.partNumber) {
-      console.log(this.openingStock[product.partNumber], this.stockPurchased[product.partNumber], this.stockConsumed[product.partNumber])
+      // console.log(this.openingStock[product.partNumber], this.stockPurchased[product.partNumber], this.stockConsumed[product.partNumber])
       const opening = this.openingStock[product.partNumber] ? this.openingStock[product.partNumber] : 0;
       const purched = this.stockPurchased[product.partNumber] ? this.stockPurchased[product.partNumber] : 0;
       const consumed = this.stockConsumed[product.partNumber] ? this.stockConsumed[product.partNumber] : 0;
@@ -291,7 +304,7 @@ export class JobCardComponent {
   }
 
   getJob(jobCardNumber: number) {
-    this.jobService.getJob(jobCardNumber).subscribe((res: any) => {
+    this.jobService.getJob(jobCardNumber.toString()).subscribe((res: any) => {
       if (!res) return;
       this.job = res;
       this.cardData = res.cardData;
@@ -308,7 +321,7 @@ export class JobCardComponent {
         chasisNumber: new FormControl(''),
         engineNumber: new FormControl(''),
         kmCovered: new FormControl(''),
-        oilChange: new FormControl(''),
+        oilChange: new FormControl('No'),
         problem: new FormControl('Servicing'),
         partNo: new FormControl(''),
         partName: new FormControl(''),
@@ -318,7 +331,7 @@ export class JobCardComponent {
         netAmount: new FormControl(''),
         totalNetAmount: new FormControl(''),
         comment: new FormControl(''),
-        status: new FormControl('')
+        status: new FormControl('Running')
 
         // paymentMode: new FormControl(res.paymentMode),
         // recordNo: new FormControl(res.recordNo),
@@ -354,7 +367,8 @@ export class JobCardComponent {
   setVehicle(e: any) {
     this.jobCardForm.patchValue({
       registrationNumber: e.vehicleNumber,
-      modelName: e.vehicleType
+      modelName: e.vehicleType,
+      kmCovered: e.currentKM
     })
   }
 
@@ -382,6 +396,7 @@ export class JobCardComponent {
         this.getActiveCards()
       })
     }
+    this.updateVehicle();
   }
 
   getCard(recordNo: number) {
@@ -543,6 +558,9 @@ export class JobCardComponent {
     this.supplyOrderService.getSupplyOrders().subscribe(res => {
       this.orders = res;
     })
+    this.workOrderService.getWorkOrders().subscribe(res => {
+      this.workOrders = res;
+    })
   }
 
   setDiscount() {
@@ -654,7 +672,7 @@ export class JobCardComponent {
         chasisNumber: new FormControl(''),
         engineNumber: new FormControl(''),
         kmCovered: new FormControl(''),
-        oilChange: new FormControl(''),
+        oilChange: new FormControl('No'),
         problem: new FormControl('Servicing'),
         partNo: new FormControl(''),
         partName: new FormControl(''),
@@ -722,7 +740,7 @@ export class JobCardComponent {
   }
 
   addData() {
-    if (this.jobCardForm.invalid) return;
+    if (this.jobCardForm.invalid && this.jobCardForm.value.quantity > 0) return;
     if (this.selectedProduct && this.selectedIndex > -1) {
       this.spareParts[this.selectedIndex] = {
         partNo: this.jobCardForm.value.partNo?.partNumber,
@@ -765,21 +783,39 @@ export class JobCardComponent {
 
   addToSupplyOrder() {
     if (this.jobCardForm.value.partName) {
-      const payload = {
-        "partsData": [
-          this.jobCardForm.value.partName],
-        "supplyOrderNumber": this.orders.length + 1,
-        "supplierName": this.prodcutSupplier[this.jobCardForm.value.partName.partNumber] ? this.prodcutSupplier[this.jobCardForm.value.partName.partNumber].supplierName : '',
-        "totalQuantity": 10,
-        "totalAmount": "",
-        "comment": "",
-        "status": "Pending",
-        "date": new Date().toISOString().substring(0, 10)
+      if (this.jobCardForm.value.partName.toLowerCase().includes('repaired')) {
+        const payload = {
+          "partsData": [
+            this.jobCardForm.value.partName],
+          "workOrderNumber": this.orders.length + 1,
+          "serviceProviderName": this.prodcutSupplier[this.jobCardForm.value.partName.partNumber] ? this.prodcutSupplier[this.jobCardForm.value.partName.partNumber].supplierName : '',
+          "totalQuantity": 10,
+          "totalAmount": this.jobCardForm.value.newRate ? this.jobCardForm.value.newRate * 10 : this.jobCardForm.value.saleRate * 10,
+          "comment": "",
+          "status": "Pending",
+          "date": new Date().toISOString().substring(0, 10)
+        }
+        console.log(payload);
+        this.workOrderService.saveWorkOrder(payload).subscribe(res => {
+          this.prodcutSupplier[this.jobCardForm.value.partNo.partNumber].orderPlaced = true
+        })
+      } else {
+        const payload = {
+          "partsData": [
+            this.jobCardForm.value.partName],
+          "supplyOrderNumber": this.orders.length + 1,
+          "supplierName": this.prodcutSupplier[this.jobCardForm.value.partName.partNumber] ? this.prodcutSupplier[this.jobCardForm.value.partName.partNumber].supplierName : '',
+          "totalQuantity": 10,
+          "totalAmount": this.jobCardForm.value.newRate ? this.jobCardForm.value.newRate * 10 : this.jobCardForm.value.saleRate * 10,
+          "comment": "",
+          "status": "Pending",
+          "date": new Date().toISOString().substring(0, 10)
+        }
+        console.log(payload);
+        this.supplyOrderService.saveSupplyOrder(payload).subscribe(res => {
+          this.prodcutSupplier[this.jobCardForm.value.partNo.partNumber].orderPlaced = true
+        })
       }
-      console.log(payload);
-      this.supplyOrderService.saveSupplyOrder(payload).subscribe(res => {
-        this.prodcutSupplier[this.jobCardForm.value.partNo.partNumber].orderPlaced = true
-      })
       // alert('work in progress')
     }
   }
@@ -883,7 +919,6 @@ export class JobCardComponent {
       arr.push(total.toFixed(2))
       newData.push(arr);
     })
-    console.log(newData)
     this.generateReport(newData);
     this.reset();
     this.spareParts = []
@@ -1005,7 +1040,8 @@ export class JobCardComponent {
         }
       },
       columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 2: { halign: 'left' } },
-      startY: 65
+      startY: 65,
+      margin: [10, 15, 30, 15] // top left bottom left
     });
     // styles: { cellPadding: 0.5, fontSize: 8 },
     const tableHeight = doc.lastAutoTable.finalY;

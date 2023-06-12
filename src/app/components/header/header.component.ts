@@ -20,6 +20,8 @@ export class HeaderComponent implements OnInit {
   public path: string
   public activeMenu: string = ''
   @ViewChild('toast') toast: any;
+  @ViewChild('mobileToggle') mobileToggle: any;
+  public loginMenu: boolean = false;
   constructor(private router: Router,
     private accountService: AccountService,
     private jobsService: JobService,
@@ -35,11 +37,20 @@ export class HeaderComponent implements OnInit {
     this.router.events.subscribe(res => {
       this.path = window.location.pathname;
       this.activeMenu = window.location.pathname.split('/')[1]
+      this.loginMenu = window.location.hash === '#/' || window.location.hash === '#/login' // window.document.URL.includes('') || window.document.URL.includes('login')
     })
   }
 
   ngOnInit(): void {
 
+  }
+
+  toggleMenu() {
+    // console.log(this.mobileToggle.nativeElement.checkVisibility());
+    // if (this.mobileToggle) {
+    this.mobileToggle.nativeElement.click();
+    // this.mobileToggle.nativeElement.className = 'navbar-toggler collapsed'
+    // }
   }
 
   search() {

@@ -4,27 +4,21 @@
     <app-menus></app-menus>
   </div> -->
   <div class="col-12">
-    <h1>Welcome to Vishwayoddha Shetkari Multitrade</h1>
-    <br>
+    <!-- <h1 class="">Welcome to Vishwayoddha Shetkari Multitrade</h1> -->
     <br>
     <div class="row">
-      <div class="col-6">
+      <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="card text-dark bg-light mb-3">
-          <div class="card-header">Products</div>
+          <div class="card-header">Qunaity is low for below Parts</div>
           <div class="card-body">
-            <div class="row">
-              <div class="col-7">
-                <label class="card-title text-start">Qunaity is low for below products</label> &nbsp;
+            <!-- <div class="row">
+              <div class="col-12">
+                <label class="card-title text-start"></label>
+                &nbsp;
               </div>
-              <div class="text-end col-5">
-                <button type="button" class="btn btn-warning" (click)="addToSupplyOrder()">
-                  Add to Supply Order
-                </button>
-              </div>
-            </div>
-            <br>
+            </div> -->
             <div class="responsive-table">
-              <table class="table table-danger table-striped table-hover table-sm" id="excel-table">
+              <table class="table table-striped table-hover table-sm" id="excel-table">
                 <thead>
                   <tr>
                     <th scope="col"><input class="form-check-input" [(ngModel)]="selectAll" type="checkbox"
@@ -66,10 +60,17 @@
                 </tbody>
               </table>
             </div>
+            <div class="row">
+              <div class="text-end col-12 mt-2">
+                <button type="button" class="btn btn-warning" (click)="addToSupplyOrder()">
+                  Add to Purchase Order
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="card text-dark bg-light mb-3">
           <div class="card-header">Running Job Cards</div>
           <div class="card-body">
@@ -78,7 +79,7 @@
               <div class="col-12 custom-btn" *ngIf="activeCards.length > 0">
                 <button *ngFor="let job of activeCards; let i =index;" class="btn btn-primary"
                   (click)="openJobCard(job)">{{job}}
-                  <i class="bi bi-bus-front text-primary"></i></button>
+                  <i class="bi bi-bus-front text-primary bus-shadow"></i></button>
               </div>
             </div>
             <p class="card-text" *ngIf="activeCards.length  === 0">There is no bus in servicing.
@@ -86,7 +87,136 @@
           </div>
         </div>
       </div>
-    </div>
+      <div class="col-lg-6 col-md-6 col-xs-12">
+        <div class="card text-dark bg-light mb-3">
+          <div class="card-header">Qunaity is low for below Repaired Parts</div>
+          <div class="card-body">
+            <!-- <div class="row">
+                      <div class="col-12">
+                        <label class="card-title text-start"></label>
+                        &nbsp;
+                      </div>
+                    </div> -->
+            <div *ngIf="repairedProducts.length > 0">
+              <div class="responsive-table">
+                <table class="table table-striped table-hover table-sm" id="excel-table">
+                  <thead>
+                    <tr>
+                      <th scope="col"><input class="form-check-input" [(ngModel)]="selectAllRepaired" type="checkbox"
+                          (change)="checkAllRepaired()" value="All">
+                      </th>
+                      <th scope="col">#</th>
+                      <th scope="col">Part No</th>
+                      <th scope="col">Part Name</th>
+                      <th scope="col">Qty</th>
+                      <th scope="col">Supplier</th>
 
+                      <!-- <th scope="col">Rate</th>
+                            <th scope="col">Unit</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Page No</th> -->
+                      <!-- <th scope="col">Action</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let product of repairedProducts;let i=index">
+                      <td scope="col"><input class="form-check-input" type="checkbox"
+                          (change)="product.checked = !product.checked" [checked]="product.checked"
+                          value="product.checked"></td>
+                      <th scope="row">{{i+1}}</th>
+                      <td>{{product.partNumber}}</td>
+                      <td>{{product.partName}}</td>
+                      <td>{{product.quantity}}</td>
+                      <td>{{product.supplierName}}</td>
+                      <!-- <td>{{product.saleRate}}</td>
+                            <td>{{product.unit}}</td>
+                            <td>{{product.storeLocation}}</td>
+                            <td>{{product.ledgerPageNumber}}</td> -->
+                      <!-- <td>
+                                      <i class="bi bi-pencil-square" (click)="editProduct(product)"></i>&nbsp;
+                                      <i class="bi bi-trash3" (click)="deleteProduct(product._id)"></i>
+                                    </td> -->
+                    </tr>
+                    <tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="row">
+                <div class="text-end col-12 mt-2">
+                  <button type="button" class="btn btn-warning" (click)="addToWorkOrder()">
+                    Add to Work Order
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p class="card-text" *ngIf="repairedProducts.length === 0">There is no low stock Repaired Prodcuts.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-xs-12">
+        <div class="card text-dark bg-light mb-3">
+          <div class="card-header">Service Due for below Vehicles</div>
+          <div class="card-body">
+            <!-- <h5 class="card-title">Job Card</h5> -->
+            <div class="row">
+              <div class="col-12 ">
+                <!-- <ng-container *ngFor="let vehicle of vehicles; let i=index;">
+                  {{vehicle.currentKM }}{{ vehicle.kmCovered}}
+                  <button *ngIf="(vehicle.currentKM - vehicle.kmCovered)" class="btn btn-primary">{{vehicle.vehicleNumber}}
+                    <i class="bi bi-bus-front text-primary bus-shadow"></i></button>
+                </ng-container> -->
+                <div class="responsive-table" *ngIf="!isEmptyObject(kmByBusNo)">
+                  <table class="table table-striped table-hover table-sm" id="excel-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Vehicle No</th>
+                        <th scope="col">Current KM</th>
+                        <th scope="col">KM After Last Serviced</th>
+                        <th scope="col">Service Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngFor="let vehicle of vehicles;let i=index">
+                        <tr>
+                          <th scope="row">{{i+1}}</th>
+                          <td class="text-danger">
+                            <i class="bi bi-bus-front text-danger bus-shadow"></i>
+                            {{vehicle.vehicleNumber}}
+                          </td>
+                          <td class="text-danger">{{vehicle.currentKM}}</td>
+                          <td class="text-danger">{{getKM(vehicle)}}</td>
+                          <td
+                            [ngClass]="{'text-danger':getServiceDetails(vehicle) !== '', 'text-primary':getServiceDetails(vehicle) === ''}">
+                            {{getServiceDetails(vehicle) ? getServiceDetails(vehicle) : 'Serviced'}}</td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <p class="card-text" *ngIf="isEmptyObject(kmByBusNo)">There is no bus service due.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="position-fixed top-10 end-0 p-3" style="z-index: 9999">
+      <div #toast class="toast" role="alert" data-bs-animation="true" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <!-- <i class="bi bi-card-checklist"></i> -->
+          <i class="bi bi-window rounded me-2 text-success"></i>
+          &nbsp;
+          <strong class="me-auto text-success">Order</strong>
+          <small>just now</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body text-success">
+          Order Placed successfully.
+        </div>
+      </div>
+    </div>
   </div>
 </div>
