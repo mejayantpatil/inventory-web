@@ -182,7 +182,7 @@
 
                 </div>
                 <br>
-                <div class="row" *ngIf="supplyOrderForm.value.supplierName">
+                <div class="row">
                     <div class="col-2">
                         Part No
                         <!-- <input class="form-control" type="text" formControlName="partNo" /> -->
@@ -233,7 +233,7 @@
 
                 </div>
                 <br>
-                <div class="row" *ngIf="supplyOrderForm.value.supplierName">
+                <div class="row" *ngIf="partsData.length>0">
                     <div class="col-12">
                         <hr>
                         <table class="table table-striped table-hover" id="excel-table">
@@ -292,7 +292,7 @@
                     </div>
                     <div class="col-6">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="button" class="btn btn-warning" (click)="cancel()">Cancel</button>
+                            <button type="button" class="btn btn-warning" (click)="cancel()">Goto List</button>
                             <button type="button" class="btn btn-primary pull-right" (click)="saveSupplyOrder()"
                                 [disabled]="!supplyOrderForm.value.supplierName">Save
                             </button>

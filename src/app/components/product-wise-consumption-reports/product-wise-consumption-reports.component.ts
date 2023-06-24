@@ -36,6 +36,7 @@ export class ProductWiseConsumptionReportsComponent {
   public totalSaleRate = 0;
   public totalCost = 0;
   public selectedVehicle: string = '';
+  public categoryID = '';
   @ViewChild('mySelect') mySelect: any;
   constructor(private categoryService: CategoryService,
     private transactionService: TransactionService,
@@ -87,12 +88,21 @@ export class ProductWiseConsumptionReportsComponent {
       this.jobs.map((j: any) => {
         if (catId && j.spareParts.some((s: any) => s.categoryId === catId)) {
           j.spareParts.map((s: SpareParts) => {
-            netAmount = netAmount + parseFloat(s.netAmount.toString());
+            if (this.selectedVehicle === j.registrationNumber) {
+              netAmount = netAmount + parseFloat(s.netAmount.toString());
+              this.jobsData.push({
+                jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+              })
+            }
+            if (this.selectedVehicle === '') {
+              netAmount = netAmount + parseFloat(s.netAmount.toString());
+              this.jobsData.push({
+                jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+              })
+            }
 
-            this.jobsData.push({
-              jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-              modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
-            })
           })
         }
 
@@ -144,15 +154,30 @@ export class ProductWiseConsumptionReportsComponent {
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
         j.spareParts.map((s: SpareParts) => {
-          if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) {
+
+          if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0]) && this.categoryID === '') {
             netAmount = netAmount + parseFloat(s.netAmount.toString());
-            console.log(j.netAmount, netAmount);
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
               modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
             })
           }
-
+          if (this.categoryID && j.spareParts.some((s: any) => s.categoryId === this.categoryID)) {
+            if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) {
+              netAmount = netAmount + parseFloat(s.netAmount.toString());
+              this.jobsData.push({
+                jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+              })
+            }
+            // if (this.selectedVehicle === '') {
+            //   netAmount = netAmount + parseFloat(s.netAmount.toString());
+            //   this.jobsData.push({
+            //     jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+            //     modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+            //   })
+            // }
+          }
         })
       });
       this.totalCost = netAmount;
@@ -202,8 +227,10 @@ export class ProductWiseConsumptionReportsComponent {
 
   filterResults(categoryID: string) {
     if (categoryID) {
+      this.categoryID = categoryID;
       this.formatData(categoryID);
     } else {
+      this.categoryID = ''
       this.data = this.jobs
     }
   }

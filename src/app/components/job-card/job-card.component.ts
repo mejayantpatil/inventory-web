@@ -793,7 +793,8 @@ export class JobCardComponent {
           "totalAmount": this.jobCardForm.value.newRate ? this.jobCardForm.value.newRate * 10 : this.jobCardForm.value.saleRate * 10,
           "comment": "",
           "status": "Pending",
-          "date": new Date().toISOString().substring(0, 10)
+          "date": new Date().toISOString().substring(0, 10),
+          assemblesData: []
         }
         console.log(payload);
         this.workOrderService.saveWorkOrder(payload).subscribe(res => {

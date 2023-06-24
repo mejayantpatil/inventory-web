@@ -29,7 +29,7 @@ export class WorkOrderService {
         // return this.data.find(workOrder => workOrder.id === id);
     }
 
-    saveWorkOrder(workOrder: any) {
+    saveWorkOrder(workOrder: WorkOrder) {
         return this.http.post(this.baseUrl, workOrder);
     }
 

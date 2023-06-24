@@ -81,7 +81,7 @@
                                             class="bi bi-box-arrow-in-down"></i> Export
                                         Work Orders</button>
                                     <button type="button" class="btn btn-primary pull-right"
-                                        (click)="newWorkOrder()">New Supply
+                                        (click)="newWorkOrder()">New Work
                                         Order
                                     </button>
                                 </div>
@@ -178,7 +178,8 @@
 
                 </div>
                 <br>
-                <div class="row" *ngIf="workOrderForm.value.serviceProviderName">
+                <!-- *ngIf="workOrderForm.value.serviceProviderName" -->
+                <div class="row">
                     <div class="col-2">
                         Part No
                         <!-- <input class="form-control" type="text" formControlName="partNo" /> -->
@@ -283,17 +284,152 @@
                 <br>
                 <div class="row">
                     <div class="col-6">
-                        Order Description
+                        <strong>Order Description</strong><br>
                         <textarea class="form-control" id="comment" formControlName="comment" rows="3"></textarea>
+                        <br>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6"></div>
+                    <div class="col-12">
+                        <strong>Order Details</strong><br>
+                        <form [formGroup]="assemblesForm" novalidate>
+                            <div class="row">
+                                <div class="col-2">
+                                    Select Vehicle
+                                    <ng-autocomplete [data]="vehicles" [searchKeyword]="'vehicleNumber'"
+                                        placeholder="Select Vehicle" [itemTemplate]="itemTemplate1"
+                                        [notFoundTemplate]="notFoundTemplate" (selected)='setVehicle($event)'
+                                        formControlName="vehicle">
+                                    </ng-autocomplete>
+                                    <ng-template #itemTemplate1 let-item>
+                                        <a [innerHTML]="item.vehicleNumber"></a>
+                                    </ng-template>
+                                    <ng-template #notFoundTemplate let-notFound>
+                                        <div [innerHTML]="notFound"></div>
+                                    </ng-template>
+                                </div>
+                                <div class="col-2">
+                                    Starter Motor
+                                    <input class="form-control text-end" type="number" formControlName="starterMotor" />
+                                </div>
+                                <div class="col-2">
+                                    Alternator Assy
+                                    <input class="form-control text-end" type="number"
+                                        formControlName="alternatorAssy" />
+                                </div>
+                                <div class="col-2">
+                                    Clutch Booster
+                                    <input class="form-control text-end" type="number"
+                                        formControlName="clutchBooster" />
+                                </div>
+                                <div class="col-2">
+                                    Brake Booster
+                                    <input class="form-control text-end" type="number" formControlName="brakeBooster" />
+                                </div>
+                                <div class="col-2"></div>
+                                <div class="col-2">
+                                    Vane Pump
+                                    <input class="form-control text-end" type="number" formControlName="vanePump" />
+                                </div>
+                                <div class="col-2">
+                                    Air Comp Assy
+                                    <input class="form-control text-end" type="number" formControlName="airCompAssy" />
+                                </div>
+                                <div class="col-2">
+                                    Radiator Assy
+                                    <input class="form-control text-end" type="number" formControlName="radiatorAssy" />
+                                </div>
+                                <div class="col-4">
+                                    Remark
+                                    <input class="form-control text-end" type="text" formControlName="remark" />
+                                </div>
+                                <div class="col-2 text-end">
+                                    <br>
+                                    <button type="button" class="btn btn-warning" (click)="reset()">Clear</button>&nbsp;
+                                    <button type="button" class="btn btn-primary" (click)="saveAssembles()">Add</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="table-responsive table-custom" *ngIf="assemblesData.length > 0">
+                            <br>
+                            <table class="table table-striped table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th width="50">#</th>
+                                        <!-- <th width="100">Order No.</th> -->
+                                        <th>Vehicle No.</th>
+                                        <th>Starter Motor</th>
+                                        <th>Alternator Assy</th>
+                                        <th>Clutch Booster</th>
+                                        <th>Brake Booster</th>
+                                        <th>Vane Pump</th>
+                                        <th>Air Comp Assy</th>
+                                        <th>Radiator Assy</th>
+                                        <th>Remark</th>
+                                        <th>Action</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of assemblesData; let i=index">
+                                        <th width="50">{{i+1}}</th>
+                                        <!-- <td width="100">{{item.workOrderNumber}}</td> -->
+                                        <td>{{item.vehicle.vehicleNumber}}</td>
+                                        <td>{{item.starterMotor}}</td>
+                                        <td>{{item.alternatorAssy}}</td>
+                                        <td>{{item.clutchBooster}}</td>
+                                        <td>{{item.brakeBooster}}</td>
+                                        <td>{{item.vanePump}}</td>
+                                        <td>{{item.airCompAssy}}</td>
+                                        <td>{{item.radiatorAssy}}</td>
+                                        <td>{{item.remark}}</td>
+                                        <td>
+                                            <i class="bi bi-pencil-square" (click)="editAssembles(item, i)"
+                                                title="Edit"></i>&nbsp;&nbsp;
+                                            <i class="bi bi-trash3" (click)="deleteAssembles(i)" title="Delete"></i>
+                                        </td>
+                                    </tr>
+                                    <tr class="text-primary">
+                                        <td width="50"></td>
+                                        <td>Total</td>
+                                        <td>{{assemblesDataTotal['starterMotor']}}</td>
+                                        <td>{{assemblesDataTotal['alternatorAssy']}}</td>
+                                        <td>{{assemblesDataTotal['clutchBooster']}}</td>
+                                        <td>{{assemblesDataTotal['brakeBooster']}}</td>
+                                        <td>{{assemblesDataTotal['vanePump']}}</td>
+                                        <td>{{assemblesDataTotal['airCompAssy']}}</td>
+                                        <td>{{assemblesDataTotal['radiatorAssy']}}</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="text-primary">
+                                        <td width="50"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Grand Total</td>
+                                        <td>{{totalAssy}}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <hr>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="button" class="btn btn-warning" (click)="cancel()">Cancel</button>
+                            <button type="button" class="btn btn-warning" (click)="cancel()">Go To List</button>
                             <button type="button" class="btn btn-primary pull-right" (click)="saveWorkOrder()"
                                 [disabled]="!workOrderForm.value.serviceProviderName">Save
                             </button>
                             <button type="button" class="btn btn-success pull-right" (click)="printOrder()"
                                 [disabled]="!workOrderForm.value.serviceProviderName">Print</button>
+                        </div>
+                        <div class="toast-body text-success text-end" *ngIf="showMessage">
+                            Work order saved successfully.
                         </div>
                     </div>
                 </div>
@@ -303,6 +439,119 @@
 
 
             <br><br>
+        </div>
+
+        <!-- <div *ngIf="false">
+            <h2>Details of Assembles and Vehicles</h2>
+            <br>
+            <form [formGroup]="assemblesForm" novalidate>
+                <div class="row">
+                    <div class="col-2">
+                        Select Vehicle
+                        <ng-autocomplete [data]="vehicles" [searchKeyword]="'vehicleNumber'"
+                            placeholder="Select Vehicle" [itemTemplate]="itemTemplate1"
+                            [notFoundTemplate]="notFoundTemplate" (selected)='setVehicle($event)'
+                            formControlName="vehicle">
+                        </ng-autocomplete>
+                        <ng-template #itemTemplate1 let-item>
+                            <a [innerHTML]="item.vehicleNumber"></a>
+                        </ng-template>
+                        <ng-template #notFoundTemplate let-notFound>
+                            <div [innerHTML]="notFound"></div>
+                        </ng-template>
+                    </div>
+                    <div class="col-2">
+                        Starter Motor
+                        <input class="form-control text-end" type="text" formControlName="starterMotor" />
+                    </div>
+                    <div class="col-2">
+                        Alternator Assy
+                        <input class="form-control text-end" type="text" formControlName="alternatorAssy" />
+                    </div>
+                    <div class="col-2">
+                        Clutch Booster
+                        <input class="form-control text-end" type="text" formControlName="clutchBooster" />
+                    </div>
+                    <div class="col-2">
+                        Brake Booster
+                        <input class="form-control text-end" type="text" formControlName="brakeBooster" />
+                    </div>
+                    <div class="col-2">
+                        Vane Pump
+                        <input class="form-control text-end" type="text" formControlName="vanePump" />
+                    </div>
+                    <div class="col-2">
+                        Air Comp Assy
+                        <input class="form-control text-end" type="text" formControlName="airCompAssy" />
+                    </div>
+                    <div class="col-2">
+                        Radiator Assy
+                        <input class="form-control text-end" type="text" formControlName="radiatorAssy" />
+                    </div>
+                    <div class="col-2">
+                        Remark
+                        <input class="form-control text-end" type="text" formControlName="remark" />
+                    </div>
+                    <div class="col-2">
+                        <br>
+                        <button type="button" class="btn btn-warning" (click)="reset()">Clear</button>&nbsp;
+                        <button type="button" class="btn btn-primary" (click)="saveAssembles()">Save</button>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive table-custom" *ngIf="assemblesData.length>0">
+                <br>
+                <table class="table table-striped table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th width="50">#</th>
+                            <th width="100">Order No.</th>
+                            <th>Vehicle No.</th>
+                            <th>Starter Motor</th>
+                            <th>Alternator Assy</th>
+                            <th>Clutch Booster</th>
+                            <th>Brake Booster</th>
+                            <th>Vane Pump</th>
+                            <th>Ais Comp Assy</th>
+                            <th>Radiator Assy</th>
+                            <th>Remark</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of assemblesData; let i=index">
+                            <th width="50">{{i+1}}</th>
+                            <td width="100">{{item.workOrderNumber}}</td>
+                            <td>{{item.vehicle.vehicleNumber}}</td>
+                            <td>{{item.starterMotor}}</td>
+                            <td>{{item.alternatorAssy}}</td>
+                            <td>{{item.clutchBooster}}</td>
+                            <td>{{item.brakeBooster}}</td>
+                            <td>{{item.vanePump}}</td>
+                            <td>{{item.airCompAssy}}</td>
+                            <td>{{item.radiatorAssy}}</td>
+                            <td>{{item.remark}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <br>
+            <br>
+        </div> -->
+        <div class="position-fixed top-10 end-0 p-3" style="z-index: 9999">
+            <div #toast class="toast" role="alert" data-bs-animation="true" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <!-- <i class="bi bi-card-checklist"></i> -->
+                    <i class="bi bi-window rounded me-2 text-success"></i>
+                    &nbsp;
+                    <strong class="me-auto text-success">Order</strong>
+                    <small>just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body text-success">
+                    Order Placed successfully.
+                </div>
+            </div>
         </div>
     </div>
 </div>

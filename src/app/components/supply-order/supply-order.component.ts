@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Account } from 'src/app/models/account';
 import { Product } from 'src/app/models/product';
 import { AccountService } from 'src/app/services/accounts.service';
@@ -38,6 +38,7 @@ export class SupplyOrderComponent {
   public stockPurchased: any = {}
   public supplierNameObj: any = {}
   public stockConsumed: any = {}
+  public showMessage: boolean = false
   @ViewChild('partNo') partNo: any;
   @ViewChild('toast') toast: any;
 
@@ -50,8 +51,8 @@ export class SupplyOrderComponent {
     private accountSerivce: AccountService) {
     this.supplyOrderForm = new FormGroup({
       // partsData: new []
-      supplyOrderNumber: new FormControl(''),
-      supplierName: new FormControl(''),
+      supplyOrderNumber: new FormControl('', Validators.required),
+      supplierName: new FormControl('', Validators.required),
       totalQuantity: new FormControl(''),
       totalAmount: new FormControl(''),
       partNo: new FormControl(''),
@@ -201,8 +202,10 @@ export class SupplyOrderComponent {
 
   showToast() {
     // TODO toat
+    this.showMessage = true;
     this.toast.nativeElement.setAttribute('class', 'toast show')
     setTimeout(() => {
+      this.showMessage = false;
       this.toast.nativeElement.setAttribute('class', 'toast hide')
     }, 2000)
   }
@@ -255,7 +258,7 @@ export class SupplyOrderComponent {
       totalQuantity = totalQuantity + parseFloat(p.quantity);
       netAmount = netAmount + parseFloat(p.netAmount ? p.netAmount.toFixed(2) : parseFloat(p.rate) * p.quantity)
     })
-    console.log(totalQuantity)
+    console.log(this.partsData)
     this.supplyOrderForm.patchValue({
       totalQuantity: totalQuantity,
       totalNetAmount: netAmount,
@@ -301,7 +304,7 @@ export class SupplyOrderComponent {
       rate: 0,
       gst: 0,
       unit: '',
-      netAmount: 0
+      netAmount: 0,
     })
     this.selectedProduct = {};
     this.selectedIndex = -1
@@ -376,8 +379,10 @@ export class SupplyOrderComponent {
     this.newOrder = true
     this.showNewSupplyOrderForm = true;
     this.selectedOrderId = '';
+
+    this.partsData = [];
     this.cancelUpdate();
-    this.supplyOrderForm.patchValue({ supplyOrderNumber: this.supplyOrders.length > 0 ? this.supplyOrders[this.supplyOrders.length - 1].supplyOrderNumber + 1 : 1 })
+    this.supplyOrderForm.patchValue({ Comment: '', supplierName: '', supplyOrderNumber: this.supplyOrders.length > 0 ? this.supplyOrders[this.supplyOrders.length - 1].supplyOrderNumber + 1 : 1 })
 
   }
 
@@ -409,7 +414,7 @@ export class SupplyOrderComponent {
       comment: supplyOrder.comment,
       totalNetAmount: supplyOrder.totalAmount
     })
-    console.log(supplyOrder)
+    this.calculateTotal();
   }
 
   deleteSupplyOrder(id: string) {
@@ -446,7 +451,8 @@ export class SupplyOrderComponent {
         // this.printOrder()
         this.cancelUpdate();
         this.getAllOrders();
-        this.showNewSupplyOrderForm = false;
+        // this.showNewSupplyOrderForm = false;
+        this.showToast()
       })
     } else {
       this.supplyOrderService.updateSupplyOrder(this.selectedOrderId, payload).subscribe(res => {
@@ -454,12 +460,13 @@ export class SupplyOrderComponent {
         // this.printOrder()
         this.getAllOrders();
         this.cancelUpdate();
-
-        this.showNewSupplyOrderForm = false;
+        this.showToast()
+        // this.showNewSupplyOrderForm = false;
       })
     }
 
   }
+
 
   printOrder() {
     const data: any = []

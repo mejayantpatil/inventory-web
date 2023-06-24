@@ -27,97 +27,98 @@ import { SupplyOrderComponent } from './components/supply-order/supply-order.com
 import { WorkOrdersComponent } from './components/work-orders/work-orders.component';
 import { JobWiseConsumptionReportsComponent } from './components/job-wise-consumption-reports/job-wise-consumption-reports.component';
 import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-reports.component';
+import { AuthGuard } from './services/auth.guard';
 
 const routes: Routes = [
   {
-    path: 'dashboard', component: DashboardComponent
+    path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'accounts', component: AccountsComponent
+    path: 'accounts', component: AccountsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'groups', component: GroupsComponent
+    path: 'groups', component: GroupsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'categorys', component: CategorysComponent
+    path: 'categorys', component: CategorysComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'products', component: ProductsComponent
+    path: 'products', component: ProductsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'part-inward/:transactionNumber', component: PartsInwardComponent
+    path: 'part-inward/:transactionNumber', component: PartsInwardComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'part-repaired/:transactionNumber', component: PartsRepairedComponent
+    path: 'part-repaired/:transactionNumber', component: PartsRepairedComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'job-card/:jobCardNumber', component: JobCardComponent
+    path: 'job-card/:jobCardNumber', component: JobCardComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'job-card', component: JobCardComponent
+    path: 'job-card', component: JobCardComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'work-orders', component: WorkOrdersComponent
+    path: 'work-orders', component: WorkOrdersComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'purchase-reports', component: PurchaseReportsComponent
+    path: 'purchase-reports', component: PurchaseReportsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'stock-wise-reports', component: StockWiseReportsComponent
+    path: 'stock-wise-reports', component: StockWiseReportsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'product-wise-consumption-reports', component: ProductWiseConsumptionReportsComponent
+    path: 'product-wise-consumption-reports', component: ProductWiseConsumptionReportsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'job-wise-consumption-reports', component: JobWiseConsumptionReportsComponent
+    path: 'job-wise-consumption-reports', component: JobWiseConsumptionReportsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'vehicle-wise-consumption-report', component: VehicleReportsComponent
+    path: 'vehicle-wise-consumption-report', component: VehicleReportsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'consumption-reports', component: ConsumptionReportsComponent
+    path: 'consumption-reports', component: ConsumptionReportsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'jobs', component: JobsComponent
+    path: 'jobs', component: JobsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'vehicles', component: VehiclesComponent
+    path: 'vehicles', component: VehiclesComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'reports', component: ReportsComponent
+    path: 'reports', component: ReportsComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'transactions', component: TransactionComponent
+    path: 'transactions', component: TransactionComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'purchase-order', component: SupplyOrderComponent
+    path: 'purchase-order', component: SupplyOrderComponent, canActivate: [AuthGuard]
   },
   {
     path: 'login', component: LoginComponent
   },
   {
-    path: 'home', component: HomeComponent
+    path: 'home', component: HomeComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'profile', component: ProfileComponent
+    path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'profile/:id', component: ProfileComponent
+    path: 'profile/:id', component: ProfileComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'shortlist', component: ShortlistComponent
+    path: 'shortlist', component: ShortlistComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'chat', component: ChatComponent
+    path: 'chat', component: ChatComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'search', component: SearchComponent
+    path: 'search', component: SearchComponent, canActivate: [AuthGuard]
   },
   {
-    path: '', component: LoginComponent
+    path: '', component: LoginComponent,
   },
   {
-    path: 'users', component: UsersComponent
+    path: 'users', component: UsersComponent, canActivate: [AuthGuard]
   }
 
 ];

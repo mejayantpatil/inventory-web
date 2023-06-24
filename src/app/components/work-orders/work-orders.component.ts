@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import jsPDF from 'jspdf';
 import { Account } from 'src/app/models/account';
 import { Product } from 'src/app/models/product';
@@ -9,6 +9,7 @@ import { GroupService } from 'src/app/services/groups.service';
 import { JobService } from 'src/app/services/jobs.service';
 import { ProductService } from 'src/app/services/products.service';
 import { TransactionService } from 'src/app/services/transactions.service';
+import { VehicleService } from 'src/app/services/vehicle.service';
 import { WorkOrderService } from 'src/app/services/work-order.service';
 import * as XLSX from 'xlsx';
 
@@ -18,7 +19,7 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./work-orders.component.scss']
 })
 export class WorkOrdersComponent {
-  public fileName = 'woek order.xlsx';
+  public fileName = 'work order.xlsx';
   public workOrders: any = [];
   public showNewWorkOrderForm: boolean = false;
   public workOrderForm: FormGroup;
@@ -37,15 +38,22 @@ export class WorkOrdersComponent {
   public stockPurchased: any = {}
   public supplierNameObj: any = {}
   public stockConsumed: any = {}
-
+  public assemblesForm: FormGroup;
+  public selectedItem: number = -1;
+  public assemblesData: any[] = [];
+  public assemblesDataTotal: any = {}
+  public vehicles: any = [];
+  public totalAssy = 0;
+  public showMessage: boolean = false;
   @ViewChild('partNo') partNo: any;
-
+  @ViewChild('toast') toast: any;
   constructor(private workOrderService: WorkOrderService,
     private categoryService: CategoryService,
     private groupService: GroupService,
     private jobService: JobService,
     private productService: ProductService,
     private transactionService: TransactionService,
+    private vehicleService: VehicleService,
     private accountSerivce: AccountService) {
     this.workOrderForm = new FormGroup({
       // partsData: new []
@@ -64,8 +72,21 @@ export class WorkOrdersComponent {
       status: new FormControl('Pending'),
       gst: new FormControl(''),
       comment: new FormControl('')
-
+      ,
     })
+
+    this.assemblesForm = new FormGroup({
+      workOrderNumber: new FormControl(''),
+      vehicle: new FormControl('', Validators.required),
+      starterMotor: new FormControl(''),
+      alternatorAssy: new FormControl(''),
+      clutchBooster: new FormControl(''),
+      brakeBooster: new FormControl(''),
+      vanePump: new FormControl(''),
+      airCompAssy: new FormControl(''),
+      radiatorAssy: new FormControl(''),
+      remark: new FormControl(''),
+    });
   }
   ngOnInit() {
     // this.getAllProducts();
@@ -73,11 +94,19 @@ export class WorkOrdersComponent {
     this.getAllOrders();
     this.getAllCategories();
     this.getAllTransactions();
+    this.getVehicles();
   }
+
 
   getAllOrders() {
     this.workOrderService.getWorkOrders().subscribe((res: any) => {
       this.workOrders = res;
+    })
+  }
+
+  getVehicles() {
+    this.vehicleService.getVehicles().subscribe((res) => {
+      this.vehicles = res;
     })
   }
 
@@ -149,6 +178,7 @@ export class WorkOrdersComponent {
 
   setProductField(e: any) {
     let index = -1;
+    if (!e.partNumber) return;
     this.products.map((p: Product, i: number) => {
       if (p.partNumber === e.partNumber) {
         index = i;
@@ -192,13 +222,13 @@ export class WorkOrdersComponent {
     let totalQuantity = 0;
     this.partsData.map((p: any) => {
       totalQuantity = totalQuantity + parseFloat(p.quantity);
-      netAmount = netAmount + p.netAmount
+      netAmount = netAmount + parseFloat(p.netAmount ? p.netAmount : '0')
     })
     this.workOrderForm.patchValue({
       totalQuantity: totalQuantity,
       totalNetAmount: netAmount
     })
-    // this.cancelUpdate();
+    console.log(netAmount, this.workOrderForm.value.totalNetAmount, totalQuantity)
 
   }
 
@@ -220,6 +250,9 @@ export class WorkOrdersComponent {
 
 
   cancelUpdate() {
+    // this.workOrderForm.reset();
+    // this.assemblesForm.reset();
+    // this.assemblesData = [];
     this.workOrderForm.patchValue({
       partNo: '',
       partName: '',
@@ -227,7 +260,8 @@ export class WorkOrdersComponent {
       rate: 0,
       gst: 0,
       unit: '',
-      netAmount: 0
+      netAmount: 0,
+      comment: ''
     })
     this.selectedProduct = {};
     this.selectedIndex = -1
@@ -302,9 +336,53 @@ export class WorkOrdersComponent {
     this.newOrder = true
     this.showNewWorkOrderForm = true;
     this.selectedOrderId = '';
-    this.cancelUpdate();
-    this.workOrderForm.patchValue({ workOrderNumber: this.workOrders.length > 0 ? this.workOrders[this.workOrders.length - 1].workOrderNumber + 1 : 1 })
 
+    // this.workOrderForm.reset();
+    // this.assemblesForm.reset();
+    this.assemblesData = [];
+    this.partsData = [];
+    this.cancelUpdate();
+    this.workOrderForm.patchValue({
+      serviceProviderName: '',
+
+      workOrderNumber: this.workOrders.length > 0 ? this.workOrders[this.workOrders.length - 1].workOrderNumber + 1 : 1
+    })
+
+  }
+
+  saveAssembles() {
+    if (this.selectedItem > -1) {
+      if (this.assemblesForm.valid) {
+        this.assemblesData[this.selectedItem] = this.assemblesForm.value;
+        this.selectedItem = -1;
+        this.reset();
+      }
+    } else {
+      if (this.assemblesForm.valid) {
+        this.assemblesData.push(this.assemblesForm.value)
+        this.selectedItem = -1;
+        this.reset();
+      }
+    }
+    this.calculateAssyTotal()
+  }
+
+  calculateAssyTotal() {
+    this.assemblesDataTotal = {};
+    if (this.assemblesData.length > 0) {
+      this.assemblesData.map(a => {
+        this.assemblesDataTotal['starterMotor'] = (a.starterMotor ? a.starterMotor : 0) + (this.assemblesDataTotal['starterMotor'] ? this.assemblesDataTotal['starterMotor'] : 0);
+        this.assemblesDataTotal['alternatorAssy'] = (a.alternatorAssy ? a.alternatorAssy : 0) + (this.assemblesDataTotal['alternatorAssy'] ? this.assemblesDataTotal['alternatorAssy'] : 0);
+        this.assemblesDataTotal['clutchBooster'] = (a.clutchBooster ? a.clutchBooster : 0) + (this.assemblesDataTotal['clutchBooster'] ? this.assemblesDataTotal['clutchBooster'] : 0);
+        this.assemblesDataTotal['brakeBooster'] = (a.brakeBooster ? a.brakeBooster : 0) + (this.assemblesDataTotal['brakeBooster'] ? this.assemblesDataTotal['brakeBooster'] : 0)
+        this.assemblesDataTotal['vanePump'] = (a.vanePump ? a.vanePump : 0) + (this.assemblesDataTotal['vanePump'] ? this.assemblesDataTotal['vanePump'] : 0);
+        this.assemblesDataTotal['airCompAssy'] = (a.airCompAssy ? a.airCompAssy : 0) + (this.assemblesDataTotal['airCompAssy'] ? this.assemblesDataTotal['airCompAssy'] : 0);
+        this.assemblesDataTotal['radiatorAssy'] = (a.radiatorAssy ? a.radiatorAssy : 0) + (this.assemblesDataTotal['radiatorAssy'] ? this.assemblesDataTotal['radiatorAssy'] : 0);
+      })
+      this.totalAssy = this.assemblesDataTotal['starterMotor'] + this.assemblesDataTotal['alternatorAssy'] +
+        this.assemblesDataTotal['clutchBooster'] + this.assemblesDataTotal['brakeBooster'] + this.assemblesDataTotal['vanePump'] +
+        this.assemblesDataTotal['airCompAssy'] + this.assemblesDataTotal['radiatorAssy']
+    }
   }
 
   cancel() {
@@ -317,6 +395,13 @@ export class WorkOrdersComponent {
     })
     this.getAllTransactions()
   }
+
+  setVehicle(event: any) {
+    this.assemblesForm.patchValue({
+      vehicle: event
+    })
+  }
+
   editWorkOrder(workOrder: any) {
     this.newOrder = false
     this.showNewWorkOrderForm = true;
@@ -333,8 +418,11 @@ export class WorkOrdersComponent {
       unit: workOrder.unit,
       rate: workOrder.rate,
       comment: workOrder.comment,
-      totalNetAmount: workOrder.totalAmount
+      totalNetAmount: workOrder.totalAmount,
     })
+    this.calculateTotal();
+    this.assemblesData = workOrder?.assemblesData || []
+    this.calculateAssyTotal();
   }
 
   deleteWorkOrder(id: string) {
@@ -363,7 +451,8 @@ export class WorkOrdersComponent {
       totalAmount: this.workOrderForm.value.totalNetAmount,
       comment: this.workOrderForm.value.comment,
       status: this.workOrderForm.value.status,
-      date: this.workOrderForm.value.date
+      date: this.workOrderForm.value.date,
+      assemblesData: this.assemblesData
     }
     if (this.newOrder) {
       this.workOrderService.saveWorkOrder(payload).subscribe((res: any) => {
@@ -371,7 +460,8 @@ export class WorkOrdersComponent {
         // this.printOrder()
         this.cancelUpdate();
         this.getAllOrders();
-        this.showNewWorkOrderForm = false;
+        // this.showNewWorkOrderForm = false;
+        this.showToast();
       })
     } else {
       this.workOrderService.updateWorkOrder(this.selectedOrderId, payload).subscribe(res => {
@@ -379,12 +469,22 @@ export class WorkOrdersComponent {
         // this.printOrder()
         this.getAllOrders();
         this.cancelUpdate();
-
-        this.showNewWorkOrderForm = false;
+        this.showToast();
+        // this.showNewWorkOrderForm = false;
       })
     }
 
   }
+
+  showToast() {
+    this.showMessage = true;
+    this.toast.nativeElement.setAttribute('class', 'toast show')
+    setTimeout(() => {
+      this.showMessage = false;
+      this.toast.nativeElement.setAttribute('class', 'toast hide')
+    }, 2000)
+  }
+
   checkAll() {
     this.products.map((p: any) => {
       p.checked = !p.checked;
@@ -400,6 +500,29 @@ export class WorkOrdersComponent {
 
   addToWorkOrder() {
 
+  }
+
+  reset() {
+    this.assemblesForm.reset();
+  }
+
+  editAssembles(item: any, index: number) {
+    this.selectedItem = index;
+    this.assemblesForm.patchValue({
+      vehicle: item.vehicle,
+      starterMotor: item.starterMotor,
+      alternatorAssy: item.alternatorAssy,
+      clutchBooster: item.clutchBooster,
+      brakeBooster: item.brakeBooster,
+      vanePump: item.vanePump,
+      airCompAssy: item.airCompAssy,
+      radiatorAssy: item.radiatorAssy,
+      remark: item.remark
+    })
+  }
+
+  deleteAssembles(index: number) {
+    this.assemblesData.splice(index, 1)
   }
 
   printOrder() {
@@ -462,12 +585,31 @@ export class WorkOrdersComponent {
     // arr.push(total.toFixed(2))
     // newData.push(arr);
     // })
-    console.log(newData)
-    this.generateReport(newData);
+    // console.log(newData)
+    let assemblesData: any[] = [];
+    if (this.assemblesData.length > 0) {
+      this.assemblesData.map(a => {
+        let arr = [];
+        arr.push(a.vehicle.vehicleNumber)
+        arr.push(a.starterMotor)
+        arr.push(a.alternatorAssy)
+        arr.push(a.clutchBooster)
+        arr.push(a.brakeBooster)
+        arr.push(a.vanePump)
+        arr.push(a.airCompAssy)
+        arr.push(a.radiatorAssy)
+        arr.push(a.remark)
+        assemblesData.push(arr);
+      })
+      assemblesData.push(['Total', this.assemblesDataTotal['starterMotor'], this.assemblesDataTotal['alternatorAssy'],
+        this.assemblesDataTotal['clutchBooster'], this.assemblesDataTotal['brakeBooster'], this.assemblesDataTotal['vanePump'],
+        this.assemblesDataTotal['airCompAssy'], this.assemblesDataTotal['radiatorAssy'], '']);
+    }
+    this.generateReport(newData, assemblesData);
 
   }
 
-  generateReport(body: any[]) {
+  generateReport(body: any[], assemblesData: any[]) {
     const doc: any = new jsPDF({ putOnlyUsedFonts: true });
     doc.setFontSize(20);
     // doc.text("Invoice", 90, 15)
@@ -563,11 +705,11 @@ export class WorkOrdersComponent {
       // headStyles: { 0: { halign: 'center' }, 1: { halign: 'left' } },
       createdCell: function (head: any, data: any) {
         if (head.cell.raw === 'Sr.No.') {
-          console.log('sr.no.', head.cell);
+          // console.log('sr.no.', head.cell);
           head.cell.styles.halign = 'center'
         }
         if (head.cell.raw === 'Part No.' || head.cell.raw === 'Part Name') {
-          console.log('name', head.cell);
+          // console.log('name', head.cell);
           head.cell.styles.halign = 'left'
         }
 
@@ -586,8 +728,12 @@ export class WorkOrdersComponent {
       startY: 65,
       margin: [10, 15, 30, 15] // top left bottom left
     });
+
+
     // styles: { cellPadding: 0.5, fontSize: 8 },
+
     const tableHeight = doc.lastAutoTable.finalY;
+
     // doc.text('In Word: RS: ' + this.inWords(parseInt(this.workOrderForm.value.totalNetAmount)), 14, tableHeight + 10)
     doc.line(14, tableHeight + 5, 196, tableHeight + 5);
     // doc.text('In Word: RS: ***', 14, tableHeight + 10)
@@ -598,22 +744,41 @@ export class WorkOrdersComponent {
     }
     doc.text("Grand Total Amount:", 165, tableHeight + 15, { align: 'right' })
     doc.text(this.workOrderForm.value.totalNetAmount ? this.workOrderForm.value.totalNetAmount.toFixed(2) : '0', 195, tableHeight + 15, { align: 'right' })
-    // doc.text("CGST Amount:", 150, tableHeight + 20, { align: 'right' })
-    // const gst: number = parseFloat(this.workOrderForm.value.gstTotal) / 2;
-    // doc.text(gst.toFixed(2), 180, tableHeight + 20, { align: 'right' })
-    // doc.text("SGST Amount:", 150, tableHeight + 25, { align: 'right' })
-    // doc.text(gst.toFixed(2), 180, tableHeight + 25, { align: 'right' })
-    // doc.text("Total Discount:", 150, tableHeight + 30, { align: 'right' })
-    // let discount = '0';
-    // if (this.workOrderForm.value.tradeDiscount) {
-    //   discount = '- ' + this.workOrderForm.value.tradeDiscount.toString()
-    // }
-    // doc.text(discount, 180, tableHeight + 30, { align: 'right' })
-    // doc.line(14, tableHeight + 35, 196, tableHeight + 35);
-    // doc.text("Net Amount:", 150, tableHeight + 40, { align: 'right' })
-    // doc.text(this.workOrderForm.value.totalNetAmount, 180, tableHeight + 40, { align: 'right' })
-    // doc.line(14, tableHeight + 45, 196, tableHeight + 45);
 
+    if (assemblesData.length > 0) {
+      // doc.text('More Details', 14, tableHeight + 20)
+      doc.line(14, tableHeight + 25, 196, tableHeight + 25);
+
+      (doc as any).autoTable({
+        head: [[
+          "Vehicle No.",
+          "Starter Motor",
+          "Alternator Assy",
+          "Clutch Booster",
+          "Brake Booster",
+          "Vane Pump",
+          "Air Comp Assy",
+          "Radiator Assy",
+          "Remark"
+        ]],
+        body: assemblesData,
+        theme: 'grid',
+        styles: {
+          // halign: 'right',
+          fontSize: 7
+        },
+
+        startY: tableHeight + 30,
+        margin: [10, 15, 30, 15] // top left bottom left
+      });
+    }
+    if (this.assemblesData.length > 0) {
+      doc.setFontSize(7);
+      doc.text("Note: Please inform after repair.", 14, doc.lastAutoTable.finalY + 5, { align: 'left' })
+      doc.text("Total Assy forward to  repair:", 180, doc.lastAutoTable.finalY + 5, { align: 'right' })
+      doc.text(this.totalAssy.toString(), 195, doc.lastAutoTable.finalY + 5, { align: 'right' })
+    }
+    doc.setFontSize(10);
     doc.line(14, doc.internal.pageSize.height - 50, 196, doc.internal.pageSize.height - 50);
 
     if (tableHeight < doc.internal.pageSize.height - 50) {

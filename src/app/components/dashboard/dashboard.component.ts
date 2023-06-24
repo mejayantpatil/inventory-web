@@ -224,6 +224,7 @@ export class DashboardComponent {
     orders.map(async (o) => {
       o.workOrderNumber = count;
       count++;
+      o.assemblesData = [];
       await this.workOrderService.saveWorkOrder(o).subscribe(res => {
         console.log('ok')
       })

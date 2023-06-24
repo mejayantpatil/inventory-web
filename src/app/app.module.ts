@@ -42,6 +42,7 @@ import { AccountsMasterComponent } from './components/accounts-master/accounts-m
 import { WorkOrdersComponent } from './components/work-orders/work-orders.component';
 import { JobWiseConsumptionReportsComponent } from './components/job-wise-consumption-reports/job-wise-consumption-reports.component';
 import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-reports.component';
+import { AuthGuardService } from './services/auth-guard.service';
 
 @NgModule({
   declarations: [
@@ -91,7 +92,7 @@ import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-re
     ReactiveFormsModule,
     AutocompleteLibModule
   ],
-  providers: [],
+  providers: [AuthGuardService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

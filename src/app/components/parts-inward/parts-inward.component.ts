@@ -300,7 +300,7 @@ export class PartsInwardComponent {
             product.saleRate = p.rate;
             product.newRate = p.newRate
             // product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
-            // product.purchasedQuantity = p.quantity
+            product.purchasedQuantity = p.quantity
             product.unit = p.unit
             await this.productSerivce.updateProduct(product._id, product).subscribe(() => {
               console.log('product updated')
@@ -323,7 +323,7 @@ export class PartsInwardComponent {
             product.saleRate = p.rate;
             product.newRate = p.newRate
             // product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
-            // product.purchasedQuantity = p.quantity
+            product.purchasedQuantity = p.quantity
             product.unit = p.unit
             await this.productSerivce.updateProduct(product._id, product).subscribe(() => {
               console.log('product updated')

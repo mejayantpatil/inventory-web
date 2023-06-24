@@ -7,6 +7,7 @@ export interface WorkOrder {
     status: string
     comment: string
     date: string
+    assemblesData: any[]
     _id?: string
 }
 

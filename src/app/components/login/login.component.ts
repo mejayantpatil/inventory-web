@@ -16,11 +16,15 @@ export class LoginComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit(): void {
+    if (sessionStorage.getItem("SeesionUser")) {
+      this.router.navigate(['dashboard']);
+    }
   }
 
   login() {
     this.error = '';
     if (this.form.username === 'Admin' && this.form.password === 'Admin') {
+      sessionStorage.setItem('SeesionUser', this.form.username)
       this.router.navigate(['dashboard']);
     } else {
       this.error = 'Please enter valid username and password.'
