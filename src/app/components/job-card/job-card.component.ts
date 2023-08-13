@@ -740,7 +740,7 @@ export class JobCardComponent {
   }
 
   addData() {
-    if (this.jobCardForm.invalid && this.jobCardForm.value.quantity > 0) return;
+    if (this.jobCardForm.invalid || this.jobCardForm.value.quantity === 0 || this.jobCardForm.value.partNo?.netAmount === 0) return;
     if (this.selectedProduct && this.selectedIndex > -1) {
       this.spareParts[this.selectedIndex] = {
         partNo: this.jobCardForm.value.partNo?.partNumber,
@@ -754,6 +754,8 @@ export class JobCardComponent {
       }
     }
     else {
+      console.log(this.spareParts.some((s: any) => s.partNo === this.jobCardForm.value.partNo?.partNumber))
+      if (this.spareParts.some((s: any) => s.partNo === this.jobCardForm.value.partNo?.partNumber)) return;
       this.spareParts.push({
         partNo: this.jobCardForm.value.partNo?.partNumber,
         partName: this.jobCardForm.value.partName?.partName,

@@ -43,6 +43,7 @@ import { WorkOrdersComponent } from './components/work-orders/work-orders.compon
 import { JobWiseConsumptionReportsComponent } from './components/job-wise-consumption-reports/job-wise-consumption-reports.component';
 import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-reports.component';
 import { AuthGuardService } from './services/auth-guard.service';
+import { AgChartsAngularModule } from 'ag-charts-angular';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,8 @@ import { AuthGuardService } from './services/auth-guard.service';
     HttpClientModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    AutocompleteLibModule
+    AutocompleteLibModule,
+    AgChartsAngularModule
   ],
   providers: [AuthGuardService],
   bootstrap: [AppComponent]

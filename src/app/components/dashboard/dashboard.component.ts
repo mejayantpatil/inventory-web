@@ -9,12 +9,14 @@ import { SupplyOrderService } from 'src/app/services/supplyOrderService';
 import { TransactionService } from 'src/app/services/transactions.service';
 import { VehicleService } from 'src/app/services/vehicle.service';
 import { WorkOrderService } from 'src/app/services/work-order.service';
+import { AgChartOptions } from 'ag-charts-community';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
+
 export class DashboardComponent {
   public products: any = [];
   public repairedProducts: any = [];
@@ -29,8 +31,11 @@ export class DashboardComponent {
   public activeCards: any = [];
   public vehicles: any = [];
   public kmByBusNo: any = {};
+  public totalStockCost = 0;
+  public totalConsumedCost = 0;
+  public mostUsedProducts: any[] = []
+  public options: AgChartOptions = {};
   @ViewChild('toast') toast: any;
-
   constructor(private productService: ProductService,
     private router: Router,
     private cardService: CardService, private jobService: JobService,
@@ -38,7 +43,6 @@ export class DashboardComponent {
     private workOrderService: WorkOrderService,
     private vehicleService: VehicleService,
     private transactionService: TransactionService) {
-
   }
 
   ngOnInit() {
@@ -299,7 +303,9 @@ export class DashboardComponent {
   getAllTransactions() {
     this.transactionService.getTransactions().subscribe((res: any) => {
       res.map((t: any) => {
+        this.totalStockCost = this.totalStockCost + parseFloat(t.netAmount)
         t.data.map((i: any) => {
+
           this.stockPurchased[i.partNo] = parseInt(this.stockPurchased[i.partNo] ? this.stockPurchased[i.partNo] : '0') + parseInt(i.quantity);
           // this.stockPuchasedValues[i.partNo] = i.newRate ? i.newRate : 0
           this.supplierNameObj[i.partNo] = { gst: i.cgstPercentage + i.sgstPercentage, supplierName: t.supplierName }
@@ -313,8 +319,10 @@ export class DashboardComponent {
 
   getAllJobs() {
     this.jobService.getJobs().subscribe((res: any) => {
+
       res.map((t: any) => {
         t.cardData.map((c: any) => {
+          this.totalConsumedCost = this.totalConsumedCost + parseFloat(c.netAmount)
           c?.spareParts && c?.spareParts.map((i: any) => {
             // if (t.status === 'Complete') {
             this.stockConsumed[i.partNo] = parseInt(this.stockConsumed[i.partNo] ? this.stockConsumed[i.partNo] : 0) + parseInt(i.quantity);
@@ -337,9 +345,46 @@ export class DashboardComponent {
           }
         }
       });
-      // console.log(this.kmByBusNo);
       this.getVehicles();
       this.getProducts();
+      const array: any[] = [];
+      let testArr: any[] = []
+      Object.values(this.stockConsumed).map((p: any) => {
+        array.push(parseInt(p))
+      })
+      array.sort((a, b) => b - a);
+      let count = 0;
+      array.map(a => {
+
+        Object.keys(this.stockConsumed).map(p => {
+          if (a === this.stockConsumed[p] && count < 10) {
+            let obj: any = {};
+            obj.label = p;
+            obj.value = this.stockConsumed[p]// + '%';
+            testArr.push(obj);
+            count++;
+          }
+        })
+      })
+
+      this.mostUsedProducts = testArr;
+
+      this.options = {
+        data: testArr,
+        series: [
+          {
+            type: 'pie',
+            angleKey: 'value',
+            calloutLabelKey: 'label',
+            sectorLabelKey: 'value',
+            sectorLabel: {
+              color: 'white',
+              fontWeight: 'bold',
+            },
+          },
+        ],
+
+      };
     })
   }
 

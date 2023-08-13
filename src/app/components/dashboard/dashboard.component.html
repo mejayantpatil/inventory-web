@@ -8,6 +8,47 @@
     <br>
     <div class="row">
       <div class="col-lg-6 col-md-6 col-xs-12">
+        <div class="mb-3">
+          <div class="alert alert-primary" role="alert">
+            <h1>Total Stock Purchased <br>&#8377;: {{totalStockCost | number :
+              '1.2-2'}}</h1>
+            <div class="text-end ">
+              <br>
+              <button type="button" class="btn btn-primary" routerLink="/purchase-reports">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-xs-12">
+        <div class="mb-3">
+          <div class="alert alert-primary" role="alert">
+            <h1>Totsl Stock Consumed <br>&#8377;: {{totalConsumedCost | number :
+              '1.2-2'}}</h1>
+            <div class="text-end ">
+              <br>
+              <button type="button" class="btn btn-primary" routerLink="/job-wise-consumption-reports">View
+                Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-xs-12">
+        <div class="card text-dark bg-light mb-3" style="height: 500px;">
+          <div class="card-header">
+            Top 10 Consumed Parts With Quantities
+          </div>
+          <div class="card-body">
+            <ag-charts-angular [options]="options"></ag-charts-angular>
+
+          </div>
+        </div>
+        <br><br><br>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="card text-dark bg-light mb-3">
           <div class="card-header">Qunaity is low for below Parts</div>
           <div class="card-body">
