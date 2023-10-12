@@ -117,9 +117,9 @@
                                         <td width="200">
                                             <i class="bi bi-pencil-square" (click)="editWorkOrder(order)"
                                                 title="Edit"></i>&nbsp;&nbsp;
-                                            <i class="bi bi-trash3" (click)="deleteWorkOrder(order._id)"
-                                                title="Delete"></i>&nbsp;&nbsp;
-                                            <i class="bi bi-check-circle" *ngIf="order.status !== 'Complete'"
+                                            <!-- <i class="bi bi-trash3" (click)="deleteWorkOrder(order._id)"
+                                                title="Delete"></i>&nbsp;&nbsp; -->
+                                            <i class="bi bi-check-lg" *ngIf="order.status !== 'Complete'"
                                                 [ngClass]="{'complete': order.status === 'Complete', 'pending': order.status === 'Pending'}"
                                                 (click)="completeOrder(order)" title="Click to Complete"></i>
                                             <!--                                 
@@ -230,6 +230,84 @@
 
                 </div>
                 <br>
+                <div class="col-lg-2 col-xs-12">
+                    <!-- <button type="button" class="btn btn-warning" (click)="cancelUpdate()">Cancel</button>&nbsp; -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addNewProduct">
+                        Add New Product
+                    </button>
+
+                </div>
+                <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="addNewProductLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addNewProductLabel">New Product</h5>
+                                <button type="button" #close class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form [formGroup]="productForm">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-xs-12">
+                                            Part Number:
+                                            <input id="partNumber" class="form-control" type="text"
+                                                formControlName="partNumber" />
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12">
+                                            Part Name:
+                                            <input id="partName" class="form-control" type="text"
+                                                formControlName="partName" />
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12">
+                                            Rate:
+                                            <input id="saleRate" class="form-control" type="text"
+                                                formControlName="saleRate" />
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12">
+                                            Quantity:
+                                            <input id="quantity" class="form-control" type="text"
+                                                formControlName="quantity" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-xs-12">
+                                            Unit:
+                                            <input id="unit" class="form-control" type="text" formControlName="unit" />
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12">
+                                            Store Location:
+                                            <input id="storeLocation" class="form-control" type="text"
+                                                formControlName="storeLocation" />
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12">
+                                            Ledger Page Number:
+                                            <input id="ledgerPageNumber" class="form-control" type="text"
+                                                formControlName="ledgerPageNumber" />
+                                        </div>
+                                        <div class="col-lg-3 col-xs-12">
+                                            Category:
+                                            <select class="form-select form-control" aria-label="Default select"
+                                                id="category" formControlName="category">
+                                                <option selected>Select Category</option>
+                                                <option [value]="cat._id" *ngFor="let cat of categories; let i = index">
+                                                    {{cat.categoryName}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button #close type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                    (click)="cancel()" #closebutton>Close</button>
+                                <button type="button" class="btn btn-primary" (click)="saveProduct()">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
                 <div class="row" *ngIf="workOrderForm.value.serviceProviderName">
                     <div class="col-12">
                         <hr>
@@ -338,6 +416,29 @@
                                     Radiator Assy
                                     <input class="form-control text-end" type="number" formControlName="radiatorAssy" />
                                 </div>
+                                <div class="col-2">
+                                    Other Charges
+                                    <select class="form-select" aria-label="Default select example"
+                                        formControlName="otherCharges">
+                                        <option selected value="">Other Charges</option>
+                                        <option value="weldingWork">Welding Work</option>
+                                        <option value="pressFittingAssy">Press Fitting Assy</option>
+                                        <option value="bracketRepaired">Bracket Repaired</option>
+                                        <option value="radiatorMounting">Radiator Mounting Cutting/Welding</option>
+                                        <option value="roadSpring">Road Spring Bending and Fitting</option>
+                                        <option value="srpingBrush">Spring Brush Fitting</option>
+                                        <option value="cngPipe">CNG Pipe Socket Fitting</option>
+                                        <option value="steeringFitting">Steering Pipe Socket Fitting</option>
+                                        <option value="waterFitting">Water Pipe Socket Fitting</option>
+                                        <option value="flyWheel">Fly Wheel Cutting</option>
+                                        <option value="gasWelding">Gas Welding</option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    Amount
+                                    <input class="form-control text-end" type="number"
+                                        [readonly]="assemblesForm.value.otherCharges ===''" formControlName="amount" />
+                                </div>
                                 <div class="col-4">
                                     Remark
                                     <input class="form-control text-end" type="text" formControlName="remark" />
@@ -364,6 +465,8 @@
                                         <th>Vane Pump</th>
                                         <th>Air Comp Assy</th>
                                         <th>Radiator Assy</th>
+                                        <th>Other Charges</th>
+                                        <th>Amount</th>
                                         <th>Remark</th>
                                         <th>Action</th>
                                     </tr>
@@ -381,6 +484,8 @@
                                         <td>{{item.vanePump}}</td>
                                         <td>{{item.airCompAssy}}</td>
                                         <td>{{item.radiatorAssy}}</td>
+                                        <td>{{otherCharges[item.otherCharges]}}</td>
+                                        <td>{{item.amount}}</td>
                                         <td>{{item.remark}}</td>
                                         <td>
                                             <i class="bi bi-pencil-square" (click)="editAssembles(item, i)"

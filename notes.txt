@@ -135,3 +135,50 @@ bus wise
 filte by running and completed done
 
 product wise report madhe category filter - 
+
+-----------------------------------------------------------------------
+Vishwayodhha August 2023
+
+work order 
+-add new part
+- fix all issue
+
+- pie chart filter on category
+
+
+vehicle
+-service and general maintainance 
+- update in job card and vehicle page
+
+
+Vishwayodhha
+
+work order 
+-add new part - done
+- fix all issue -wip
+
+- pie chart filter on category - done
+
+parts inward
+supplier filter - done  
+
+vehicle
+-service and general maintainance -done
+-update in job card and vehicle page - done
+still need to work on vehicle service status
+
+
+06-09-23
+dashboard work done
+report autocomplete done
+part inward - invoice no not working done
+jobs update not working - DONE
+
+13 sept 2023
+produt report  - show total quantities - DONE
+part outwards same like part inwards
+vehicle - dashboard change columns for vehicle service status use oil change and total service values
+
+06-10-2023
+purchase order and work order issues fixed
+need to work on both UI of orders - wip

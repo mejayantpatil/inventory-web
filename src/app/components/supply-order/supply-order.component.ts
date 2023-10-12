@@ -23,6 +23,7 @@ export class SupplyOrderComponent {
   public supplyOrders: any = [];
   public showNewSupplyOrderForm: boolean = false;
   public supplyOrderForm: FormGroup;
+  public productForm: FormGroup;
   public accounts: any = [];
   public supplierGroupID: string = '';
   public products: Product[] = [];
@@ -39,15 +40,19 @@ export class SupplyOrderComponent {
   public supplierNameObj: any = {}
   public stockConsumed: any = {}
   public showMessage: boolean = false
+  public editProductFlag: boolean = false;
+  public categories: any = []
+  public showNewProductForm = false;
   @ViewChild('partNo') partNo: any;
   @ViewChild('toast') toast: any;
-
+  @ViewChild('close') close: any;
   constructor(private supplyOrderService: SupplyOrderService,
     private categoryService: CategoryService,
     private groupService: GroupService,
     private productService: ProductService,
     private transactionService: TransactionService,
     private jobService: JobService,
+    private productSerivce: ProductService,
     private accountSerivce: AccountService) {
     this.supplyOrderForm = new FormGroup({
       // partsData: new []
@@ -68,6 +73,17 @@ export class SupplyOrderComponent {
       comment: new FormControl('')
 
     })
+
+    this.productForm = new FormGroup({
+      partNumber: new FormControl(''),
+      partName: new FormControl(''),
+      saleRate: new FormControl(''),
+      category: new FormControl(''),
+      quantity: new FormControl(''),
+      unit: new FormControl(''),
+      storeLocation: new FormControl(''),
+      ledgerPageNumber: new FormControl(''),
+    })
   }
   ngOnInit() {
     this.getGRoups();
@@ -77,14 +93,14 @@ export class SupplyOrderComponent {
   }
 
   getAllOrders() {
-    this.supplyOrderService.getSupplyOrders().subscribe((res: any) => {
-      this.supplyOrders = res;
+    this.supplyOrderService.getSupplyOrders().subscribe((res: any = []) => {
+      this.supplyOrders = res.reverse();
     })
   }
 
   getAllCategories() {
     this.categoryService.getCategorys().subscribe((res: any) => {
-      // this.categorys = res;
+      this.categories = res;
       res.forEach((c: any) => {
         this.categroysObj[c._id] = c.categoryName;
       });
@@ -145,7 +161,7 @@ export class SupplyOrderComponent {
   addToSupplyOrder() {
     let orders: any = []
     let supplierObj: any = {}
-    this.products.map((p: any) => {
+    this.productsWithLowQty.map((p: any) => {
       let partsData: any = [];
       if (p.checked) {
         partsData.push({
@@ -382,7 +398,7 @@ export class SupplyOrderComponent {
 
     this.partsData = [];
     this.cancelUpdate();
-    this.supplyOrderForm.patchValue({ Comment: '', supplierName: '', supplyOrderNumber: this.supplyOrders.length > 0 ? this.supplyOrders[this.supplyOrders.length - 1].supplyOrderNumber + 1 : 1 })
+    this.supplyOrderForm.patchValue({ Comment: '', supplierName: '', supplyOrderNumber: this.supplyOrders.length > 0 ? this.supplyOrders[0].supplyOrderNumber + 1 : 1 })
 
   }
 
@@ -445,9 +461,16 @@ export class SupplyOrderComponent {
       status: this.supplyOrderForm.value.status,
       date: this.supplyOrderForm.value.date
     }
+    this.partsData.map((p: any) => {
+      const pp: any = this.products.find(pp => pp.partNumber === p.partNo)
+      pp.orderPlaced = true;
+      this.productSerivce.updateProduct(pp._id, pp).subscribe(res => { })
+    })
+
     if (this.newOrder) {
       this.supplyOrderService.saveSupplyOrder(payload).subscribe(res => {
 
+        console.log(this.partsData)
         // this.printOrder()
         this.cancelUpdate();
         this.getAllOrders();
@@ -457,6 +480,7 @@ export class SupplyOrderComponent {
     } else {
       this.supplyOrderService.updateSupplyOrder(this.selectedOrderId, payload).subscribe(res => {
 
+        console.log(this.partsData)
         // this.printOrder()
         this.getAllOrders();
         this.cancelUpdate();
@@ -718,5 +742,37 @@ export class SupplyOrderComponent {
     /* save to file */
     XLSX.writeFile(wb, this.fileName);
 
+  }
+
+
+  initializeForm() {
+    this.productForm = new FormGroup({
+      partNumber: new FormControl(''),
+      partName: new FormControl(''),
+      saleRate: new FormControl(''),
+      category: new FormControl(''),
+      quantity: new FormControl(''),
+      unit: new FormControl(''),
+      storeLocation: new FormControl(''),
+      ledgerPageNumber: new FormControl(''),
+    })
+  }
+
+  saveProduct() {
+    if (this.productForm.valid) {
+      // save 
+      this.productSerivce.saveProduct(this.productForm.value).subscribe(res => {
+        this.getAllProducts();
+        this.cancelP();
+        this.close.nativeElement.click();
+        // this.getAllProducts();
+      })
+    }
+  }
+
+  cancelP() {
+    this.editProductFlag = false
+    this.showNewProductForm = false;
+    this.initializeForm();
   }
 }

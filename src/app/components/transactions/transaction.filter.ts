@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class FilterInvoice implements PipeTransform {
 
     transform(array: any[], searchWord: string): any {
-        return array.filter(a => searchWord ? a.transactionNo === parseInt(searchWord) || a.supplierInvoiceNo.includes(searchWord) : a);
+        return array.filter(a => searchWord ? a.transactionNo === parseInt(searchWord) || a.supplierInvoiceNo.includes(searchWord) || a.supplierName.toLowerCase().includes(searchWord.toLowerCase()) : a);
     }
 
 }

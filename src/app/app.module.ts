@@ -44,6 +44,7 @@ import { JobWiseConsumptionReportsComponent } from './components/job-wise-consum
 import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-reports.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { AgChartsAngularModule } from 'ag-charts-angular';
+import { NewProductsComponent } from './components/products/new-product';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { AgChartsAngularModule } from 'ag-charts-angular';
     GroupsComponent,
     CategorysComponent,
     ProductsComponent,
+    NewProductsComponent,
     PartsInwardComponent,
     VehiclesComponent,
     TransactionComponent,

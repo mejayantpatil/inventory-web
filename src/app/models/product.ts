@@ -12,4 +12,5 @@ export interface Product {
     storeLocation: string
     ledgerPageNumber: string
     _id?: string
+    orderPlaced?: boolean
 }

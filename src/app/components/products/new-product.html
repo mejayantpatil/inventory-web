@@ -1,0 +1,70 @@
+<div class="col-lg-2 col-xs-12">
+    <!-- <button type="button" class="btn btn-warning" (click)="cancelUpdate()">Cancel</button>&nbsp; -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNewProduct">
+        Add New Product
+    </button>
+
+</div>
+<div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="addNewProductLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addNewProductLabel">New Product</h5>
+                <button type="button" #close class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="productForm">
+                    <div class="row">
+                        <div class="col-lg-3 col-xs-12">
+                            Part Number:
+                            <input id="partNumber" class="form-control" type="text" formControlName="partNumber" />
+                        </div>
+                        <div class="col-lg-3 col-xs-12">
+                            Part Name:
+                            <input id="partName" class="form-control" type="text" formControlName="partName" />
+                        </div>
+                        <div class="col-lg-3 col-xs-12">
+                            Rate:
+                            <input id="saleRate" class="form-control" type="text" formControlName="saleRate" />
+                        </div>
+                        <div class="col-lg-3 col-xs-12">
+                            Quantity:
+                            <input id="quantity" class="form-control" type="text" formControlName="quantity" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-xs-12">
+                            Unit:
+                            <input id="unit" class="form-control" type="text" formControlName="unit" />
+                        </div>
+                        <div class="col-lg-3 col-xs-12">
+                            Store Location:
+                            <input id="storeLocation" class="form-control" type="text"
+                                formControlName="storeLocation" />
+                        </div>
+                        <div class="col-lg-3 col-xs-12">
+                            Ledger Page Number:
+                            <input id="ledgerPageNumber" class="form-control" type="text"
+                                formControlName="ledgerPageNumber" />
+                        </div>
+                        <div class="col-lg-3 col-xs-12">
+                            Category:
+                            <select class="form-select form-control" aria-label="Default select" id="category"
+                                formControlName="category">
+                                <option selected>Select Category</option>
+                                <option [value]="cat._id" *ngFor="let cat of categories; let i = index">
+                                    {{cat.categoryName}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button #close type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancel()"
+                    #closebutton>Close</button>
+                <button type="button" class="btn btn-primary" (click)="saveProduct()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

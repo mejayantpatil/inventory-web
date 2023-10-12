@@ -112,11 +112,13 @@ export class TransactionComponent {
     //   "comment": ""
     // }).subscribe(res => {
     this.cancel();
+    const data = this.data.sort()
+    const transactionNo = data[0]?.transactionNo
     if (type === 'new') {
 
-      this.router.navigate(['part-inward', this.data.length > 0 ? this.data.length + 1 : 1]);// this.data.length > 0 ? this.data.length : 1]);
+      this.router.navigate(['part-inward', transactionNo > 0 ? transactionNo + 1 : 1]);// this.data.length > 0 ? this.data.length : 1]);
     } else {
-      this.router.navigate(['part-repaired', this.data.length > 0 ? this.data.length + 1 : 1]);
+      this.router.navigate(['part-repaired', transactionNo > 0 ? transactionNo + 1 : 1]);
     }
     // this.getAllTransactions();
     // })

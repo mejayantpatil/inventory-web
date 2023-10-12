@@ -363,6 +363,7 @@ export class PartsRepairedComponent {
             product.newRate = p.newRate ? p.newRate : 0;
             // product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
             product.unit = p.unit
+            product.orderPlaced = false
             await this.productSerivce.updateProduct(product._id, product).subscribe(() => {
               console.log('product updated')
             })
@@ -384,6 +385,7 @@ export class PartsRepairedComponent {
             product.newRate = p.newRate ? p.newRate : 0;
             // product.quantity = parseInt(product.quantity) + parseInt(p.quantity);
             product.unit = p.unit
+            product.orderPlaced = false
             await this.productSerivce.updateProduct(product._id, product).subscribe(() => {
               console.log('product updated')
             })

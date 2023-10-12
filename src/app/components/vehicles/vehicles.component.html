@@ -24,6 +24,8 @@
                             <th scope="col">Vehicle Type</th>
                             <!-- <th scope="col">KM Covered</th> -->
                             <th scope="col">Current KM</th>
+                            <th scope="col">Oil Change</th>
+                            <th scope="col">Total Service</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -34,6 +36,8 @@
                             <td>{{vehicle.vehicleType}}</td>
                             <!-- <td>{{kmByBusNo[vehicle.vehicleNumber] ? kmByBusNo[vehicle.vehicleNumber] : 0}}</td> -->
                             <td>{{vehicle.currentKM}}</td>
+                            <td>{{vehicle.oilChange}}</td>
+                            <td>{{vehicle.service}}</td>
                             <td>
                                 <i class="bi bi-pencil-square" (click)="editVehicle(vehicle)"></i>&nbsp;
                                 <!-- <i class="bi bi-trash3" (click)="deleteVehicle(vehicle._id)"></i> -->
@@ -75,6 +79,16 @@
                             <span *ngIf="!editVehicleFlag">{{vehicle.currentKM}}</span>
                             <input *ngIf="editVehicleFlag" id="currentKM" class="form-control" type="number"
                                 formControlName="currentKM">
+                        </li>
+                        <li class="list-group-item">Oil Change:
+                            <span *ngIf="!editVehicleFlag">{{vehicle.oilChange}}</span>
+                            <input *ngIf="editVehicleFlag" id="oilChange" class="form-control" type="text"
+                                formControlName="oilChange" readonly>
+                        </li>
+                        <li class="list-group-item">Total Service:
+                            <span *ngIf="!editVehicleFlag">{{vehicle.service}}</span>
+                            <input *ngIf="editVehicleFlag" id="service" class="form-control" type="text"
+                                formControlName="service" readonly>
                         </li>
                     </ul>
                 </form>

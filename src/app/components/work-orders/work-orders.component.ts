@@ -45,6 +45,13 @@ export class WorkOrdersComponent {
   public vehicles: any = [];
   public totalAssy = 0;
   public showMessage: boolean = false;
+  public productForm: FormGroup;
+  public product: any = {};
+  public editProductFlag: boolean = false;
+  public showNewProductForm = false;
+  public categories: any = []
+  public otherCharges: any = {}
+  @ViewChild('close') close: any;
   @ViewChild('partNo') partNo: any;
   @ViewChild('toast') toast: any;
   constructor(private workOrderService: WorkOrderService,
@@ -54,6 +61,7 @@ export class WorkOrdersComponent {
     private productService: ProductService,
     private transactionService: TransactionService,
     private vehicleService: VehicleService,
+    private productSerivce: ProductService,
     private accountSerivce: AccountService) {
     this.workOrderForm = new FormGroup({
       // partsData: new []
@@ -85,8 +93,35 @@ export class WorkOrdersComponent {
       vanePump: new FormControl(''),
       airCompAssy: new FormControl(''),
       radiatorAssy: new FormControl(''),
+      otherCharges: new FormControl(''),
+      amount: new FormControl(''),
       remark: new FormControl(''),
     });
+
+    this.productForm = new FormGroup({
+      partNumber: new FormControl(''),
+      partName: new FormControl(''),
+      saleRate: new FormControl(''),
+      category: new FormControl(''),
+      quantity: new FormControl(''),
+      unit: new FormControl(''),
+      storeLocation: new FormControl(''),
+      ledgerPageNumber: new FormControl(''),
+    })
+
+    this.otherCharges = {
+      weldingWork: 'Welding Work',
+      pressFittingAssy: 'Press Fitting Assy',
+      bracketRepaired: 'Bracket Repaired',
+      radiatorMounting: 'Radiator Mounting Cutting/Welding',
+      roadSpring: 'Road Spring Bending and Fitting',
+      srpingBrush: 'Spring Brush Fitting',
+      cngPipe: 'CNG Pipe Socket Fitting',
+      steeringFitting: 'Steering Pipe Socket Fitting',
+      waterFitting: 'Water Pipe Socket Fitting',
+      flyWheel: 'Fly Wheel Cutting',
+      gasWelding: 'Gas Welding'
+    }
   }
   ngOnInit() {
     // this.getAllProducts();
@@ -99,8 +134,8 @@ export class WorkOrdersComponent {
 
 
   getAllOrders() {
-    this.workOrderService.getWorkOrders().subscribe((res: any) => {
-      this.workOrders = res;
+    this.workOrderService.getWorkOrders().subscribe((res: any = []) => {
+      this.workOrders = res.reverse();
     })
   }
 
@@ -112,7 +147,7 @@ export class WorkOrdersComponent {
 
   getAllCategories() {
     this.categoryService.getCategorys().subscribe((res: any) => {
-      // this.categorys = res;
+      this.categories = res;
       res.forEach((c: any) => {
         this.categroysObj[c._id] = c.categoryName;
       });
@@ -345,7 +380,7 @@ export class WorkOrdersComponent {
     this.workOrderForm.patchValue({
       serviceProviderName: '',
 
-      workOrderNumber: this.workOrders.length > 0 ? this.workOrders[this.workOrders.length - 1].workOrderNumber + 1 : 1
+      workOrderNumber: this.workOrders.length > 0 ? this.workOrders[0].workOrderNumber + 1 : 1
     })
 
   }
@@ -378,6 +413,8 @@ export class WorkOrdersComponent {
         this.assemblesDataTotal['vanePump'] = (a.vanePump ? a.vanePump : 0) + (this.assemblesDataTotal['vanePump'] ? this.assemblesDataTotal['vanePump'] : 0);
         this.assemblesDataTotal['airCompAssy'] = (a.airCompAssy ? a.airCompAssy : 0) + (this.assemblesDataTotal['airCompAssy'] ? this.assemblesDataTotal['airCompAssy'] : 0);
         this.assemblesDataTotal['radiatorAssy'] = (a.radiatorAssy ? a.radiatorAssy : 0) + (this.assemblesDataTotal['radiatorAssy'] ? this.assemblesDataTotal['radiatorAssy'] : 0);
+        this.assemblesDataTotal['otherCharges'] = a.otherCharges
+        this.assemblesDataTotal['amount'] = (a.amount ? a.amount : 0) + (this.assemblesDataTotal['amount'] ? this.assemblesDataTotal['amount'] : 0);
       })
       this.totalAssy = this.assemblesDataTotal['starterMotor'] + this.assemblesDataTotal['alternatorAssy'] +
         this.assemblesDataTotal['clutchBooster'] + this.assemblesDataTotal['brakeBooster'] + this.assemblesDataTotal['vanePump'] +
@@ -454,6 +491,12 @@ export class WorkOrdersComponent {
       date: this.workOrderForm.value.date,
       assemblesData: this.assemblesData
     }
+    this.partsData.map((p: any) => {
+      const pp: any = this.products.find(pp => pp.partNumber === p.partNo)
+      pp.orderPlaced = true;
+      this.productSerivce.updateProduct(pp._id, pp).subscribe(res => { })
+    })
+
     if (this.newOrder) {
       this.workOrderService.saveWorkOrder(payload).subscribe((res: any) => {
         this.selectedOrderId = res._id
@@ -517,6 +560,8 @@ export class WorkOrdersComponent {
       vanePump: item.vanePump,
       airCompAssy: item.airCompAssy,
       radiatorAssy: item.radiatorAssy,
+      otherCharges: item.otherCharges,
+      amount: item.amount,
       remark: item.remark
     })
   }
@@ -598,12 +643,14 @@ export class WorkOrdersComponent {
         arr.push(a.vanePump)
         arr.push(a.airCompAssy)
         arr.push(a.radiatorAssy)
+        arr.push(this.otherCharges[a.otherCharges])
+        arr.push(a.amount)
         arr.push(a.remark)
         assemblesData.push(arr);
       })
       assemblesData.push(['Total', this.assemblesDataTotal['starterMotor'], this.assemblesDataTotal['alternatorAssy'],
         this.assemblesDataTotal['clutchBooster'], this.assemblesDataTotal['brakeBooster'], this.assemblesDataTotal['vanePump'],
-        this.assemblesDataTotal['airCompAssy'], this.assemblesDataTotal['radiatorAssy'], '']);
+        this.assemblesDataTotal['airCompAssy'], this.assemblesDataTotal['radiatorAssy'], '', this.assemblesDataTotal['amount'], '']);
     }
     this.generateReport(newData, assemblesData);
 
@@ -759,6 +806,8 @@ export class WorkOrdersComponent {
           "Vane Pump",
           "Air Comp Assy",
           "Radiator Assy",
+          "Other Charges",
+          "Amount",
           "Remark"
         ]],
         body: assemblesData,
@@ -815,5 +864,38 @@ export class WorkOrdersComponent {
     /* save to file */
     XLSX.writeFile(wb, this.fileName);
 
+  }
+
+
+
+  initializeForm() {
+    this.productForm = new FormGroup({
+      partNumber: new FormControl(''),
+      partName: new FormControl(''),
+      saleRate: new FormControl(''),
+      category: new FormControl(''),
+      quantity: new FormControl(''),
+      unit: new FormControl(''),
+      storeLocation: new FormControl(''),
+      ledgerPageNumber: new FormControl(''),
+    })
+  }
+
+  saveProduct() {
+    if (this.productForm.valid) {
+      // save 
+      this.productSerivce.saveProduct(this.productForm.value).subscribe(res => {
+        this.getAllProducts();
+        this.cancelP();
+        this.close.nativeElement.click();
+        // this.getAllProducts();
+      })
+    }
+  }
+
+  cancelP() {
+    this.editProductFlag = false
+    this.showNewProductForm = false;
+    this.initializeForm();
   }
 }

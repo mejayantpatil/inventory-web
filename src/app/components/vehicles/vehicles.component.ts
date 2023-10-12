@@ -26,7 +26,9 @@ export class VehiclesComponent {
     this.vehicleForm = new FormGroup({
       vehicleNumber: new FormControl('', Validators.required),
       vehicleType: new FormControl('', Validators.required),
-      currentKM: new FormControl('')
+      currentKM: new FormControl(''),
+      oilChange: new FormControl(''),
+      service: new FormControl('')
     })
   }
   ngOnInit(): void {
@@ -58,7 +60,9 @@ export class VehiclesComponent {
     this.vehicleForm = new FormGroup({
       vehicleNumber: new FormControl('', Validators.required),
       vehicleType: new FormControl('', Validators.required),
-      currentKM: new FormControl('')
+      currentKM: new FormControl(''),
+      oilChange: new FormControl('No'),
+      service: new FormControl('No')
     })
   }
   newVehicle() {
@@ -73,6 +77,8 @@ export class VehiclesComponent {
       vehicleNumber: new FormControl(vehicle.vehicleNumber),
       vehicleType: new FormControl(vehicle.vehicleType),
       currentKM: new FormControl(vehicle.currentKM),
+      oilChange: new FormControl(vehicle.oilChange),
+      service: new FormControl(vehicle.service),
       _id: new FormControl(vehicle._id)
     })
   }

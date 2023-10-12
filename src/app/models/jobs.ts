@@ -23,6 +23,7 @@ export interface CardData {
     modelName: string
     kmCovered: number
     oilChange: string
+    service: string
     problem: string
     netAmount: number
     comment: string

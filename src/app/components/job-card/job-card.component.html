@@ -138,7 +138,7 @@
                     KM Covered
                     <input class="form-control" type="number" formControlName="kmCovered" />
                 </div>
-                <div class="col-lg-3 col-xs-12">
+                <div class="col-lg-2 col-xs-12">
                     Engine Oil Change<br>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" value="Yes" formControlName="oilChange"
@@ -155,7 +155,25 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-lg-3 col-xs-12">
+                <div class="col-lg-2 col-xs-12">
+                    Total Service<br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" value="Yes" formControlName="service"
+                            name="service" id="serviceYes">
+                        <label class="form-check-label" for="serviceYes">
+                            Yes
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" value="No" formControlName="service" name="service"
+                            id="serviceNo" [checked]="true">
+                        <label class="form-check-label" for="serviceNo">
+                            No
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-xs-12">
                     Mechanic Name
                     <!-- <input class="form-control" type="text" formControlName="mechanicName" /> -->
                     <ng-autocomplete [data]="mechanics" [searchKeyword]="'accountName'" placeholder="Select Machanic"

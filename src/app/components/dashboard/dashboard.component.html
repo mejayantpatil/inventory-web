@@ -1,5 +1,11 @@
 <br>
 <div class="row">
+  <div class="col-md-12 text-center">
+    <br>
+    <h3 class="animate-charcter">विश्वयोद्धा शेतकरी मल्टीट्रेड</h3>
+    <hr>
+  </div>
+
   <!-- <div class="col-2">
     <app-menus></app-menus>
   </div> -->
@@ -10,8 +16,8 @@
       <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="mb-3">
           <div class="alert alert-primary" role="alert">
-            <h1>Total Stock Purchased <br>&#8377;: {{totalStockCost | number :
-              '1.2-2'}}</h1>
+            <h2>Total Stock Purchased <br>&#8377;: {{totalStockCost | number :
+              '1.2-2'}}</h2>
             <div class="text-end ">
               <br>
               <button type="button" class="btn btn-primary" routerLink="/purchase-reports">View Details</button>
@@ -22,8 +28,8 @@
       <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="mb-3">
           <div class="alert alert-primary" role="alert">
-            <h1>Totsl Stock Consumed <br>&#8377;: {{totalConsumedCost | number :
-              '1.2-2'}}</h1>
+            <h2>Total Stock Consumed <br>&#8377;: {{totalConsumedCost | number :
+              '1.2-2'}}</h2>
             <div class="text-end ">
               <br>
               <button type="button" class="btn btn-primary" routerLink="/job-wise-consumption-reports">View
@@ -34,17 +40,49 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-12 col-md-12 col-xs-12">
+      <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="card text-dark bg-light mb-3" style="height: 500px;">
           <div class="card-header">
-            Top 10 Consumed Parts With Quantities
+            Top Products expenses
+          </div>
+          <div class="card-body">
+            <ag-charts-angular [options]="options3"></ag-charts-angular>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-xs-12">
+        <div class="card text-dark bg-light mb-3" style="height: 500px;">
+          <div class="card-header">
+            Category wise expenses
+          </div>
+          <div class="card-body">
+            <ag-charts-angular [options]="options1"></ag-charts-angular>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-xs-12">
+        <div class="card text-dark bg-light mb-3" style="height: 500px;">
+          <div class="card-header">
+            Category wise expenses
+          </div>
+          <div class="card-body">
+            <ag-charts-angular [options]="options2"></ag-charts-angular>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-xs-12">
+        <div class="card text-dark bg-light mb-3" style="height: 500px;">
+          <div class="card-header">
+            External repaired work expenses
           </div>
           <div class="card-body">
             <ag-charts-angular [options]="options"></ag-charts-angular>
 
           </div>
         </div>
-        <br><br><br>
       </div>
     </div>
     <div class="row">

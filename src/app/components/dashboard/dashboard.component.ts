@@ -10,6 +10,7 @@ import { TransactionService } from 'src/app/services/transactions.service';
 import { VehicleService } from 'src/app/services/vehicle.service';
 import { WorkOrderService } from 'src/app/services/work-order.service';
 import { AgChartOptions } from 'ag-charts-community';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,6 +36,11 @@ export class DashboardComponent {
   public totalConsumedCost = 0;
   public mostUsedProducts: any[] = []
   public options: AgChartOptions = {};
+  public options1: AgChartOptions = {};
+  public options2: AgChartOptions = {};
+  public options3: AgChartOptions = {};
+  public originalProducts: any = [];
+  public categories: any = [];
   @ViewChild('toast') toast: any;
   constructor(private productService: ProductService,
     private router: Router,
@@ -42,15 +48,21 @@ export class DashboardComponent {
     private supplyOrderService: SupplyOrderService,
     private workOrderService: WorkOrderService,
     private vehicleService: VehicleService,
-    private transactionService: TransactionService) {
+    private transactionService: TransactionService, private categoriesService: CategoryService) {
   }
 
   ngOnInit() {
+    this.getCategories()
     this.getAllTransactions();
     this.getAllOrders();
     this.getCards()
   }
 
+  getCategories() {
+    this.categoriesService.getCategorys().subscribe(res => {
+      this.categories = res;
+    })
+  }
   getVehicles() {
     this.vehicleService.getVehicles().subscribe(res => {
       this.vehicles = res;
@@ -64,8 +76,8 @@ export class DashboardComponent {
     if (this.kmByBusNo[vehicle.vehicleNumber]) {
       this.kmByBusNo[vehicle.vehicleNumber].sort((a: number, b: number) => b - a);
       // console.log(vehicle.vehicleNumber, this.kmByBusNo[vehicle.vehicleNumber])
-
-      return vehicle.currentKM - (this.kmByBusNo[vehicle.vehicleNumber][1] ? this.kmByBusNo[vehicle.vehicleNumber][1] : 0)
+      const val = vehicle.currentKM - (this.kmByBusNo[vehicle.vehicleNumber][1] ? this.kmByBusNo[vehicle.vehicleNumber][1] : 0)
+      return val > 0 ? val : 0
     } else return 0
 
   }
@@ -75,9 +87,9 @@ export class DashboardComponent {
       this.kmByBusNo[vehicle.vehicleNumber].sort((a: number, b: number) => b - a);
 
       const diffence = vehicle.currentKM - (this.kmByBusNo[vehicle.vehicleNumber][1] ? this.kmByBusNo[vehicle.vehicleNumber][1] : 0)
-      if (diffence < 21000 && diffence > 18000) {
+      if (diffence < 21000 && diffence > 15000) {
         return 'Oil Change';
-      } if (diffence < 61000 && diffence > 58000) {
+      } if (diffence < 70000 && diffence > 50000) {
         return 'Total Service';
       } else return ''
     } else return ''
@@ -214,6 +226,7 @@ export class DashboardComponent {
     orders.map(async (o) => {
       o.supplyOrderNumber = count;
       count++;
+      // TODO add here logic for update product order placed
       await this.supplyOrderService.saveSupplyOrder(o).subscribe(res => {
         console.log('ok')
       })
@@ -266,10 +279,12 @@ export class DashboardComponent {
 
   getProducts() {
     this.productService.getProducts().subscribe((res: any) => {
+      this.originalProducts = res;
       this.products = [];
       res.map((p: any) => {
         const qty = (p.quantity ? p.quantity : 0) + (this.stockPurchased[p.partNumber] ? this.stockPurchased[p.partNumber] : 0) - (this.stockConsumed[p.partNumber] ? this.stockConsumed[p.partNumber] : 0)
-        if (qty <= 10) {
+        console.log(p.orderPlaced, p.partNumber)
+        if (qty <= 10 && !p.orderPlaced) {
           if (p.partName.toLowerCase().includes('repaired')) {
             this.repairedProducts.push({
               checked: false,
@@ -297,6 +312,231 @@ export class DashboardComponent {
         }
       });
 
+
+      const array: any[] = [];
+      let testArr: any[] = [];
+      let testArr1: any[] = [];
+      let testArr2: any[] = [];
+      let pieArr: any = {};
+      const cats = ['ENGINE',
+        'CLUTCH SYSTEM',
+        'TRANSMISSION',
+        'PROPELLER SHAFT',
+        'FRONT AXLE',
+        'REAR AXLE',
+        'FRONT WHEEL',
+        'REAR WHEEL',
+        'POWER STEERING',
+        'BRAKE SYSTEM']
+      const catIds = ['642c04a8cbc85cf3c84ec9f8',
+        '642ada548bda6bde91e35077', '642ada998bda6bde91e3507a',
+        '642adabc8bda6bde91e3507d', '642adadc8bda6bde91e35080',
+        '642adb0c8bda6bde91e35083', '642adb1b8bda6bde91e35086',
+        '642adb628bda6bde91e35089', '642adb7b8bda6bde91e3508c',
+        '642ade468bda6bde91e350a5', '642adecc8bda6bde91e350ab',
+        '642adc368bda6bde91e35098']
+      // ['POWER STEERING', 'ENGINE',
+      // 'CLUTCH SYSTEM',
+      // 'TRANSMISSION',
+      // 'PROPELLER SHAFT',
+      // 'FRONT AXLE',
+      // 'REAR AXLE',
+      // 'FRONT SUSPENSSION',
+      // 'REAR SUSPENSSION',
+      // 'FRONT WHEEL',
+      // 'REAR WHEEL',
+      //   'BRAKE SYSTEM']
+      const cats1 = ['FUEL SYSTEM',
+        'TURBO SYSTEM',
+        'COOLING SYSTEM',
+        'EXHAUST SYSTEM',
+        'LUBRCATION SYSTEM',
+        'IGNITION SYSTEM',
+        'ELECTRICAL SYSTEM']
+      const pie1 = ['80W90',
+        '85W140',
+        'DOT 4',
+        'ATF DXIII',
+        '4320-000126',
+        '4320-000127',
+        '19202122',
+        '15W40']
+
+      const pie4 = ['2930-883240',
+        // 'PD600616',
+        'F3P024351',
+        'F3V04000',
+        '2930-006020',
+        '2930-883280',
+        // 'PD600613',
+        '2930-004902',
+        '2930-004901',
+        '2930-251580',
+        '2930-095000',
+        'M251580',
+        '2930-001900']
+
+      let cat: any = {};
+      Object.values(this.stockConsumed).map((p: any) => {
+        array.push(parseInt(p))
+      })
+      array.sort((a, b) => b - a);
+      let count = 0;
+      Object.keys(this.stockConsumed).map(p => {
+        const pp = this.originalProducts.find((pr: any) => pr?.partNumber === p)
+        const rate = pp?.newRate ? pp?.newRate : pp?.saleRate
+        const amount = rate * this.stockConsumed[p];
+        if (pp?.category) {
+          cat[pp?.category] ? cat[pp?.category].push(amount) : cat[pp?.category] = [];
+        }
+        if (pie4.includes(pp?.partNumber)) {
+          let obj: any = {};
+          obj.label = p + ' ' + (pp?.partName ? pp?.partName : '');
+          obj.value = this.stockConsumed[p] * rate// + '%';
+          testArr.push(obj);
+          // count++;
+        }
+      });
+      array.map(a => {
+
+        Object.keys(this.stockConsumed).map(p => {
+          const pp = this.originalProducts.find((pr: any) => pr?.partNumber === p)
+          const rate = pp?.newRate ? pp?.newRate : pp?.saleRate
+          // cat[pp?.category] ? cat[pp?.category].push(pp?.partNumber) : cat[pp?.category] = [];
+
+          // console.log(pp?.partNumber, cat)
+
+          // console.log(this.stockConsumed[p], pp?.saleRate, pp?.newRate)
+
+          if (a === this.stockConsumed[p] && pie4.includes(pp?.partNumber)) {
+            let obj: any = {};
+            obj.label = p + ' ' + (pp?.partName ? pp?.partName : '');
+            obj.value = this.stockConsumed[p] * rate// + '%';
+            // testArr.push(obj);
+            // count++;
+          }
+          if (pie1.includes(p)) {
+            pieArr[p + ' ' + (pp?.partName ? pp?.partName : '')] = this.stockConsumed[p]
+          }
+
+          // if (a === this.stockConsumed[p] && pie1.includes(p)) {
+          //   let obj: any = {};
+          //   obj.label = p + ' ' + (pp?.partName ? pp?.partName : '');
+          //   obj.value = this.stockConsumed[p]// + '%';
+          //   testArr.push(obj);
+          //   count++;
+          // }
+        })
+
+      })
+      // console.log(testArr);
+
+      let testArr3: any = []
+      Object.keys(pieArr).map(p => {
+        let obj: any = {};
+        obj.label = p;
+        obj.value = pieArr[p]// + '%';
+        testArr3.push(obj);
+      });
+      let catArr: any = [];
+      let count1 = 0;
+      Object.keys(cat).map(c => {
+        const cn = this.categories.find((ct: any) => ct._id === c)
+
+        catArr[cn?.categoryName] = cat[c] ? cat[c].length : 0;
+        // console.log(c, cat[c] ? cat[c].reduce((a: any, b: any) => a + b) : 0)
+        // if (count1 < 10) {
+        let obj: any = {};
+        if (cats.includes(cn?.categoryName)) {
+          obj.label = cn?.categoryName;
+          obj.value = cat[c].length > 0 ? cat[c].reduce((a: any, b: any) => a + b) : 0;
+          testArr1.push(obj);
+          count1++;
+        }
+
+        // }
+        obj = {};
+        if (cn?.categoryName && cats1.includes(cn?.categoryName)) {
+          obj.label = cn?.categoryName;
+          obj.value = cat[c].length > 0 ? cat[c].reduce((a: any, b: any) => a + b) : 0;
+          testArr2.push(obj);
+          // count1++;
+        }
+
+      })
+      // console.log(catArr);
+      this.mostUsedProducts = testArr;
+
+      this.options = {
+        legend: { enabled: false },
+        data: testArr,
+        series: [
+          {
+            type: 'pie',
+            angleKey: 'value',
+            calloutLabelKey: 'label',
+            sectorLabelKey: 'value',
+            sectorLabel: {
+              color: 'white',
+              fontWeight: 'bold',
+            },
+          },
+        ],
+
+      };
+
+      this.options1 = {
+        legend: { enabled: false },
+        data: testArr1,
+        series: [
+          {
+            type: 'pie',
+            angleKey: 'value',
+            calloutLabelKey: 'label',
+            sectorLabelKey: 'value',
+            sectorLabel: {
+              color: 'white',
+              fontWeight: 'bold',
+            },
+          },
+        ],
+
+      };
+
+      this.options2 = {
+        legend: { enabled: false },
+        data: testArr2,
+        series: [
+          {
+            type: 'pie',
+            angleKey: 'value',
+            calloutLabelKey: 'label',
+            sectorLabelKey: 'value',
+            sectorLabel: {
+              color: 'white',
+              fontWeight: 'bold',
+            },
+          },
+        ],
+      };
+
+      this.options3 = {
+        legend: { enabled: false },
+        data: testArr3,
+        series: [
+          {
+            type: 'pie',
+            angleKey: 'value',
+            calloutLabelKey: 'label',
+            sectorLabelKey: 'value',
+            sectorLabel: {
+              color: 'white',
+              fontWeight: 'bold',
+            },
+          },
+        ],
+      };
+
     })
   }
 
@@ -322,6 +562,7 @@ export class DashboardComponent {
 
       res.map((t: any) => {
         t.cardData.map((c: any) => {
+          // console.log(c.jobCardDate, c.billDate)
           this.totalConsumedCost = this.totalConsumedCost + parseFloat(c.netAmount)
           c?.spareParts && c?.spareParts.map((i: any) => {
             // if (t.status === 'Complete') {
@@ -347,44 +588,6 @@ export class DashboardComponent {
       });
       this.getVehicles();
       this.getProducts();
-      const array: any[] = [];
-      let testArr: any[] = []
-      Object.values(this.stockConsumed).map((p: any) => {
-        array.push(parseInt(p))
-      })
-      array.sort((a, b) => b - a);
-      let count = 0;
-      array.map(a => {
-
-        Object.keys(this.stockConsumed).map(p => {
-          if (a === this.stockConsumed[p] && count < 10) {
-            let obj: any = {};
-            obj.label = p;
-            obj.value = this.stockConsumed[p]// + '%';
-            testArr.push(obj);
-            count++;
-          }
-        })
-      })
-
-      this.mostUsedProducts = testArr;
-
-      this.options = {
-        data: testArr,
-        series: [
-          {
-            type: 'pie',
-            angleKey: 'value',
-            calloutLabelKey: 'label',
-            sectorLabelKey: 'value',
-            sectorLabel: {
-              color: 'white',
-              fontWeight: 'bold',
-            },
-          },
-        ],
-
-      };
     })
   }
 

@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import jsPDF from 'jspdf';
 import { SpareParts } from 'src/app/models/jobs';
+import { Product } from 'src/app/models/product';
 import { CategoryService } from 'src/app/services/category.service';
 import { JobService } from 'src/app/services/jobs.service';
 import { ProductService } from 'src/app/services/products.service';
@@ -35,9 +36,14 @@ export class ProductWiseConsumptionReportsComponent {
   public totalPurchasedRate = 0;
   public totalSaleRate = 0;
   public totalCost = 0;
+  // public totalQty = 0;
   public selectedVehicle: string = '';
+  // public partNo: string = ''
   public categoryID = '';
+  public selectedProduct: any;
+  public products: Product[] = [];
   @ViewChild('mySelect') mySelect: any;
+  @ViewChild('partNo') partNo: any;
   constructor(private categoryService: CategoryService,
     private transactionService: TransactionService,
     private jobService: JobService,
@@ -71,35 +77,52 @@ export class ProductWiseConsumptionReportsComponent {
     this.spinner.showSpinner();
     this.productService.getProducts().subscribe((res: any) => {
       this.spinner.hideSpinner();
+      this.products = res;
       this.data = res;
       this.data.map(d => {
-        this.totalQty = this.totalQty + d.quantity;
+        // this.totalQty = this.totalQty + d.quantity;
         this.totalPurchasedRate = this.totalPurchasedRate + (d.newRate ? d.newRate : 0)
         this.totalSaleRate = this.totalSaleRate + parseFloat(d.saleRate);
       })
     });
   }
 
+  setPartNo(e: any) {
+    let index = -1;
+    this.data.map((p: Product, i: number) => {
+      if (p.partNumber === e.partNumber) {
+        index = i;
+        this.selectedProduct = p
+        this.partNo = p.partNumber
+        this.filterPart()
+      }
+    })
+  }
+
   formatData(catId = '') {
     let netAmount = 0;
+    let quantity = 0;
     this.jobsData = [];
     this.totalCost = 0;
+    this.totalQty = 0;
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
         if (catId && j.spareParts.some((s: any) => s.categoryId === catId)) {
           j.spareParts.map((s: SpareParts) => {
             if (this.selectedVehicle === j.registrationNumber) {
               netAmount = netAmount + parseFloat(s.netAmount.toString());
+              quantity = quantity + parseInt(s.quantity.toString())
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-                modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+                modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
             if (this.selectedVehicle === '') {
               netAmount = netAmount + parseFloat(s.netAmount.toString());
+              quantity = quantity + parseInt(s.quantity.toString())
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-                modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+                modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
 
@@ -109,65 +132,126 @@ export class ProductWiseConsumptionReportsComponent {
         if (catId === '') {
           j.spareParts.map((s: SpareParts) => {
             netAmount = netAmount + parseFloat(s.netAmount.toString());
-
+            quantity = quantity + parseInt(s.quantity.toString())
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-              modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+              modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
             })
           })
         }
       });
       this.totalCost = parseFloat(netAmount.toFixed(2));
+      this.totalQty = quantity;
     } else {
       this.jobsData = [];
       this.totalCost = 0;
+      this.totalQty = 0;
+    }
+  }
+
+  formatDataFilterPart(partNo = '') {
+    let netAmount = 0;
+    let quantity = 0;
+    this.jobsData = [];
+    this.totalCost = 0;
+    this.totalQty = 0;
+    if (this.jobs.length > 0) {
+      this.jobs.map((j: any) => {
+        if (partNo && j.spareParts.find((s: any) => s.partNo.toLowerCase().includes(partNo.toLowerCase()))) {
+          j.spareParts.map((s: SpareParts) => {
+            if (this.selectedVehicle === j.registrationNumber && s.partNo.toLowerCase().includes(partNo.toLowerCase())) {
+              netAmount = netAmount + parseFloat(s.netAmount.toString());
+              quantity = quantity + parseInt(s.quantity.toString())
+
+              this.jobsData.push({
+                jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+              })
+            }
+            if (this.selectedVehicle === '' && s.partNo.toLowerCase().includes(partNo.toLowerCase())) {
+              netAmount = netAmount + parseFloat(s.netAmount.toString());
+              quantity = quantity + parseInt(s.quantity.toString())
+              this.jobsData.push({
+                jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+              })
+            }
+
+          })
+        }
+
+        if (partNo === '') {
+          j.spareParts.map((s: SpareParts) => {
+            netAmount = netAmount + parseFloat(s.netAmount.toString());
+            quantity = quantity + parseInt(s.quantity.toString())
+            this.jobsData.push({
+              jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+              modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+            })
+          })
+        }
+      });
+      this.totalCost = parseFloat(netAmount.toFixed(2));
+      this.totalQty = quantity;
+    } else {
+      this.jobsData = [];
+      this.totalCost = 0;
+      this.totalQty = 0;
     }
   }
 
   all() {
     let netAmount = 0;
+    let quantity = 0;
     this.jobsData = [];
     this.totalCost = 0;
+    this.totalQty = 0;
     this.selectedVehicle = ''
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
         j.spareParts.map((s: SpareParts) => {
           netAmount = netAmount + parseFloat(s.netAmount.toString());
-          console.log(j.netAmount, netAmount);
+          quantity = quantity + parseInt(s.quantity.toString())
           this.jobsData.push({
             jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-            modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+            modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
           })
         })
       });
       this.totalCost = parseFloat(netAmount.toFixed(2));
+      this.totalQty = quantity;
     } else {
       this.jobsData = [];
       this.totalCost = 0;
+      this.totalQty = 0;
     }
   }
 
   busWise() {
     let netAmount = 0;
+    let quantity = 0;
     this.jobsData = [];
     this.totalCost = 0;
+    this.totalQty = 0;
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
         j.spareParts.map((s: SpareParts) => {
 
           if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0]) && this.categoryID === '') {
             netAmount = netAmount + parseFloat(s.netAmount.toString());
+            quantity = quantity + parseInt(s.quantity.toString())
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-              modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+              modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
             })
           }
           if (this.categoryID && j.spareParts.some((s: any) => s.categoryId === this.categoryID)) {
             if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) {
               netAmount = netAmount + parseFloat(s.netAmount.toString());
+              quantity = quantity + parseInt(s.quantity.toString())
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
-                modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
+                modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
             // if (this.selectedVehicle === '') {
@@ -181,6 +265,7 @@ export class ProductWiseConsumptionReportsComponent {
         })
       });
       this.totalCost = netAmount;
+      this.totalQty = quantity;
     } else {
       this.jobsData = [];
       this.totalCost = 0;
@@ -226,6 +311,7 @@ export class ProductWiseConsumptionReportsComponent {
   }
 
   filterResults(categoryID: string) {
+    this.selectedProduct = {};
     if (categoryID) {
       this.categoryID = categoryID;
       this.formatData(categoryID);
@@ -233,6 +319,12 @@ export class ProductWiseConsumptionReportsComponent {
       this.categoryID = ''
       this.data = this.jobs
     }
+  }
+
+  filterPart() {
+    // if (this.partNo) {
+    this.formatDataFilterPart(this.partNo);
+    // }
   }
 
 
@@ -320,10 +412,10 @@ export class ProductWiseConsumptionReportsComponent {
     // styles: { cellPadding: 0.5, fontSize: 8 },
     const tableHeight = doc.lastAutoTable.finalY;
     doc.line(14, tableHeight + 5, 196, tableHeight + 5);
-    // doc.text("Total Quantiy:", 175, tableHeight + 10, { align: 'right' })
-    // doc.text(this.totalQuantity.toString(), 195, tableHeight + 10, { align: 'right' })
-    doc.text("Net Amount:", 175, tableHeight + 10, { align: 'right' })
-    doc.text(this.totalCost.toFixed(2), 195, tableHeight + 10, { align: 'right' })
+    doc.text("Total Quantiy:", 175, tableHeight + 10, { align: 'right' })
+    doc.text(this.totalQty.toString(), 195, tableHeight + 10, { align: 'right' })
+    doc.text("Net Amount:", 175, tableHeight + 15, { align: 'right' })
+    doc.text(this.totalCost.toFixed(2), 195, tableHeight + 15, { align: 'right' })
     // doc.line(14, tableHeight + 45, 196, tableHeight + 45);
 
     doc.line(14, doc.internal.pageSize.height - 30, 196, doc.internal.pageSize.height - 30);

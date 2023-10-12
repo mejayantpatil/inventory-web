@@ -105,7 +105,8 @@ export class JobCardComponent {
       unit: new FormControl(''),
       quantity: new FormControl(''),
       oilChange: new FormControl('No'),
-      problem: new FormControl('Servicing'),
+      service: new FormControl('No'),
+      problem: new FormControl('Service and General Maintenance'),
       netAmount: new FormControl(''),
       totalNetAmount: new FormControl(''),
       comment: new FormControl(''),
@@ -130,10 +131,10 @@ export class JobCardComponent {
     const jobIDandCardMap: any = sessionStorage.getItem('jobIDandCardMap');
     this.jobIDandCardMap = JSON.parse(jobIDandCardMap) || {}
     this.getAllProducts();
-    this.getGRoups();
+    this.getGroups();
     // this.getAllJobs();
     this.getAllCategories();
-    this.getVehicles();
+    // this.getVehicles();
     this.getAllTransactions();
     this.getActiveCards();
 
@@ -226,7 +227,7 @@ export class JobCardComponent {
     })
   }
 
-  getGRoups() {
+  getGroups() {
     this.groupService.getGroups().subscribe((res: any) => {
       // this.groups = res;
       res.map((g: any) => {
@@ -244,8 +245,9 @@ export class JobCardComponent {
     let vehicle = this.vehicles.find(v => v.vehicleNumber === this.jobCardForm.value.registrationNumber?.vehicleNumber)
     if (vehicle) {
       vehicle.currentKM = this.jobCardForm.value.kmCovered;
+      vehicle.oilChange = this.jobCardForm.value.oilChange
+      vehicle.service = this.jobCardForm.value.service
       this.vehicleService.updateVehicle(vehicle._id || '', vehicle).subscribe(res => { })
-
     }
   }
 
@@ -272,6 +274,7 @@ export class JobCardComponent {
       if (this.jobCardForm.value.mechanicName) {
         this.setMachanic(this.accounts[this.mechanics.find(m => m.accountName === this.jobCardForm.value.mechanicName)]);
       }
+      this.getVehicles();
     });
   }
 
@@ -280,7 +283,9 @@ export class JobCardComponent {
   }
 
   getMechanicIndex(mechanicName: string) {
-    return this.mechanics.findIndex(m => m.accountName === mechanicName);
+    return this.mechanics.findIndex(m => {
+      return m.accountName === mechanicName
+    });
   }
 
   getProductIndex(partNo: string) {
@@ -322,7 +327,8 @@ export class JobCardComponent {
         engineNumber: new FormControl(''),
         kmCovered: new FormControl(''),
         oilChange: new FormControl('No'),
-        problem: new FormControl('Servicing'),
+        service: new FormControl('No'),
+        problem: new FormControl('Service and General Maintenance'),
         partNo: new FormControl(''),
         partName: new FormControl(''),
         rate: new FormControl(''),
@@ -446,6 +452,7 @@ export class JobCardComponent {
       kmCovered: this.jobCardForm.value.kmCovered,
       billDate: this.jobCardForm.value.billDate,
       oilChange: this.jobCardForm.value.oilChange,
+      service: this.jobCardForm.value.service,
       problem: this.jobCardForm.value.problem,
       netAmount: this.jobCardForm.value.totalNetAmount,
       comment: this.jobCardForm.value.comment,
@@ -637,10 +644,13 @@ export class JobCardComponent {
     this.productForm.enable();
     this.jobCardForm.enable();
     //TODO set data from card data to form
+
     const index = this.cardData.findIndex(c => c.recordNo === recordNo)
+
     if (index >= 0) {
       const data = this.cardData[index]
       this.spareParts = data.spareParts
+      console.log('data.mechanicName', this.getMechanicIndex(data.mechanicName), data)
       this.jobCardForm.patchValue({
         paymentMode: data.paymentMode,
         recordNo: data.recordNo,
@@ -653,6 +663,7 @@ export class JobCardComponent {
         kmCovered: data.kmCovered,
         billDate: data.billDate,
         oilChange: data.oilChange,
+        service: data.service,
         problem: data.problem,
         totalNetAmount: data.netAmount,
         comment: data.comment,
@@ -673,7 +684,8 @@ export class JobCardComponent {
         engineNumber: new FormControl(''),
         kmCovered: new FormControl(''),
         oilChange: new FormControl('No'),
-        problem: new FormControl('Servicing'),
+        service: new FormControl('No'),
+        problem: new FormControl('Service and General Maintenance'),
         partNo: new FormControl(''),
         partName: new FormControl(''),
         rate: new FormControl(''),

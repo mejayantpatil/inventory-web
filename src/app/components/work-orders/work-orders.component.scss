@@ -9,6 +9,12 @@ tbody tr {
     display: table;
     width: 100%; //var(--table-width);
     table-layout: fixed;
+
+    td {
+        .bi {
+            font-size: 20px;
+        }
+    }
 }
 
 thead {

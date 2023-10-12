@@ -16,12 +16,24 @@
         End Date
         <input class="form-control" type="date" [(ngModel)]="endDate" />
     </div>
-    <div class="col-lg-2 col-md-2 col-xs-12">Filter vehicle wise
-        <select [disabled]="!showTable" class="form-control" [(ngModel)]="selectedVehicle" (change)="busWise()">
+    <div class="col-lg-2 col-md-2 col-xs-12">Filter Part No wise
+        <!-- <select [disabled]="!showTable" class="form-control" [(ngModel)]="selectedVehicle" (change)="busWise()">
             <option selected value="">Filter By Vehicle</option>
             <option *ngFor="let vehicle of vehicles; let i =index">{{vehicle.vehicleNumber}}
             </option>
-        </select>
+        </select> -->
+        <!-- <input placeholder="Filter by Part No/Name" type="text" class="form-control" (keyup)="filterPart()"
+            [(ngModel)]="partNo"> -->
+        <ng-autocomplete #pratNo [data]="products" [searchKeyword]="'partNumber'" placeholder="Select Part No"
+            [itemTemplate]="partNoTemplate" [initialValue]="selectedProduct" [notFoundTemplate]="notFoundTemplate"
+            (selected)='setPartNo($event)'>
+        </ng-autocomplete>
+        <ng-template #partNoTemplate let-item>
+            <a [innerHTML]="item.partNumber"></a>
+        </ng-template>
+        <ng-template #notFoundTemplate let-notFound>
+            <div [innerHTML]="notFound"></div>
+        </ng-template>
     </div>
     <div class="col-2">
         Filter By Category
@@ -93,8 +105,8 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td width="200"></td>
-                        <td>Total</td>
+                        <td width="200">Total</td>
+                        <td>{{totalQty}}</td>
                         <td>{{totalCost| number :
                             '1.2-2'}}</td>
 
