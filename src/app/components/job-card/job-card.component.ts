@@ -65,6 +65,7 @@ export class JobCardComponent {
   @ViewChild('toast') toast: any;
   @ViewChild('jobCardDateElement') jobCardDateElement: any;
   @ViewChild('partNo') partNo: any;
+  @ViewChild('vehicleNumber') vehicleNumber: any;
 
   constructor(private jobService: JobService,
     private activatedRoute: ActivatedRoute,
@@ -361,7 +362,7 @@ export class JobCardComponent {
         // comment: new FormControl(res.comment),
         // status: new FormControl()
       })
-      this.setJob(res.cardData[0].recordNo)
+      this.setJob(res.cardData[0]?.recordNo)
       // setTimeout(() => {
       //   this.jobCardForm.patchValue({
       //     mechanicName: this.accounts[this.getAccountIndex(res.mechanicName)]
@@ -371,6 +372,41 @@ export class JobCardComponent {
     })
   }
   setVehicle(e: any) {
+
+    // if vehicle number available in job cards then dont set
+    let isJobRunning = false;
+    let runningID = '';
+    let runningJobCardNo = '';
+    this.jobs.map(j => {
+      if (j.cardData[0]?.registrationNumber === e.vehicleNumber && j.cardData[0]?.status === 'Running') {
+        // get card no from jobCardNo
+        Object.keys(this.jobIDandCardMap).map(i => {
+          if (i && this.jobIDandCardMap[i].toString() === j.jobCardNo) {
+            runningID = i;
+            runningJobCardNo = j.jobCardNo;
+            alert('This bus number is already in Running in Card No: ' + i)
+            isJobRunning = true;
+          }
+        })
+      }
+    });
+
+    if (isJobRunning && runningID && runningJobCardNo) {
+      console.log(isJobRunning, runningID, runningJobCardNo)
+      if (confirm('Do you want open Card No: ' + runningID)) {
+        this.router.navigate(['job-card', runningJobCardNo])
+        if (this.jobCardNumber) {
+          setTimeout(() => {
+            window.location.reload()
+          }, 0)
+
+        }
+      } else {
+        this.vehicleNumber.query = ''
+      }
+      return;
+    }
+
     this.jobCardForm.patchValue({
       registrationNumber: e.vehicleNumber,
       modelName: e.vehicleType,
@@ -468,6 +504,7 @@ export class JobCardComponent {
 
       }
       this.jobIDandCardMap[this.jobCardForm.value.recordNo] = this.jobCardNumber
+      // this.jobIDandCardMap[this.jobCardForm.value.recordNo] = this.jobCardNumber + '_' + this.jobCardForm.value.registrationNumber.vehicleNumber
       // if (this.jobIDandCardMap._id) {
       //   this.cardService.updateCard(this.jobIDandCardMap._id, this.jobIDandCardMap).subscribe(res => {
 
@@ -650,7 +687,7 @@ export class JobCardComponent {
     if (index >= 0) {
       const data = this.cardData[index]
       this.spareParts = data.spareParts
-      console.log('data.mechanicName', this.getMechanicIndex(data.mechanicName), data)
+      // console.log('data.mechanicName', this.getMechanicIndex(data.mechanicName), data)
       this.jobCardForm.patchValue({
         paymentMode: data.paymentMode,
         recordNo: data.recordNo,
@@ -719,7 +756,7 @@ export class JobCardComponent {
     })
     this.selectedProduct = {};
     this.selectedIndex = -1
-    this.partNo.query = '';//
+    this.partNo.query = '';// clear input
     this.partNo.focus()
   }
 

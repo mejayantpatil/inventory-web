@@ -76,6 +76,8 @@ export class PartsRepairedComponent {
       discountPercentage: new FormControl(''),
       discount: new FormControl(''),
       labourCharges: new FormControl(''),
+      otherCharges: new FormControl(''),
+      otherChargesDesc: new FormControl(''),
       lgstPercentage: new FormControl(''),
       lgst: new FormControl(''),
       lnetAmount: new FormControl(''),
@@ -88,11 +90,11 @@ export class PartsRepairedComponent {
       totalGSTPercentage: new FormControl(''),
       grossAmount: new FormControl(''),
       gstTotal: new FormControl(''),
-      tradeDiscount: new FormControl(''),
+      tradeDiscount: new FormControl('0'),
       igst: new FormControl(''),
       grandTotal: new FormControl(''),
+      roundOff: new FormControl(''),
       cashDiscount: new FormControl(''),
-      otherCharges: new FormControl(''),
       totalNetAmount: new FormControl(''),
       comment: new FormControl(''),
       type: new FormControl(''),
@@ -207,6 +209,8 @@ export class PartsRepairedComponent {
           discountPercentage: new FormControl(''),
           discount: new FormControl(''),
           labourCharges: new FormControl(''),
+          otherCharges: new FormControl(''),
+          otherChargesDesc: new FormControl(''),
           lgstPercentage: new FormControl(''),
           lgst: new FormControl(''),
           lnetAmount: new FormControl(''),
@@ -219,11 +223,11 @@ export class PartsRepairedComponent {
           netAmount: new FormControl(''),
           grossAmount: new FormControl(''),
           gstTotal: new FormControl(''),
-          tradeDiscount: new FormControl(''),
+          tradeDiscount: new FormControl('0'),
           igst: new FormControl(''),
           grandTotal: new FormControl(''),
+          roundOff: new FormControl(''),
           cashDiscount: new FormControl(''),
-          otherCharges: new FormControl(''),
           totalNetAmount: new FormControl(''),
           comment: new FormControl(''),
           type: new FormControl(''),
@@ -256,6 +260,8 @@ export class PartsRepairedComponent {
           discountPercentage: new FormControl(''),
           discount: new FormControl(''),
           labourCharges: new FormControl(''),
+          otherCharges: new FormControl(''),
+          otherChargesDesc: new FormControl(''),
           lgstPercentage: new FormControl(''),
           lgst: new FormControl(''),
           lnetAmount: new FormControl(''),
@@ -268,11 +274,11 @@ export class PartsRepairedComponent {
           partNetAmount: new FormControl(''),
           grossAmount: new FormControl(res.grossAmount.toFixed(2)),
           gstTotal: new FormControl(res.gst.toFixed(2)),
-          tradeDiscount: new FormControl(''),
+          tradeDiscount: new FormControl('0'),
           igst: new FormControl(''),
           grandTotal: new FormControl(res.grandTotal.toFixed(2)),
+          roundOff: new FormControl(res.roundOff ? res.roundOff.toFixed(2) : 0),
           cashDiscount: new FormControl(''),
-          otherCharges: new FormControl(''),
           totalNetAmount: new FormControl(res.netAmount.toFixed(2)),
           comment: new FormControl(res.comment),
           type: new FormControl(res.type),
@@ -319,9 +325,10 @@ export class PartsRepairedComponent {
       transactionNo: this.transactions.length + 1,
       grossAmount: '',
       gstTotal: '',
-      tradeDiscount: '',
+      tradeDiscount: '0',
       igst: '',
       grandTotal: '',
+      roundOff: '',
       cashDiscount: '',
       otherCharges: '',
       totalNetAmount: '',
@@ -349,6 +356,7 @@ export class PartsRepairedComponent {
         grandTotal: this.partInwardForm.value.grandTotal,
         cashDiscount: this.partInwardForm.value.cashDiscount,
         otherCharges: this.partInwardForm.value.otherCharges,
+        roundOff: this.partInwardForm.value.roundOff,
         netAmount: this.partInwardForm.value.totalNetAmount,
         comment: this.partInwardForm.value.comment,
         data: this.data,
@@ -453,7 +461,7 @@ export class PartsRepairedComponent {
 
   setLGST() {
     if (this.partInwardForm.value.lgstPercentage) {
-      const amount = this.partInwardForm.value.labourCharges;
+      const amount = this.partInwardForm.value.labourCharges + this.partInwardForm.value.otherCharges;
       const gst = (amount * this.partInwardForm.value.lgstPercentage) / 100;
       const total = amount + gst;// + this.partInwardForm.value.labourCharges;
       this.partInwardForm.patchValue({
@@ -461,8 +469,8 @@ export class PartsRepairedComponent {
         lnetAmount: parseFloat(total.toString()).toFixed(2),
       })
     } else {
-      const amount = this.partInwardForm.value.labourCharges;
-      const total = this.partInwardForm.value.labourCharges;
+      const amount = this.partInwardForm.value.labourCharges + this.partInwardForm.value.otherCharges;
+      const total = this.partInwardForm.value.labourCharges + this.partInwardForm.value.otherCharges;
       this.partInwardForm.patchValue({
         lgst: 0,
         lnetAmount: parseFloat(total.toString()).toFixed(2),
@@ -493,6 +501,8 @@ export class PartsRepairedComponent {
       discountPercentage: 0,
       discount: 0,
       labourCharges: 0,
+      otherCharges: 0,
+      otherChargesDesc: '',
       // grossAmount: 0,
       lgstPercentage: 0,
       lgst: 0,
@@ -528,6 +538,8 @@ export class PartsRepairedComponent {
         discountPercentage: data.discountPercentage,
         discount: data.discount,
         labourCharges: data.labourCharges,
+        otherCharges: data.otherCharges,
+        otherChargesDesc: data.otherChargesDesc,
         // grossAmount: (data.rate * data.quantity),
         lgstPercentage: data.lgstPercentage,
         lgst: data.lgst,
@@ -550,7 +562,7 @@ export class PartsRepairedComponent {
 
   addData() {
     if (this.partInwardForm.invalid) return;
-    const gross = parseFloat(this.partInwardForm.value.rate) * parseFloat(this.partInwardForm.value.quantity) + parseFloat(this.partInwardForm.value.labourCharges)
+    const gross = parseFloat(this.partInwardForm.value.rate) * parseFloat(this.partInwardForm.value.quantity) + parseFloat(this.partInwardForm.value.labourCharges) + parseFloat(this.partInwardForm.value.otherCharges)
     if (this.selectedProduct && this.selectedIndex > -1) {
       this.data[this.selectedIndex] = {
         partNo: this.partInwardForm.value.partNo?.partNumber,
@@ -563,6 +575,8 @@ export class PartsRepairedComponent {
         // discountPercentage: this.partInwardForm.value.discountPercentage,
         // discount: this.partInwardForm.value.discount.toFixed(2),
         labourCharges: this.partInwardForm.value.labourCharges,
+        otherCharges: this.partInwardForm.value.otherCharges,
+        otherChargesDesc: this.partInwardForm.value.otherChargesDesc,
         lgstPercentage: this.partInwardForm.value.lgstPercentage,
         lgst: this.partInwardForm.value.lgst,
         gstPercentage: this.partInwardForm.value.gstPercentage,
@@ -590,6 +604,8 @@ export class PartsRepairedComponent {
         discountPercentage: this.partInwardForm.value.discountPercentage,
         discount: this.partInwardForm.value.discount,
         labourCharges: this.partInwardForm.value.labourCharges ? this.partInwardForm.value.labourCharges.toFixed(2) : '0',
+        otherCharges: this.partInwardForm.value.otherCharges ? this.partInwardForm.value.otherCharges.toFixed(2) : '0',
+        otherChargesDesc: this.partInwardForm.value.otherChargesDesc,
         lgstPercentage: this.partInwardForm.value.lgstPercentage,
         totalGST: this.partInwardForm.value.totalGST,
         lgst: this.partInwardForm.value.lgst,
@@ -623,12 +639,12 @@ export class PartsRepairedComponent {
       netAmount = netAmount + parseFloat(d.total)
     })
     const total = grossAmount;
-    netAmount = total + gst;
+    netAmount = total + gst + this.partInwardForm.value.roundOff;
     // netAmount = netAmount + g;
     this.partInwardForm.patchValue({
       grossAmount: parseFloat(grossAmount.toString()).toFixed(2),
       gstTotal: parseFloat(gst.toString()).toFixed(2),
-      // tradeDiscount: parseFloat(discount.toString()).toFixed(2),
+      // roundOff: parseFloat(discount.toString()).toFixed(2),
       grandTotal: parseFloat(total.toString()).toFixed(2),
       totalNetAmount: parseFloat(netAmount.toString()).toFixed(2),
     })
@@ -770,18 +786,20 @@ export class PartsRepairedComponent {
     doc.text(gst.toFixed(2), 180, tableHeight + 25, { align: 'right' })
     doc.text("Total Discount:", 150, tableHeight + 30, { align: 'right' })
     let discount = '0';
-    if (this.partInwardForm.value.tradeDiscount) {
-      discount = '- ' + this.partInwardForm.value.tradeDiscount.toString()
-    }
+    // if (this.partInwardForm.value.tradeDiscount ) {
+    //   discount = '- ' + this.partInwardForm.value.tradeDiscount.toString()
+    // }
     doc.text(discount, 180, tableHeight + 30, { align: 'right' })
-    doc.line(14, tableHeight + 35, 196, tableHeight + 35);
-    doc.text("Net Amount:", 150, tableHeight + 40, { align: 'right' })
-    doc.text(this.partInwardForm.value.totalNetAmount, 180, tableHeight + 40, { align: 'right' })
-    doc.line(14, tableHeight + 45, 196, tableHeight + 45);
+    doc.text("Round Off:", 150, tableHeight + 35, { align: 'right' })
+    doc.text(this.partInwardForm.value.roundOff, 180, tableHeight + 35, { align: 'right' })
+    doc.line(14, tableHeight + 40, 196, tableHeight + 40);
+    doc.text("Net Amount:", 150, tableHeight + 45, { align: 'right' })
+    doc.text(this.partInwardForm.value.totalNetAmount, 180, tableHeight + 45, { align: 'right' })
+    doc.line(14, tableHeight + 50, 196, tableHeight + 50);
 
-    doc.line(14, doc.internal.pageSize.height - 50, 196, doc.internal.pageSize.height - 50);
+    doc.line(14, doc.internal.pageSize.height - 55, 196, doc.internal.pageSize.height - 55);
 
-    if (tableHeight < doc.internal.pageSize.height - 50) {
+    if (tableHeight < doc.internal.pageSize.height - 55) {
       doc.text('Signature', 14, doc.internal.pageSize.height - 30);
       doc.text('Seal', 150, doc.internal.pageSize.height - 30);
     }

@@ -2,6 +2,10 @@
     height: 300px;
 }
 
+.card-500 {
+    height: 500px;
+}
+
 
 .animate-charcter {
     text-transform: uppercase;
@@ -33,7 +37,7 @@
 
 .responsive-table {
     overflow-y: auto;
-    height: 150px;
+    height: 300px;
     font-size: 10pt;
 
     @media (max-width: 599px) {

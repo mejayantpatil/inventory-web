@@ -17,6 +17,11 @@
     }
 }
 
+.table-responsive {
+    font-size: 10pt;
+    overflow-y: auto;
+}
+
 @media (max-width: 599px) {
     .table-responsive {
         max-height: 500px;

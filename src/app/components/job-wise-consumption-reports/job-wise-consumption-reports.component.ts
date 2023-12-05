@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import { Job } from 'src/app/models/jobs';
 import { CategoryService } from 'src/app/services/category.service';
@@ -22,26 +22,35 @@ export class JobWiseConsumptionReportsComponent {
   public categroysObj: any = {};
   public jobCardNo: string = '';
   public originalData: any = [];
+  private formatedData: any = [];
   public selectedJob: any = {};
   public selectedRowIndex = -1;
   public status: string = 'all';
   public totalCost = 0;
   public showTable: boolean = false;
   public jobs: any[] = [];
+  @ViewChild('mySelect') categoryDropdown: any;
   @ViewChild('closeModal') closeModal: any
   constructor(private jobService: JobService,
-    private router: Router,
+    private router: Router, private route: ActivatedRoute,
     private categoryService: CategoryService, private spinner: SpinnerService) {
 
   }
   ngOnInit(): void {
-    this.getAllJobs();
-    this.getAllCategories();
+    this.route.queryParams
+      .subscribe((params: any) => {
+        // console.log(params);
+        this.getAllJobs();
+        this.getAllCategories(params);
+      })
   }
 
-  getAllCategories() {
+  getAllCategories(params: any) {
     this.categoryService.getCategorys().subscribe((res: any) => {
       this.categorys = res;
+      // const cat = this.categorys.find(c => c.categoryName === params.category)
+      // console.log(cat)
+      // this.categoryDropdown.value = cat._id;
       this.categorys.forEach(c => {
         this.categroysObj[c._id] = c.categoryName;
       });
@@ -72,14 +81,37 @@ export class JobWiseConsumptionReportsComponent {
         const bb = parseInt(b.jobCardNo)
         return aa - bb;
       });
-      this.data = data;
-      this.jobs = data;
+      this.formatedData = [...data]
+      this.data = [...data];
+      this.jobs = [...data];
       // this.data = data.reverse();
     });
   }
   filterResults(categoryID: string) {
+    this.jobs = [...this.formatedData];
     if (categoryID) {
-      this.data = this.jobs.filter((d: any) => d.spareParts.some((s: any) => s.categoryId === categoryID))
+      let data: any[] = [];
+      this.totalCost = 0;
+      this.jobs.map((d: any) => {
+        let totalAmount = 0;
+        let catMatching = false;
+        d.spareParts.map((s: any) => {
+          if (s.categoryId === categoryID) {
+            // console.log(s)
+            totalAmount = totalAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+            d.netAmount = totalAmount > 0 ? totalAmount.toFixed(2) : d.netAmount;
+            // this.totalCost = this.totalCost + totalAmount;
+            // data.push(d)
+            catMatching = true;
+          }
+        });
+        if (catMatching) {
+          this.totalCost = this.totalCost + totalAmount;
+          data.push(d)
+        }
+      })
+      this.data = data;
+
     } else {
       this.data = this.jobs
     }

@@ -82,7 +82,7 @@
                                 <td>
                                     <i class="bi bi-pencil-square" (click)="editProduct(product)"
                                         title="Edit"></i>&nbsp;&nbsp;
-                                    <i class="bi bi-trash3" (click)="deleteProduct(product._id)" title="Delete"></i>
+                                    <i class="bi bi-trash3" (click)="delete(product._id)" title="Delete"></i>
                                 </td>
                             </tr>
                             <tr *ngIf="selectedRowIndex === i" class="table-light">

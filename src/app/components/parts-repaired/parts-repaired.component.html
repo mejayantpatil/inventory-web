@@ -150,7 +150,17 @@
                     Part Net
                     <input class="form-control" type="number" readonly formControlName="partNetAmount" />
                 </div>
-                <div class="col-lg-5 col-xs-12"></div>
+                <div class="col-lg-1 col-xs-12">
+
+                </div>
+                <div class="col-lg-2 col-xs-12">
+                    Other Charges Description
+                    <input class="form-control" type="text" formControlName="otherChargesDesc" />
+                </div>
+                <div class="col-lg-2 col-xs-12">
+                    Other Charges
+                    <input class="form-control" type="number" formControlName="otherCharges" />
+                </div>
                 <div class="col-lg-2 col-xs-12">
                     Labour Charges
                     <input class="form-control" type="number" formControlName="labourCharges" />
@@ -168,7 +178,7 @@
                     <input class="form-control" type="number" (blur)="addData()" readonly
                         formControlName="lnetAmount" />
                 </div>
-                <div class="col-lg-5 col-xs-12"></div>
+                <div class="col-lg-4 col-xs-12"></div>
                 <div class="col-lg-2 col-xs-12">
                     Total
                 </div>
@@ -330,6 +340,17 @@
                         <div class="col-lg-6 col-xs-6">
                             GST
                             <input class="form-control" type="text" readonly formControlName="gstTotal" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-xs-6">
+                            <!-- Gross Amount
+                            <input class="form-control" type="text" readonly formControlName="grossAmount" /> -->
+                        </div>
+                        <div class="col-lg-6 col-xs-6">
+                            Round Off
+                            <input class="form-control" type="number" (blur)="calculateTotal()"
+                                formControlName="roundOff" />
                         </div>
                     </div>
                     <div class="row">

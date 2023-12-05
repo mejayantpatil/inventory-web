@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Account } from 'src/app/models/account';
 import { AccountService } from 'src/app/services/accounts.service';
+import { ConfirmModalService } from 'src/app/services/confirm-modal.service';
 import { GroupService } from 'src/app/services/groups.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import * as XLSX from 'xlsx';
@@ -20,7 +21,9 @@ export class AccountsMasterComponent {
   public editAccountFlag: boolean = false;
   public groups: any[] = [];
   public groupsObj: any = {};
-  constructor(private accountSerivce: AccountService, private groupService: GroupService, private spinner: SpinnerService) {
+  constructor(private accountSerivce: AccountService, private groupService: GroupService,
+    private modalService: ConfirmModalService,
+    private spinner: SpinnerService) {
     this.accountForm = new FormGroup({
       accountName: new FormControl(''),
       groupName: new FormControl(''),
@@ -107,6 +110,15 @@ export class AccountsMasterComponent {
       });
     } else {
       this.getAllAccounts();
+    }
+  }
+
+  delete(id: string) {
+    // this.modalService.show(id);
+    if (window.confirm('Are you sure ?')) {
+      this.deleteAccount(id)
+    } else {
+      console.log('not ok')
     }
   }
 

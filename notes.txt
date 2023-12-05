@@ -182,3 +182,37 @@ vehicle - dashboard change columns for vehicle service status use oil change and
 06-10-2023
 purchase order and work order issues fixed
 need to work on both UI of orders - wip
+
+20-10-23
+show kms in columns - done
+print all vehicles on dashboard - done
+
+
+09-11-2023
+part inward -
+round off net amount
+other charges enable - done
+
+part repaired
+- add sub-item under parts
+- save it in array
+-
+
+23 11 23
+show all consumption report in one
+round off field in part inwards - done
+total not showing - done
+category wise not working - done
+
+
+29 11 23
+in repaired parts
+round off - done
+other charges  and descrip in part section - done
+on update issue - not found
+
+outwards table same as inwards but no gst - WIP
+
+01 12 2023
+top products graph not working
+in order show items pending 

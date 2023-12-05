@@ -110,9 +110,10 @@
                             {{account.accountName}}
                         </option>
                     </select> -->
-                    <ng-autocomplete [data]="vehicles" [searchKeyword]="'vehicleNumber'" placeholder="Select Reg. No."
-                        [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
-                        (selected)='setVehicle($event)' formControlName="registrationNumber" [disabled]=true>
+                    <ng-autocomplete #vehicleNumber [data]="vehicles" [searchKeyword]="'vehicleNumber'"
+                        placeholder="Select Reg. No." [itemTemplate]="itemTemplate"
+                        [notFoundTemplate]="notFoundTemplate" (selected)='setVehicle($event)'
+                        formControlName="registrationNumber" [disabled]=true>
                     </ng-autocomplete>
                     <ng-template #itemTemplate let-item>
                         <a [innerHTML]="item.vehicleNumber"></a>

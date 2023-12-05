@@ -7,6 +7,7 @@ import { SpinnerService } from 'src/app/services/spinner.service';
 import { JobService } from 'src/app/services/jobs.service';
 import * as XLSX from 'xlsx'
 import { VehicleService } from 'src/app/services/vehicle.service';
+import { CardService } from 'src/app/services/cards.service';
 @Component({
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
@@ -33,11 +34,13 @@ export class JobsComponent {
   public selectedRowIndex = -1;
   public status: string = 'all'
   public selectedVehicle = ''
+  public jobIDandCardMap: any = {}
   public vehicles: any = [];
+  public activeCards: any = [];
   @ViewChild('closeModal') closeModal: any
   @ViewChild('mySelect') mySelect: any;
   constructor(private jobService: JobService,
-    private router: Router,
+    private router: Router, private cardService: CardService,
     private vehicleService: VehicleService,
     private categoryService: CategoryService, private spinner: SpinnerService) {
     this.JobForm = new FormGroup({
@@ -57,10 +60,22 @@ export class JobsComponent {
     })
   }
   ngOnInit(): void {
-    this.getAllJobs();
+    // const jobIDandCardMap: any = sessionStorage.getItem('jobIDandCardMap');
+    // this.jobIDandCardMap = JSON.parse(jobIDandCardMap) || {}
+    this.getActiveCards()
+    // this.getAllJobs();
     this.getAllCategories();
     this.getVehicles();
 
+  }
+
+  getActiveCards() {
+    this.cardService.getCards().subscribe((res: any) => {
+      this.activeCards = res;
+      this.jobIDandCardMap = JSON.parse(res.jobIDandCardMap || '{}');// ? res.jobIDandCardMap : {});
+      this.getAllJobs();
+      // this.loadAllCards()
+    })
   }
 
   getVehicles() {
@@ -266,25 +281,43 @@ export class JobsComponent {
   setSelectedJob(id: string, recordNo: number) {
     this.selectedJob = { id, recordNo };
   }
+
   deleteJob(id: string, recordNo: number) {
     id = this.selectedJob.id;
     recordNo = this.selectedJob.recordNo;
     this.spinner.showSpinner();
-    let payload: Job = {
-      jobCardNo: '0',
-      cardData: []
-    };
-    this.originalData.forEach(i => {
-      if (i._id === id) {
-        const index = i.cardData.findIndex((c: any) => c.recordNo === recordNo)
-        i.cardData.splice(index, 1);
-        payload = i
+    // let payload: Job = {
+    //   jobCardNo: '0',
+    //   cardData: []
+    // };
+    // this.originalData.forEach(i => {
+    //   if (i._id === id) {
+    //     const index = i.cardData.findIndex((c: any) => c.recordNo === recordNo)
+    //     i.cardData.splice(index, 1);
+    //     payload = i
+    //   }
+    // })
+    this.jobService.deleteJob(id).subscribe(() => {
+      let index = '';
+      Object.keys(this.jobIDandCardMap).map(j => {
+        if (recordNo === this.jobIDandCardMap[j].toString()) {
+          index = j
+        }
+      })
+      delete this.jobIDandCardMap[index]
+      console.log('lol', this.jobIDandCardMap)
+      if (this.activeCards._id) {
+        this.cardService.updateCard(this.activeCards._id, { jobIDandCardMap: JSON.stringify(this.jobIDandCardMap) }).subscribe(res => {
+          this.getActiveCards()
+        })
+      } else {
+        this.cardService.saveCard({ jobIDandCardMap: JSON.stringify(this.jobIDandCardMap) }).subscribe(res => {
+          this.getActiveCards()
+        })
       }
-    })
-    this.jobService.updateJob(id, payload).subscribe(() => {
       this.spinner.hideSpinner();
       this.closeModal.nativeElement.click()
-      this.getAllJobs();
+      // this.getAllJobs();
     });
   }
 

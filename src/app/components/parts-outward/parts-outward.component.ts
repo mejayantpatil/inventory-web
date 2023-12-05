@@ -16,11 +16,11 @@ import { SupplyOrderService } from 'src/app/services/supplyOrderService';
 import { TransactionService } from 'src/app/services/transactions.service';
 
 @Component({
-  selector: 'app-parts-inward',
-  templateUrl: './parts-inward.component.html',
-  styleUrls: ['./parts-inward.component.scss']
+  selector: 'app-parts-outward',
+  templateUrl: './parts-outward.component.html',
+  styleUrls: ['./parts-outward.component.scss']
 })
-export class PartsInwardComponent {
+export class PartsOutwardComponent {
 
   public data: any[] = [];
   public partInwardForm: FormGroup;
@@ -216,7 +216,7 @@ export class PartsInwardComponent {
           tradeDiscount: new FormControl(res.tradeDiscount ? res.tradeDiscount.toFixed(2) : '0'),
           igst: new FormControl(res.igst ? res.igst.toFixed(2) : ''),
           grandTotal: new FormControl(res.grandTotal.toFixed(2)),
-          cashDiscount: new FormControl(res.cashDiscount ? res.cashDiscount.toFixed(2) : '0'),
+          cashDiscount: new FormControl(''),
           otherCharges: new FormControl(res.otherCharges ? res.otherCharges.toFixed(2) : '0'),
           totalNetAmount: new FormControl(res.netAmount.toFixed(2)),
           comment: new FormControl(res.comment),
@@ -306,7 +306,7 @@ export class PartsInwardComponent {
         tradeDiscount: this.partInwardForm.value.tradeDiscount,
         igst: this.partInwardForm.value.igst,
         grandTotal: this.partInwardForm.value.grandTotal,
-        roundOff: 0,
+        roundOff: this.partInwardForm.value.roundOff,
         cashDiscount: this.partInwardForm.value.cashDiscount,
         otherCharges: this.partInwardForm.value.otherCharges,
         netAmount: this.partInwardForm.value.totalNetAmount,
@@ -555,9 +555,6 @@ export class PartsInwardComponent {
     // netAmount = netAmount + g;
     if (this.partInwardForm.value.otherCharges) {
       netAmount = netAmount + parseFloat(this.partInwardForm.value.otherCharges)
-    }
-    if (this.partInwardForm.value.cashDiscount) {
-      netAmount = netAmount + parseFloat(this.partInwardForm.value.cashDiscount)
     }
     this.partInwardForm.patchValue({
       grossAmount: parseFloat(grossAmount.toString()).toFixed(2),

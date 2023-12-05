@@ -45,6 +45,9 @@ import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-re
 import { AuthGuardService } from './services/auth-guard.service';
 import { AgChartsAngularModule } from 'ag-charts-angular';
 import { NewProductsComponent } from './components/products/new-product';
+import { PartsOutwardComponent } from './components/parts-outward/parts-outward.component';
+import { OutTransactionComponent } from './components/out-transactions/transactions.component';
+import { DeleteModalComponent } from './components/delete-modal/delete-modal.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +69,8 @@ import { NewProductsComponent } from './components/products/new-product';
     ProductsComponent,
     NewProductsComponent,
     PartsInwardComponent,
+    PartsOutwardComponent,
+    OutTransactionComponent,
     VehiclesComponent,
     TransactionComponent,
     FilterPipe,
@@ -84,7 +89,8 @@ import { NewProductsComponent } from './components/products/new-product';
     AccountsMasterComponent,
     WorkOrdersComponent,
     JobWiseConsumptionReportsComponent,
-    VehicleReportsComponent
+    VehicleReportsComponent,
+    DeleteModalComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,232 @@
+<br>
+<div class="row">
+    <!-- <div class="col-2">
+        <app-menus></app-menus>
+    </div> -->
+    <div class="col-12">
+        <div *ngIf="!showNewTransactionForm">
+            <h2>Part Outwards Transactions</h2>
+            <!-- <div class="row">
+                <div class="col-6">
+                    <span>Filter By Category</span>
+                    <select #mySelect (change)='filterResults(mySelect.value)' class="form-select form-control"
+                        aria-label="Default select">
+                        <option selected value="">All Category</option>
+                        <option [value]="cat._id" *ngFor="let cat of categorys; let i = index">
+                            {{cat.categoryName}}
+                        </option>
+                    </select>
+                </div>
+            </div> -->
+            <hr>
+            <div class="row">
+                <div class="col-lg-4 col-xs-12">
+                    <input placeholder="Filter By Tr. No. /Invoice No./Supplier Name" type="text" class="form-control"
+                        [(ngModel)]="invoiceNo">
+                </div>
+                <div class="col-lg-9 col-xs-12">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <!-- <input *ngIf="showFileUpload" type="file" class="file-upload" (change)="onFileChange($event)">
+                <button *ngIf="showFileUpload" type="button" class="btn btn-danger"
+                    (click)="uploadFile()">Upload</button>
+                <button *ngIf="!showFileUpload" type="button" class="btn btn-warning" (click)="importData()">Import
+                    Transactions</button> -->
+                        <button type="button" class="btn btn-warning" (click)="exportToExcel()"><i
+                                class="bi bi-box-arrow-in-down"></i> Export
+                            to Excel</button>
+                        <button type="button" class="btn btn-primary pull-right"
+                            (click)="newTransaction('repaired')">Add Repaired
+                            Parts</button>
+                        <!-- <button type="button" class="btn btn-info">Info</button> -->
+                        <button type="button" class="btn btn-primary pull-right" (click)="newTransaction()">Add New
+                            Parts</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="excel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="50">#</th>
+                            <th scope="col">TRN No</th>
+                            <th scope="col">Mode</th>
+                            <th scope="col" width="120">S.Invoice No</th>
+                            <th scope="col" width="200">Supplier Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col" class="text-right">Gross</th>
+                            <th scope="col" class="text-right">GST</th>
+                            <th scope="col" class="text-right">Discount</th>
+                            <!-- <th scope="col" class="text-right">Grand Total</th> -->
+                            <!-- <th scope="col" class="text-right">Cash Discount</th>
+                        <th scope="col" class="text-right">Other Charges</th> -->
+                            <th scope="col" class="text-right">Net Amount</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let transaction of data| filterInvoice: invoiceNo;let i=index">
+                            <tr (click)="toggleDetails(i, transaction)"
+                                [ngClass]="{'table-info': selectedRowIndex === i}">
+
+                                <th scope="row" width="50">{{i+1}}</th>
+                                <td>{{transaction.transactionNo}}</td>
+                                <td>{{transaction.paymentMode}}</td>
+                                <td width="120">{{transaction.supplierInvoiceNo}}</td>
+                                <td width="200">{{transaction.supplierName}}</td>
+                                <td>{{transaction.date| date: 'dd/MM/yyyy'}}</td>
+                                <td class="text-right">{{transaction.grossAmount}}</td>
+                                <td class="text-right">{{transaction.gst}}</td>
+                                <td class="text-right">{{transaction.tradeDiscount}}</td>
+                                <!-- <td class="text-right">{{transaction.grandTotal}}</td> -->
+                                <!-- <td class="text-right">{{transaction.cashDiscount}}</td>
+                        <td class="text-right">{{transaction.otherCharges}}</td> -->
+                                <td class="text-right">{{transaction.netAmount}}</td>
+                                <td class="text-center">
+                                    <!-- <i class="bi bi-pencil-square" (click)="editTransaction(transaction)"></i>&nbsp; -->
+                                    <!-- <i class="bi bi-trash3" (click)="deleteTransaction(transaction._id)"></i> -->
+                                    <i class="bi bi-pencil-square cursor-pointer" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal" (click)="setSelectedTransaction(transaction)"></i>
+                                </td>
+                            </tr>
+                            <tr *ngIf="selectedRowIndex === i" class="table-light">
+                                <td></td>
+                                <td colspan="10">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th width="50">#</th>
+                                                <th>Part No</th>
+                                                <th>Product Name</th>
+                                                <th>Quantity</th>
+                                                <th>Ledger No.</th>
+                                                <th>Rate</th>
+                                                <th>GST</th>
+                                                <th>Net Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of transaction.data; let j=index">
+                                                <th width="50">{{j+1}}</th>
+                                                <td>{{item.partNo}}</td>
+                                                <td>{{item.partName}}</td>
+                                                <td>{{item.quantity}}</td>
+                                                <td>{{item.ledgerPageNumber}}</td>
+                                                <td>{{item.rate}}</td>
+                                                <td>{{item.cgstPercentage*2}}
+                                                </td>
+                                                <td>{{item.netAmount}}</td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </ng-container>
+
+                    </tbody>
+                </table>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="showNewTransactionForm">
+            <h2>Transactions</h2>
+            <!-- <form [formGroup]="transactionForm">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Transaction Details:</li>
+                    <li class="list-group-item">Part Number:
+                        <span *ngIf="!editTransactionFlag">{{transaction.partNumber}}</span>
+                        <input *ngIf="editTransactionFlag" id="partNumber" class="form-control" type="text"
+                            formControlName="partNumber" />
+                    </li>
+                    <li class="list-group-item">Part Name:
+                        <span *ngIf="!editTransactionFlag">{{transaction.partName}}</span>
+                        <input *ngIf="editTransactionFlag" id="partName" class="form-control" type="text"
+                            formControlName="partName" />
+                    </li>
+                    <li class="list-group-item">Sale Rate:
+                        <span *ngIf="!editTransactionFlag">{{transaction.saleRate}}</span>
+                        <input *ngIf="editTransactionFlag" id="saleRate" class="form-control" type="text"
+                            formControlName="saleRate" />
+                    </li>
+                    <li class="list-group-item">Quantity:
+                        <span *ngIf="!editTransactionFlag">{{transaction.quantity}}</span>
+                        <input *ngIf="editTransactionFlag" id="quantity" class="form-control" type="text"
+                            formControlName="quantity" />
+                    </li>
+                    <li class="list-group-item">Unit:
+                        <span *ngIf="!editTransactionFlag">{{transaction.unit}}</span>
+                        <input *ngIf="editTransactionFlag" id="unit" class="form-control" type="text"
+                            formControlName="unit" />
+                    </li>
+                    <li class="list-group-item">Store Location:
+                        <span *ngIf="!editTransactionFlag">{{transaction.storeLocation}}</span>
+                        <input *ngIf="editTransactionFlag" id="storeLocation" class="form-control" type="text"
+                            formControlName="storeLocation" />
+                    </li>
+                    <li class="list-group-item">Ledger Page Number:
+                        <span *ngIf="!editTransactionFlag">{{transaction.ledgerPageNumber}}</span>
+                        <input *ngIf="editTransactionFlag" id="ledgerPageNumber" class="form-control" type="text"
+                            formControlName="ledgerPageNumber" />
+                    </li>
+                    <li class="list-group-item">Category:
+                        <span *ngIf="!editTransactionFlag">{{transaction.category}}</span>
+                        <input *ngIf="editTransactionFlag" id="category" class="form-control" type="text"
+                            formControlName="category" />
+                        <select class="form-select form-control" aria-label="Default select" *ngIf="editTransactionFlag"
+                            id="category" formControlName="category">
+                            <option selected>Select Category</option>
+                            <option [selected]="cat._id===transaction.category" [value]="cat._id"
+                                *ngFor="let cat of categorys; let i = index">{{cat.categoryName}}
+                            </option>
+                        </select>
+                    </li>
+                    <li class="list-group-item">Country:
+                          <span *ngIf="!editTransactionFlag">{{transaction.country}}</span>
+                          <input *ngIf="editTransactionFlag" id="country" class="form-control" type="text" formControlName="country">
+                        </li>
+                </ul>
+            </form> -->
+            <!-- <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-warning" (click)="cancel()">Cancel</button>
+                <button type="button" class="btn btn-info">Info</button>
+                <button type="button" class="btn btn-primary pull-right"
+                    (click)="saveTransaction(transactionForm.value)">Save
+                    Transaction</button>
+            </div> -->
+            <br><br>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Edit Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Enter password to edit Transaction: {{selectedTransaction.transactionNo}}<br>
+                    <input placeholder="Enter Password" #pwd autofocus (keyup)="editTransactionOnEnter($event)"
+                        type="text" class="form-control pwd" [(ngModel)]="editPassword">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" #closeModal data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" (click)="editTransaction(selectedTransaction)">Yes,
+                        Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -217,10 +217,21 @@ export class ProductsComponent {
     }
   }
 
+  delete(id: string) {
+    // this.modalService.show(id);
+    if (window.confirm('Are you sure ?')) {
+      this.deleteProduct(id)
+    } else {
+      console.log('not ok')
+    }
+  }
+
+
   deleteProduct(id: string) {
     this.spinner.showSpinner();
     this.productSerivce.deleteProduct(id).subscribe(() => {
-      this.spinner.hideSpinner(); this.getAllProducts();
+      this.spinner.hideSpinner();
+      this.getAllProducts();
     });
   }
 

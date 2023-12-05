@@ -25,6 +25,7 @@ export interface Transaction {
     tradeDiscount: number
     igst: number
     grandTotal: number
+    roundOff: number
     cashDiscount: number
     otherCharges: number
     netAmount: number

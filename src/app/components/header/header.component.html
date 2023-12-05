@@ -47,9 +47,29 @@
               class="bi bi-box"></i>
             Products</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link mx-1" aria-current="page" routerLink="/transactions" routerLinkActive="active"><i
               class="bi bi-boxes"></i>Parts</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" routerLink="/transactions"><i class="bi bi-journal-check"></i>Parts Inward</a>
+            </li>
+            <li><a class="dropdown-item" routerLink="/transactions"><i class="bi bi-journal-check"></i>
+                Parts Outward</a>
+            </li>
+          </ul>
+        </li> -->
+        <li class="nav-item dropdown">
+          <a class="nav-link mx-1 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false"><i class="bi bi-clipboard2-check"></i>
+            Parts
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" routerLink="/transactions"><i class="bi bi-journal-check"></i>Part Inwards</a>
+            </li>
+            <li><a class="dropdown-item" routerLink="/out-transactions"><i class="bi bi-journal-check"></i>
+                Part Outwards</a>
+            </li>
+          </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link mx-1" aria-current="page" routerLink="/jobs" routerLinkActive="active"><i

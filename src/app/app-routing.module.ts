@@ -28,6 +28,8 @@ import { WorkOrdersComponent } from './components/work-orders/work-orders.compon
 import { JobWiseConsumptionReportsComponent } from './components/job-wise-consumption-reports/job-wise-consumption-reports.component';
 import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-reports.component';
 import { AuthGuard } from './services/auth.guard';
+import { PartsOutwardComponent } from './components/parts-outward/parts-outward.component';
+import { OutTransactionComponent } from './components/out-transactions/transactions.component';
 
 const routes: Routes = [
   {
@@ -44,6 +46,9 @@ const routes: Routes = [
   },
   {
     path: 'products', component: ProductsComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'part-outward/:transactionNumber', component: PartsOutwardComponent, canActivate: [AuthGuard]
   },
   {
     path: 'part-inward/:transactionNumber', component: PartsInwardComponent, canActivate: [AuthGuard]
@@ -89,6 +94,9 @@ const routes: Routes = [
   },
   {
     path: 'transactions', component: TransactionComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'out-transactions', component: PartsOutwardComponent, canActivate: [AuthGuard]
   },
   {
     path: 'purchase-order', component: SupplyOrderComponent, canActivate: [AuthGuard]

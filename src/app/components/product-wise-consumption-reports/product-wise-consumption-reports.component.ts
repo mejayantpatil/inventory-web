@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import jsPDF from 'jspdf';
 import { SpareParts } from 'src/app/models/jobs';
 import { Product } from 'src/app/models/product';
@@ -47,14 +48,20 @@ export class ProductWiseConsumptionReportsComponent {
   constructor(private categoryService: CategoryService,
     private transactionService: TransactionService,
     private jobService: JobService,
-    private vehicleService: VehicleService,
+    private vehicleService: VehicleService, private route: ActivatedRoute,
     private productService: ProductService, private spinner: SpinnerService) {
+
 
   }
   ngOnInit(): void {
+    // this.route.queryParams
+    //   .subscribe(params => {
+    //     console.log(params);
+
     this.getAllProducts();
     this.getAllCategories();
     this.getAllVehicles();
+    // });
   }
 
   getAllCategories() {
@@ -100,6 +107,7 @@ export class ProductWiseConsumptionReportsComponent {
   }
 
   formatData(catId = '') {
+    this.spinner.hideSpinner();
     let netAmount = 0;
     let quantity = 0;
     this.jobsData = [];
@@ -109,17 +117,17 @@ export class ProductWiseConsumptionReportsComponent {
       this.jobs.map((j: any) => {
         if (catId && j.spareParts.some((s: any) => s.categoryId === catId)) {
           j.spareParts.map((s: SpareParts) => {
-            if (this.selectedVehicle === j.registrationNumber) {
-              netAmount = netAmount + parseFloat(s.netAmount.toString());
-              quantity = quantity + parseInt(s.quantity.toString())
+            if (catId === s.categoryId) {
+              netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+              quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
-            if (this.selectedVehicle === '') {
-              netAmount = netAmount + parseFloat(s.netAmount.toString());
-              quantity = quantity + parseInt(s.quantity.toString())
+            if (catId === '') {
+              netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+              quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -131,8 +139,8 @@ export class ProductWiseConsumptionReportsComponent {
 
         if (catId === '') {
           j.spareParts.map((s: SpareParts) => {
-            netAmount = netAmount + parseFloat(s.netAmount.toString());
-            quantity = quantity + parseInt(s.quantity.toString())
+            netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+            quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
               modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -147,6 +155,7 @@ export class ProductWiseConsumptionReportsComponent {
       this.totalCost = 0;
       this.totalQty = 0;
     }
+
   }
 
   formatDataFilterPart(partNo = '') {
@@ -157,20 +166,20 @@ export class ProductWiseConsumptionReportsComponent {
     this.totalQty = 0;
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
-        if (partNo && j.spareParts.find((s: any) => s.partNo.toLowerCase().includes(partNo.toLowerCase()))) {
+        if (partNo && j.spareParts.find((s: any) => s.partNo?.toLowerCase().includes(partNo.toLowerCase()))) {
           j.spareParts.map((s: SpareParts) => {
-            if (this.selectedVehicle === j.registrationNumber && s.partNo.toLowerCase().includes(partNo.toLowerCase())) {
-              netAmount = netAmount + parseFloat(s.netAmount.toString());
-              quantity = quantity + parseInt(s.quantity.toString())
+            if (this.selectedVehicle === j.registrationNumber && s.partNo?.toLowerCase().includes(partNo.toLowerCase())) {
+              netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+              quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
 
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
-            if (this.selectedVehicle === '' && s.partNo.toLowerCase().includes(partNo.toLowerCase())) {
-              netAmount = netAmount + parseFloat(s.netAmount.toString());
-              quantity = quantity + parseInt(s.quantity.toString())
+            if (this.selectedVehicle === '' && s.partNo?.toLowerCase().includes(partNo.toLowerCase())) {
+              netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+              quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -182,8 +191,8 @@ export class ProductWiseConsumptionReportsComponent {
 
         if (partNo === '') {
           j.spareParts.map((s: SpareParts) => {
-            netAmount = netAmount + parseFloat(s.netAmount.toString());
-            quantity = quantity + parseInt(s.quantity.toString())
+            netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+            quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
               modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -210,8 +219,8 @@ export class ProductWiseConsumptionReportsComponent {
     if (this.jobs.length > 0) {
       this.jobs.map((j: any) => {
         j.spareParts.map((s: SpareParts) => {
-          netAmount = netAmount + parseFloat(s.netAmount.toString());
-          quantity = quantity + parseInt(s.quantity.toString())
+          netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+          quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
           this.jobsData.push({
             jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
             modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -238,8 +247,8 @@ export class ProductWiseConsumptionReportsComponent {
         j.spareParts.map((s: SpareParts) => {
 
           if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0]) && this.categoryID === '') {
-            netAmount = netAmount + parseFloat(s.netAmount.toString());
-            quantity = quantity + parseInt(s.quantity.toString())
+            netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+            quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
               modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -247,8 +256,8 @@ export class ProductWiseConsumptionReportsComponent {
           }
           if (this.categoryID && j.spareParts.some((s: any) => s.categoryId === this.categoryID)) {
             if (j.registrationNumber.includes(this.selectedVehicle.split(' ')[0])) {
-              netAmount = netAmount + parseFloat(s.netAmount.toString());
-              quantity = quantity + parseInt(s.quantity.toString())
+              netAmount = netAmount + parseFloat(s.netAmount ? s.netAmount.toString() : '0');
+              quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -284,13 +293,14 @@ export class ProductWiseConsumptionReportsComponent {
         })
 
       });
-      Object.keys(this.stockPuchasedValues).map(p => {
-        // this.totalPurchasedRate = this.totalPurchasedRate + this.stockPuchasedValues[p]
-      })
+      // Object.keys(this.stockPuchasedValues).map(p => {
+      // this.totalPurchasedRate = this.totalPurchasedRate + this.stockPuchasedValues[p]
+      // })
     })
   }
 
   getJobs() {
+
     this.jobService.getJobByDate(this.startDate, this.endDate).subscribe((res: any) => {
       this.jobs = res;
       this.formatData()
@@ -304,6 +314,7 @@ export class ProductWiseConsumptionReportsComponent {
   }
 
   search() {
+    this.spinner.showSpinner();
     this.mySelect.nativeElement.value = ''
     this.showTable = true;
     this.getTransactions();

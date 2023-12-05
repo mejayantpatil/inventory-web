@@ -122,7 +122,7 @@ export class VehicleReportsComponent {
       this.jobs.map((j: any) => {
         j.spareParts.map((s: SpareParts) => {
           netAmount = netAmount + parseFloat(s.netAmount.toString());
-          console.log(j.netAmount, netAmount);
+          // console.log(j.netAmount, netAmount);
           this.jobsData.push({
             jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
             modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
@@ -174,7 +174,7 @@ export class VehicleReportsComponent {
           // netAmount = netAmount + j.netAmount;
           this.data.push(j)
           netAmount = netAmount + parseFloat(j.netAmount.toString());
-          console.log(j.netAmount, netAmount);
+          // console.log(j.netAmount, netAmount);
           //     this.jobsData.push({
           //       jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
           //       modelName: j.modelName, partNo: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
