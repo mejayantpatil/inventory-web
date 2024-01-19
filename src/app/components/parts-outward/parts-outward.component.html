@@ -1,8 +1,5 @@
 <br>
 <div class="row">
-    <div class="col-12">
-        <h1>Page is under construction</h1>
-    </div>
     <!-- <div class="col-3">
         <div class="list-group">
             <a href="#" class="list-group-item list-group-item-action active" routerLink="/dashboard">Dashboard</a>
@@ -15,14 +12,14 @@
         </div>
     </div> -->
 
-    <!-- <ng-template #notFoundTemplate let-notFound>
+    <ng-template #notFoundTemplate let-notFound>
         <div [innerHTML]="notFound"></div>
     </ng-template>
     <div class="col-lg-12 col-xs-12">
         <h2>
             <a href="#" routerLink="/transactions">
                 <i class="bi bi-arrow-left-square-fill"></i>
-            </a> Part Inward
+            </a> Part Outward
         </h2><br>
         <form [formGroup]="partInwardForm" novalidate>
 
@@ -33,6 +30,7 @@
                 </div>
                 <div class="col-lg-3 col-xs-12">
                     Payment Mode
+                    <!-- <input class="form-control" type="text" formControlName="paymentMode" /> -->
                     <select class="form-select form-control" #paymentMode aria-label="Default select" id="paymentMode"
                         formControlName="paymentMode" autofocus>
                         <option value="" disabled selected>Select Mode</option>
@@ -54,6 +52,13 @@
             <div class="row mb-2">
                 <div class="col-lg-4 col-xs-12">
                     Supplier Name
+                    <!-- <select class="form-select form-control" aria-label="Default select" id="supplierName"
+                        formControlName="supplierName">
+                        <option value="" disabled selected>Select supplierName</option>
+                        <option [value]="account.accountName" *ngFor="let account of accounts; let i = index">
+                            {{account.accountName}}
+                        </option>
+                    </select> -->
                     <ng-autocomplete [data]="accounts" [searchKeyword]="'accountName'" placeholder="Select Supplier"
                         [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
                         (selected)='setSupplier($event)' formControlName="supplierName">
@@ -77,7 +82,14 @@
             <div class="row mb-2">
                 <div class="col-lg-2 col-xs-12">
                     Part No
-                    
+                    <!-- <input class="form-control" type="text" formControlName="partNo" /> -->
+                    <!-- <select class="form-select form-control" (change)="setProductField()" aria-label="Default select"
+                        id="partNo" formControlName="partNo">
+                        <option value="" disabled selected>Select Part No</option>
+                        <option [value]="product.partNumber" *ngFor="let product of products; let i = index">
+                            {{product.partNumber}}
+                        </option>
+                    </select> -->
                     <ng-autocomplete #partNo [data]="products" formControlName="partNo" [searchKeyword]="'partNumber'"
                         placeholder="Select Part No" [itemTemplate]="partNoTemplate" [initialValue]="selectedProduct"
                         [notFoundTemplate]="notFoundTemplate" (selected)='setPartNo($event)'>
@@ -89,6 +101,16 @@
                 </div>
                 <div class="col-lg-2 col-xs-12">
                     Part Name
+                    <!-- <input class="form-control" type="text" formControlName="partName" /> -->
+                    <!-- <select class="form-select form-control" aria-label="Default select" id="partName"
+                        formControlName="partName">
+                        <option value="" disabled selected>Select Part Name</option>
+                        <option [value]="product.partName"
+                            [selected]="product.partName === partInwardForm.value.partName"
+                            *ngFor="let product of products; let i = index">
+                            {{product.partName}}
+                        </option>
+                    </select> -->
                     <ng-autocomplete [data]="products" formControlName="partName" [searchKeyword]="'partName'"
                         [initialValue]="selectedProduct" placeholder="Select Part Name"
                         [itemTemplate]="partNameTemplate" [notFoundTemplate]="notFoundTemplate"
@@ -111,6 +133,7 @@
                     Rate
                     <input class="form-control" type="number" formControlName="rate" />
                     <br><input class="form-control" type="number" formControlName="newRate" />
+                    <!-- <span>{{selectedProduct ? selectedProduct.saleRate: ''}}</span> -->
                 </div>
                 <div class="col-lg-1 col-xs-6">
                     Discount %
@@ -146,6 +169,7 @@
 
             <div class="row" *ngIf="!(selectedIndex > -1 && selectedProduct)">
                 <div class="col-lg-2 col-xs-12">
+                    <!-- <button type="button" class="btn btn-warning" (click)="cancelUpdate()">Cancel</button>&nbsp; -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#addNewProduct">
                         Add New Product
@@ -304,16 +328,26 @@
                             IGST Amount
                             <input class="form-control" type="text" formControlName="igst" />
                         </div>
-                       
+                        <!-- <div class="col-6">
+                            Net Amount
+                            <input class="form-control" type="text" formControlName="totalNetAmount" />
+                        </div> -->
                     </div>
                     <div class="row">
                         <div class="col-6">
                             Grand Total Amount
                             <input class="form-control" readonly type="text" formControlName="grandTotal" />
                         </div>
-                        
+                        <!-- <div class="col-6">
+                            Cash Discount
+                            <input class="form-control" type="text" formControlName="cashDiscount" />
+                        </div> -->
                         <div class="col-6">
-                            
+                            Round Off
+                            <input class="form-control" type="text" formControlName="cashDiscount"
+                                (blur)="calculateTotal()" />
+                            <!-- Net Amount
+                            <input class="form-control" readonly type="text" formControlName="totalNetAmount" /> -->
                         </div>
                     </div>
                     <div class="row">
@@ -360,7 +394,12 @@
             <br>
             <div class="row">
                 <div class="col-12">
-                    
+                    <!-- <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <button type="button" class="btn btn-warning" routerLink="/transactions">Find</button>
+                        <button type="button" class="btn btn-primary pull-right" (click)="saveTransaction()">Save
+                            Product</button>
+                        <button type="button" class="btn btn-success" (click)="report()">Print Invoice</button>
+                    </div> -->
                 </div>
             </div>
             <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="addNewProductLabel"
@@ -374,7 +413,11 @@
                         <div class="modal-body">
                             <app-accounts-master></app-accounts-master>
                         </div>
-                        
+                        <!-- <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                            #closebutton>Close</button>
+                                        <button type="button" class="btn btn-primary" (click)="addNewProduct()">Save</button>
+                                    </div> -->
                     </div>
                 </div>
             </div>
@@ -382,6 +425,7 @@
                 <div #toast class="toast" role="alert" data-bs-animation="true" aria-live="assertive"
                     aria-atomic="true">
                     <div class="toast-header">
+                        <!-- <i class="bi bi-card-checklist"></i> -->
                         <i class="bi bi-window rounded me-2 text-success"></i>
                         &nbsp;
                         <strong class="me-auto text-success">Transaction</strong>
@@ -395,5 +439,5 @@
             </div>
             <br><br>
         </form>
-    </div> -->
+    </div>
 </div>

@@ -42,7 +42,8 @@
                 </div>
                 <div class="col-lg-3 col-xs-12">
                     Supplier Invoice No
-                    <input class="form-control" type="text" formControlName="supplierInvoiceNo" />
+                    <input class="form-control" (blur)="checkExisting()" type="text"
+                        formControlName="supplierInvoiceNo" />
                 </div>
                 <div class="col-lg-3 col-xs-12">
                     Purchase Order No

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import jsPDF from 'jspdf';
+import { companyName } from 'src/app/constants';
 import { CategoryService } from 'src/app/services/category.service';
 import { JobService } from 'src/app/services/jobs.service';
 import { ProductService } from 'src/app/services/products.service';
@@ -160,7 +161,7 @@ export class StockWiseReportsComponent {
         consumedQty, closingQty,
         saleRate: (d.newRate ? d.newRate : d.saleRate || 0).toFixed(2),
         closingRate: (d.quantity * d.saleRate).toFixed(2),
-        closingStockValue: closingStockValue.toFixed(2)
+        closingStockValue: Math.abs(closingStockValue).toFixed(2)
       })
       // console.log(d.partNumber, d.partName, opening ? opening : 0, purchasedQty, consumedQty, closingQty, d.saleRate, d.quantity * d.saleRate)
     })
@@ -192,7 +193,7 @@ export class StockWiseReportsComponent {
     doc.setFontSize(20);
     doc.text("STOCK REPORT", 80, 15)
     doc.setFontSize(10);
-    doc.text("Vishwayoddha Shetkari Multitrade", 80, 22);
+    doc.text(companyName, 80, 22);
     doc.line(14, 30, 196, 30);
 
     // doc.autoTable({ html: '#excel-table' })
@@ -210,7 +211,7 @@ export class StockWiseReportsComponent {
     // doc.setFontSize(8);
 
     // doc.text("Bill No: " + this.partInwardForm.value.transactionNo.toString(), 14, 40)
-    // doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+    // doc.text("Firm Name: ", 14, 45)
 
     (doc as any).autoTable({
       head: [[
@@ -229,7 +230,7 @@ export class StockWiseReportsComponent {
       theme: 'striped',
       styles: {
         // halign: 'right',
-        fontSize: 8
+        fontSize: 7
       },
       headStyles: {
         fontSize: 7

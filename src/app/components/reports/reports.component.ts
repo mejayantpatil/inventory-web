@@ -3,6 +3,7 @@ import jsPDF from 'jspdf';
 // import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable'
 import { applyPlugin } from 'jspdf-autotable'
+import { companyName } from 'src/app/constants';
 applyPlugin(jsPDF)
 
 @Component({
@@ -74,13 +75,13 @@ export class ReportsComponent {
     doc.text("394893", 170, 30)
 
     doc.text("Supplier Name:", 14, 30);
-    doc.text("Vishwayoddha Shetkari Multitrade", 40, 30);
+    doc.text(companyName, 40, 30);
 
     doc.line(14, 35, 196, 35);
     doc.setFontSize(10);
 
     doc.text("Bill No: 293", 14, 40)
-    doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+    doc.text("Firm Name: " + companyName, 14, 45)
 
     doc.text("Date: 12/12/2013", 150, 40)
     // doc.text("Firm Name: Wishvayodha Multitrade", 10, 40)

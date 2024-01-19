@@ -1,5 +1,6 @@
 <div *ngIf="!showNewAccountForm">
     <h2>Accounts</h2>
+    <hr>
     <div class="row">
         <div class="col-lg-3 col-md-3 col-xs-12">
             <!-- <span>Filter By Group</span> -->
@@ -10,7 +11,6 @@
                     {{group.groupName}}
                 </option>
             </select>
-            <br />
         </div>
         <div class="col-lg-9 col-md-9 col-xs-12">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -44,7 +44,7 @@
                     <td>{{account.phone}}</td>
                     <td>
                         <i class="bi bi-pencil-square" (click)="editAccount(account)"></i>&nbsp;&nbsp;
-                        <i class="bi bi-trash3" (click)="delete(account._id)"></i>
+                        <!-- <i class="bi bi-trash3" (click)="delete(account._id)"></i> -->
                     </td>
                 </tr>
                 <tr>

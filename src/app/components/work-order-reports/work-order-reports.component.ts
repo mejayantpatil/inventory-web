@@ -2,20 +2,25 @@ import { Component, ViewChild } from '@angular/core';
 import jsPDF from 'jspdf';
 import { companyName } from 'src/app/constants';
 import { Account } from 'src/app/models/account';
+import { SupplyOrder } from 'src/app/models/supplyOrder';
+import { WorkOrder } from 'src/app/models/workOrder';
 import { AccountService } from 'src/app/services/accounts.service';
 import { GroupService } from 'src/app/services/groups.service';
 import { JobService } from 'src/app/services/jobs.service';
 import { ProductService } from 'src/app/services/products.service';
+import { SpinnerService } from 'src/app/services/spinner.service';
+import { SupplyOrderService } from 'src/app/services/supplyOrderService';
 import { TransactionService } from 'src/app/services/transactions.service';
+import { WorkOrderService } from 'src/app/services/work-order.service';
 import * as XLSX from 'xlsx';
 
 @Component({
-  selector: 'app-purchase-reports',
-  templateUrl: './purchase-reports.component.html',
-  styleUrls: ['./purchase-reports.component.scss']
+  selector: 'app-work-order-reports',
+  templateUrl: './work-order-reports.component.html',
+  styleUrls: ['./work-order-reports.component.scss']
 })
-export class PurchaseReportsComponent {
-  private fileName: string = 'Purchase-Report-' + new Date().toISOString().substring(0, 10) + '.xlsx';
+export class WorkOrderReportsComponent {
+  private fileName: string = 'work-order-Report-' + new Date().toISOString().substring(0, 10) + '.xlsx';
   public jobsData: any[] = [];
   public transactions: any[] = [];
   public transactionsData: any[] = [];
@@ -36,20 +41,93 @@ export class PurchaseReportsComponent {
   public providerName: string = '';
   public supplierGroupID = '';
   public providerGroupID = '';
+  public orders: WorkOrder[] = [];
+  public status = 'All'
   @ViewChild('providers') providersAuto: any
   @ViewChild('suppliers') suppliersAuto: any
 
 
   constructor(private jobService: JobService, private accountSerivce: AccountService,
+    private service: WorkOrderService, private spinner: SpinnerService,
     private groupService: GroupService, private productService: ProductService, private transactionService: TransactionService) {
 
   }
 
   ngOnInit() {
-    this.getProducts();
-    this.getAllJobs();
+    // this.getAllOrders();
+    // this.getAllJobs();
     // this.getAllAccounts();
     this.getGRoups();
+  }
+
+  filterOrder() {
+
+  }
+
+  getAllOrders() {
+    if (this.startDate && this.endDate) {
+      this.spinner.showSpinner();
+      this.service.getWorkOrdersByDate(this.startDate, this.endDate).subscribe((res: any) => {
+        this.spinner.hideSpinner();
+        this.showTable = true;
+        this.totalQuantity = 0;
+        this.totalCost = 0;
+
+        if (this.supplierName) {
+          this.orders = res.filter((o: any) => {
+            if (this.status !== 'All') {
+              if (o.supplierName === this.supplierName && o.status === this.status) {
+                this.totalCost = this.totalCost + o.totalAmount;
+                this.totalQuantity = this.totalQuantity + o.totalQuantity
+                return o;
+              }
+            } else {
+              if (o.supplierName === this.supplierName) {
+                this.totalCost = this.totalCost + o.totalAmount;
+                this.totalQuantity = this.totalQuantity + o.totalQuantity
+                return o;
+              }
+            }
+
+          })
+        } else {
+
+          this.orders = res.filter((o: any) => {
+            if (this.status !== 'All') {
+              if (o.status === this.status) {
+                this.totalCost = this.totalCost + o.totalAmount;
+                this.totalQuantity = this.totalQuantity + o.totalQuantity
+                return o;
+              }
+            } else {
+              this.totalCost = this.totalCost + o.totalAmount;
+              this.totalQuantity = this.totalQuantity + o.totalQuantity
+              return o;
+            }
+          })
+
+          // this.orders = res;
+          // this.orders.map(o => {
+          //   this.totalCost = this.totalCost + o.totalAmount;
+          //   this.totalQuantity = this.totalQuantity + o.totalQuantity
+          // })
+        }
+      })
+    } else {
+
+      this.spinner.showSpinner();
+      this.service.getWorkOrders().subscribe((res: any) => {
+        this.spinner.hideSpinner();
+        this.showTable = true;
+        this.orders = res;
+        this.totalQuantity = 0;
+        this.totalCost = 0;
+        this.orders.map(o => {
+          this.totalCost = this.totalCost + o.totalAmount;
+          this.totalQuantity = this.totalQuantity + o.totalQuantity
+        })
+      })
+    }
   }
 
   getGRoups() {
@@ -81,14 +159,14 @@ export class PurchaseReportsComponent {
     this.supplierName = e ? e.accountName : ''
     this.providersAuto.query = ''
     // this.providersAuto.close()
-    this.formatData();
+    // this.formatData();
   }
 
   setProvider(e: any) {
     this.supplierName = e ? e.accountName : ''
     this.suppliersAuto.query = ''
     // this.suppliersAuto.close()
-    this.formatData();
+    // this.formatData();
   }
 
   getProducts() {
@@ -177,23 +255,24 @@ export class PurchaseReportsComponent {
   }
 
   search() {
-    this.getAllTransactions();
+    this.getAllOrders();
   }
 
 
   report() {
     const data: any = []
-    this.transactionsData.map((item, index) => {
+    this.orders.map((item, index) => {
       const arr = [];
       arr.push(index + 1)
-      arr.push(item.transactionNo)
+      arr.push(item.workOrderNumber)
       arr.push(item.date)
-      arr.push(item.invoiceNo)
-      arr.push(item.supplierName)
-      arr.push(item.quantity)
-      arr.push(item.gst)
-      arr.push(item.grandTotal)
-      arr.push(item.netAmount)
+      // arr.push(item.invoiceNo)
+      arr.push(item.serviceProviderName)
+      arr.push(item.status)
+      arr.push(item.totalQuantity)
+      arr.push(item.totalAmount)
+      // arr.push(item.status)
+      // arr.push(item.netAmount)
       data.push(arr);
     })
     this.generateReport(data);
@@ -202,7 +281,7 @@ export class PurchaseReportsComponent {
   generateReport(body: any[]) {
     const doc: any = new jsPDF({ putOnlyUsedFonts: true });
     doc.setFontSize(20);
-    doc.text("PURCHASE REPORT", 70, 15)
+    doc.text("WORK ORDER REPORT", 60, 15)
     doc.setFontSize(10);
     doc.text(companyName, 80, 22);
     doc.line(14, 30, 196, 30);
@@ -227,13 +306,13 @@ export class PurchaseReportsComponent {
     (doc as any).autoTable({
       head: [[
         "Sr.No.",
-        "TN. No.",
+        "Order No.",
         "Date",
-        "Invoice No.",
+        // "Invoice No.",
         "Supplier Name",
-        "Stock",
-        "GST",
-        "Grand Total",
+        "Status",
+        "Quantity",
+        // "Grand Total",
         "Net Amount",
       ]],
       body: body,
@@ -254,11 +333,11 @@ export class PurchaseReportsComponent {
         if (head.cell.raw === 'Sr.No.') {
           head.cell.styles.halign = 'center'
         }
-        if (head.cell.raw === 'GST' || head.cell.raw === 'Grand Total' || head.cell.raw === 'Net Amount') {
+        if (head.cell.raw === 'Quantity' || head.cell.raw === 'Net Amount') {
           head.cell.styles.halign = 'right'
         }
       },
-      columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 6: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right' } },
+      columnStyles: { 0: { halign: 'center' }, 1: { halign: 'center' }, 6: { halign: 'right' }, 5: { halign: 'right' }, 2: { halign: 'left' } },
       startY: 45,
       margin: [10, 15, 30, 15] // top left bottom left
     });

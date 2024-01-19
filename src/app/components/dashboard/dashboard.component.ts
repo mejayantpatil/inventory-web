@@ -15,6 +15,7 @@ import { AccountService } from 'src/app/services/accounts.service';
 import { GroupService } from 'src/app/services/groups.service';
 import { Account } from 'src/app/models/account';
 import jsPDF from 'jspdf';
+import { companyName } from 'src/app/constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -511,7 +512,6 @@ export class DashboardComponent {
         if (pie4.includes(pp?.partNumber)) {
           let obj: any = {};
           obj.label = p + ' ' + (pp?.partName ? pp?.partName : '');
-          // console.log('lol', pp?.partNumber, this.stockConsumed[p], rate, p)
           obj.value = this.stockConsumed[p] * rate // + '%';
           testArr.push(obj);
           // count++;
@@ -747,7 +747,7 @@ export class DashboardComponent {
     doc.setFontSize(20);
     doc.text("KM WISE BUS REPORT", 70, 15)
     doc.setFontSize(10);
-    doc.text("Vishwayoddha Shetkari Multitrade", 80, 22);
+    doc.text(companyName, 80, 22);
     doc.line(14, 30, 196, 30);
 
     doc.autoTable({

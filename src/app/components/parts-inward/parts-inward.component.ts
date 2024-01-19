@@ -4,6 +4,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { async } from 'rxjs';
+import { companyName } from 'src/app/constants';
 import { Account } from 'src/app/models/account';
 import { Group } from 'src/app/models/group';
 import { Product } from 'src/app/models/product';
@@ -274,6 +275,7 @@ export class PartsInwardComponent {
     this.partInwardForm.patchValue({
       supplierName: e.accountName
     })
+    this.checkExisting()
   }
 
   setPartNo(e: any) {
@@ -291,6 +293,9 @@ export class PartsInwardComponent {
   }
 
   saveTransaction() {
+    // if (this.checkExisting()) {
+    //   return;
+    // }
     if (this.partInwardForm.invalid) return;
 
     if (this.partInwardForm.value.supplierName.accountName && this.data.length > 0 && this.partInwardForm.value.totalNetAmount) {
@@ -490,6 +495,20 @@ export class PartsInwardComponent {
 
   }
 
+  checkExisting() {
+    let isExist = false;
+    if (this.partInwardForm.value.supplierName && this.partInwardForm.value.supplierInvoiceNo) {
+      const supplier = typeof (this.partInwardForm.value.supplierName) === 'string' ? this.partInwardForm.value.supplierName : this.partInwardForm.value.supplierName.accountName
+      const result = this.transactions.find(t => t.supplierInvoiceNo === this.partInwardForm.value.supplierInvoiceNo && t.supplierName === supplier)
+      // console.log(result)
+      if (result) {
+        isExist = true;
+        alert('Supplier Invoice No ' + result.supplierInvoiceNo + ' with Supplier ' + result.supplierName + ' is Exist in Transaction No ' + result.transactionNo + ' On this Date ' + result.date)
+      }
+    }
+    return isExist;
+  }
+
   deleteData(index: number) {
     this.data.splice(index, 1);
     this.calculateTotal()
@@ -630,7 +649,7 @@ export class PartsInwardComponent {
     doc.setFontSize(8);
 
     doc.text("Bill No: " + this.partInwardForm.value.transactionNo.toString(), 14, 40)
-    doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+    doc.text("Firm Name: " + companyName, 14, 45)
 
     doc.text("Date: " + this.partInwardForm.value.date, 140, 40)
     // doc.text("Firm Name: Wishvayodha Multitrade", 10, 40)

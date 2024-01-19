@@ -17,6 +17,7 @@ import { TransactionService } from 'src/app/services/transactions.service';
 import { CardService } from 'src/app/services/cards.service';
 import { SupplyOrderService } from 'src/app/services/supplyOrderService';
 import { WorkOrderService } from 'src/app/services/work-order.service';
+import { companyName } from 'src/app/constants';
 
 @Component({
   selector: 'app-job-card',
@@ -97,7 +98,7 @@ export class JobCardComponent {
       engineNumber: new FormControl(''),
       registrationNumber: new FormControl('', Validators.required),
       modelName: new FormControl(''),
-      kmCovered: new FormControl(''),
+      kmCovered: new FormControl('', Validators.required),
       jobCardDate: new FormControl(new Date().toISOString().substring(0, 10)),
       billDate: new FormControl(new Date().toISOString().substring(0, 10)),
       partNo: new FormControl(''),
@@ -326,7 +327,7 @@ export class JobCardComponent {
         modelName: new FormControl(''),
         chasisNumber: new FormControl(''),
         engineNumber: new FormControl(''),
-        kmCovered: new FormControl(''),
+        kmCovered: new FormControl('', Validators.required),
         oilChange: new FormControl('No'),
         service: new FormControl('No'),
         problem: new FormControl('Service and General Maintenance'),
@@ -410,7 +411,7 @@ export class JobCardComponent {
     this.jobCardForm.patchValue({
       registrationNumber: e.vehicleNumber,
       modelName: e.vehicleType,
-      kmCovered: e.currentKM
+      kmCovered: ''// e.currentKM
     })
   }
 
@@ -719,7 +720,7 @@ export class JobCardComponent {
         modelName: new FormControl(''),
         chasisNumber: new FormControl(''),
         engineNumber: new FormControl(''),
-        kmCovered: new FormControl(''),
+        kmCovered: new FormControl('', Validators.required),
         oilChange: new FormControl('No'),
         service: new FormControl('No'),
         problem: new FormControl('Service and General Maintenance'),
@@ -999,7 +1000,7 @@ export class JobCardComponent {
     const doc: any = new jsPDF({ putOnlyUsedFonts: true });
     doc.setFontSize(20);
     // doc.text("Invoice", 90, 15)
-    doc.text("Vishwayoddha Shetkari Multitrade", 100, 15, { align: 'center' })
+    doc.text(companyName, 100, 15, { align: 'center' })
     doc.setFontSize(7);
     doc.text("Address: Katraj, Pune.", 100, 23, { align: 'center' })
 

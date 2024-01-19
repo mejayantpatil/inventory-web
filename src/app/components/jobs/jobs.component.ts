@@ -305,7 +305,6 @@ export class JobsComponent {
         }
       })
       delete this.jobIDandCardMap[index]
-      console.log('lol', this.jobIDandCardMap)
       if (this.activeCards._id) {
         this.cardService.updateCard(this.activeCards._id, { jobIDandCardMap: JSON.stringify(this.jobIDandCardMap) }).subscribe(res => {
           this.getActiveCards()

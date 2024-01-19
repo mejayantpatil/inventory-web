@@ -6,6 +6,7 @@
     <div class="col-12">
         <div *ngIf="!showNewProductForm">
             <h2>Products</h2>
+            <hr>
             <div class="row">
                 <div class="col-lg-3 col-sm-6 col-md-3 col-xs-12">
                     <!-- <span>Filter By Category</span> -->
@@ -21,7 +22,7 @@
                     <!-- <span>Filter</span> -->
                     <input placeholder="Filter By Part No or Part Name" type="text" class="form-control"
                         [(ngModel)]="partNo">
-                    <br>
+
                 </div>
                 <div class="col-lg-6 col-sm-12 col-md-6 col-xs-12">
                     <div class="d-grid gap-2 d-sm-flex  d-md-flex justify-content-md-end">

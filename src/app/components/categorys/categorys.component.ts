@@ -47,7 +47,13 @@ export class CategorysComponent {
   }
 
   saveCategory() {
+
     if (this.categoryForm.valid) {
+      const result = this.data.find(c => c.categoryName === this.categoryForm.value.categoryName)
+      if (result) {
+        alert('Category exist with name ' + this.categoryForm.value.categoryName)
+        return;
+      }
       this.categorySerivce.saveCategory(this.categoryForm.value).subscribe(res => {
         this.cancel();
         this.getAllCategorys();

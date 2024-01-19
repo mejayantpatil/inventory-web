@@ -70,7 +70,7 @@ export class OutTransactionComponent {
     this.spinner.showSpinner();
     this.TransactionSerivce.getTransactions().subscribe((res: any) => {
       this.spinner.hideSpinner();
-      this.data = res;
+      // this.data = res;
     });
   }
 
@@ -116,7 +116,7 @@ export class OutTransactionComponent {
     const transactionNo = data[0]?.transactionNo
     if (type === 'new') {
 
-      this.router.navigate(['part-inward', transactionNo > 0 ? transactionNo + 1 : 1]);// this.data.length > 0 ? this.data.length : 1]);
+      this.router.navigate(['part-outward', transactionNo > 0 ? transactionNo + 1 : 1]);// this.data.length > 0 ? this.data.length : 1]);
     } else {
       this.router.navigate(['part-repaired', transactionNo > 0 ? transactionNo + 1 : 1]);
     }

@@ -9,6 +9,7 @@ import { VehicleService } from 'src/app/services/vehicle.service';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'
+import { companyName } from 'src/app/constants';
 
 
 @Component({
@@ -261,7 +262,7 @@ export class VehicleReportsComponent {
     doc.setFontSize(20);
     doc.text("VEHICLE CONSUMPTION REPORT", 50, 15)
     doc.setFontSize(10);
-    doc.text("Vishwayoddha Shetkari Multitrade", 80, 22);
+    doc.text(companyName, 80, 22);
     doc.line(14, 30, 196, 30);
 
     // doc.autoTable({ html: '#excel-table' })
@@ -279,7 +280,7 @@ export class VehicleReportsComponent {
     // doc.setFontSize(8);
 
     // doc.text("Bill No: " + this.partInwardForm.value.transactionNo.toString(), 14, 40)
-    // doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+    // doc.text("Firm Name: ", 14, 45)
 
     (doc as any).autoTable({
       head: [[
@@ -295,7 +296,7 @@ export class VehicleReportsComponent {
       theme: 'striped',
       styles: {
         // halign: 'right',
-        fontSize: 8
+        fontSize: 7
       },
       headStyles: {
         fontSize: 7

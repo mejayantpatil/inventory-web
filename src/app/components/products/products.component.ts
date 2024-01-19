@@ -183,7 +183,22 @@ export class ProductsComponent {
     })
   }
 
+  checkExisting() {
+    let isExist = false;
+    if (this.productForm.value.partNumber && this.productForm.value.partName) {
+      const result = this.data.find(p => p.partNumber === this.productForm.value.partNumber && p.partName === this.productForm.value.partName)
+      if (result) {
+        isExist = true;
+        alert('Product exist with Name ' + this.productForm.value.partName + ' and ' + this.productForm.value.partNumber)
+      }
+    }
+    return isExist
+  }
+
   saveProduct(product: Product) {
+    if (this.checkExisting()) {
+      return
+    }
     if (this.productForm.valid && product._id) {
       // update
       this.productSerivce.updateProduct(product._id, this.productForm.value).subscribe(res => {
@@ -216,6 +231,7 @@ export class ProductsComponent {
       this.getAllProducts();
     }
   }
+
 
   delete(id: string) {
     // this.modalService.show(id);

@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import jsPDF from 'jspdf';
+import { companyName } from 'src/app/constants';
 import { Account } from 'src/app/models/account';
 import { Product } from 'src/app/models/product';
 import { AccountService } from 'src/app/services/accounts.service';
@@ -282,7 +283,24 @@ export class WorkOrdersComponent {
 
   }
 
-
+  resetForm() {
+    this.workOrderForm.reset();
+    this.assemblesForm.reset();
+    this.assemblesData = [];
+    this.partsData = [];
+    this.workOrderForm.patchValue({
+      partNo: '',
+      partName: '',
+      quantity: 0,
+      rate: 0,
+      gst: 0,
+      unit: '',
+      netAmount: 0,
+      comment: ''
+    })
+    this.selectedProduct = {};
+    this.selectedIndex = -1
+  }
 
   cancelUpdate() {
     // this.workOrderForm.reset();
@@ -462,6 +480,15 @@ export class WorkOrdersComponent {
     this.calculateAssyTotal();
   }
 
+  delete(id: string) {
+    // this.modalService.show(id);
+    if (window.confirm('Are you sure ?')) {
+      this.deleteWorkOrder(id)
+    } else {
+      console.log('not ok')
+    }
+  }
+
   deleteWorkOrder(id: string) {
     this.workOrderService.deleteWorkOrder(id).subscribe(() => {
       this.getAllOrders();
@@ -501,8 +528,9 @@ export class WorkOrdersComponent {
       this.workOrderService.saveWorkOrder(payload).subscribe((res: any) => {
         this.selectedOrderId = res._id
         // this.printOrder()
-        this.cancelUpdate();
+        // this.cancelUpdate();
         this.getAllOrders();
+        this.resetForm();
         // this.showNewWorkOrderForm = false;
         this.showToast();
       })
@@ -511,8 +539,9 @@ export class WorkOrdersComponent {
 
         // this.printOrder()
         this.getAllOrders();
-        this.cancelUpdate();
+        // this.cancelUpdate();
         this.showToast();
+        this.resetForm()
         // this.showNewWorkOrderForm = false;
       })
     }
@@ -663,7 +692,7 @@ export class WorkOrdersComponent {
     doc.text("WORK ORDER", 100, 15, { align: 'center' })
 
     // doc.setFontSize(8);
-    // doc.text("Order By: Vishwayoddha Shetkari Multitrade", 100, 2, { align: 'center' })
+    // doc.text("Order By: ", 100, 2, { align: 'center' })
     // doc.setFontSize(7);
     // doc.text("Address: Katraj, Pune.", 100, 25, { align: 'center' })
 
@@ -681,7 +710,7 @@ export class WorkOrdersComponent {
     doc.text(this.workOrderForm.value.date, 40, 35);
 
     doc.line(14, 40, 196, 40);
-    doc.text("Order By: Vishwayoddha Shetkari Multitrade", 14, 45)
+    doc.text("Order By: " + companyName, 14, 45)
     // doc.setFontSize(7);
     doc.text("Address: Katraj, Pune.", 14, 50)
 

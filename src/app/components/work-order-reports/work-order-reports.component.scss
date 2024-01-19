@@ -4,21 +4,11 @@ tbody {
     overflow-y: auto;
 }
 
-.top-10 {
-    top: 10%
-}
-
 thead,
 tbody tr {
     display: table;
     width: 100%; //var(--table-width);
     table-layout: fixed;
-
-    td {
-        .bi {
-            font-size: 20px;
-        }
-    }
 }
 
 thead {
@@ -29,14 +19,13 @@ table {
     font-size: 10pt;
 }
 
+@media (max-width: 599px) {
+    table {
+        width: 1000px;
+    }
+}
+
+
 .table-borderless {
     font-size: 12pt;
-}
-
-.complete {
-    color: green;
-}
-
-.pending {
-    color: red;
 }

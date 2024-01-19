@@ -78,8 +78,22 @@ export class AccountsMasterComponent {
       // country: new FormControl(this.account.country)
     })
   }
+  checkExisting() {
+    let isExist = false;
+    if (this.accountForm.value.accountName && this.accountForm.value.groupName) {
+      const result = this.data.find(a => a.accountName === this.accountForm.value.accountName && a.groupName === this.accountForm.value.groupName)
+      if (result) {
+        isExist = true
+        alert('Account exit with ' + this.accountForm.value.accountName)
+      }
+    }
+    return isExist
+  }
 
   saveAccount(account: Account) {
+    if (this.checkExisting()) {
+      return;
+    }
     if (this.accountForm.valid && account._id) {
       // update
       this.accountSerivce.updateAccount(account._id, this.accountForm.value).subscribe(res => {

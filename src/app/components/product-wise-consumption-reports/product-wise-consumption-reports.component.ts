@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import jsPDF from 'jspdf';
+import { companyName } from 'src/app/constants';
 import { SpareParts } from 'src/app/models/jobs';
 import { Product } from 'src/app/models/product';
 import { CategoryService } from 'src/app/services/category.service';
@@ -362,7 +363,7 @@ export class ProductWiseConsumptionReportsComponent {
     doc.setFontSize(20);
     doc.text("PRODUCT WISE CONSUMPTION REPORT", 30, 15)
     doc.setFontSize(10);
-    doc.text("Vishwayoddha Shetkari Multitrade", 80, 22);
+    doc.text(companyName, 80, 22);
     doc.line(14, 30, 196, 30);
 
     // doc.autoTable({ html: '#excel-table' })
@@ -380,7 +381,7 @@ export class ProductWiseConsumptionReportsComponent {
     // doc.setFontSize(8);
 
     // doc.text("Bill No: " + this.partInwardForm.value.transactionNo.toString(), 14, 40)
-    // doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+    // doc.text("Firm Name: ", 14, 45)
 
     (doc as any).autoTable({
       head: [[
@@ -398,7 +399,7 @@ export class ProductWiseConsumptionReportsComponent {
       theme: 'striped',
       styles: {
         // halign: 'right',
-        fontSize: 8
+        fontSize: 7
       },
       headStyles: {
         fontSize: 7

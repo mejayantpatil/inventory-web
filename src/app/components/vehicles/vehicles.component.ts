@@ -83,7 +83,24 @@ export class VehiclesComponent {
     })
   }
 
+  checkExisting() {
+    const result = this.data.find(v => v.vehicleNumber.trim() === this.vehicleForm.value.vehicleNumber.trim() && v.vehicleType.trim() === this.vehicleForm.value.vehicleType.trim())
+    if (result) {
+      alert('Vehicle exist with number ' + this.vehicleForm.value.vehicleNumber + ' and type ' + this.vehicleForm.value.vehicleType);
+      return;
+    }
+
+  }
+
   saveVehicle(vehicle: Vehicle) {
+    if (this.vehicleForm.valid) {
+      const result = this.data.find(v => v.vehicleNumber.trim() === this.vehicleForm.value.vehicleNumber.trim() && v.vehicleType.trim() === this.vehicleForm.value.vehicleType.trim())
+      if (result) {
+        alert('Vehicle exist with number ' + this.vehicleForm.value.vehicleNumber + ' and type ' + this.vehicleForm.value.vehicleType);
+        return;
+      }
+    }
+
     if (this.vehicleForm.valid && vehicle._id) {
       this.vehicleSerivce.updateVehicle(vehicle._id, this.vehicleForm.value).subscribe(res => {
         this.cancel();

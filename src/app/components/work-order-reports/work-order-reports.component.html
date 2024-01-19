@@ -4,7 +4,7 @@
         <!-- <h3><a href="#" routerLink="/dashboard">
                 <i class="bi bi-arrow-left-square-fill"></i>
             </a> Purchase Report</h3> -->
-        <h3>Purchase Report</h3>
+        <h3>Work Order Report</h3>
     </div>
 </div>
 <hr>
@@ -17,19 +17,8 @@
         End Date
         <input class="form-control" type="date" [(ngModel)]="endDate" />
     </div>
-    <div class="col-lg-2 col-md-2 col-xs-12"><br>
-        <ng-autocomplete [data]="suppliersData" #suppliers [searchKeyword]="'accountName'"
-            placeholder="Filter By Supplier" [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
-            (inputCleared)="setSupplier($event)" (selected)='setSupplier($event)'>
-        </ng-autocomplete>
-        <ng-template #itemTemplate let-item>
-            <a [innerHTML]="item.accountName"></a>
-        </ng-template>
-        <ng-template #notFoundTemplate let-notFound>
-            <div [innerHTML]="notFound"></div>
-        </ng-template>
-        <!-- <button type="button" class="btn btn-primary" (click)="search()">Show</button> -->
-    </div>
+
+
     <div class="col-lg-2 col-md-2 col-xs-12"><br>
         <ng-autocomplete [data]="providersData" #providers [searchKeyword]="'accountName'"
             placeholder="Filter By Provider" [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
@@ -43,19 +32,34 @@
         </ng-template>
         <!-- <button type="button" class="btn btn-primary" (click)="search()">Show</button> -->
     </div>
-    <div class="col-1">
+    <div class="col-lg-2 col-md-2 col-xs-12"><br>
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" value="All" autocomplete="off"
+                [(ngModel)]="status" checked (change)="filterOrder()">
+            <label class="btn btn-outline-primary" for="btnradio1">All</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" value="Pending" autocomplete="off"
+                [(ngModel)]="status" (change)="filterOrder()">
+            <label class="btn btn-outline-primary" for="btnradio2">Pending</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" value="Complete" autocomplete="off"
+                [(ngModel)]="status" (change)="filterOrder()">
+            <label class="btn btn-outline-primary" for="btnradio3">Completed</label>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-2 col-xs-12 text-center">
         <br>
         <button type="button" class="btn btn-primary" (click)="search()">Show</button>
 
     </div>
-    <div class="col-lg-3 col-md-3 col-xs-12 text-end">
+    <div class="col-lg-2 col-md-2 col-xs-12 text-end">
         <br>
         <button type="button" class="btn btn-primary" [disabled]="!showTable" (click)="report()"><i
                 class="bi bi-printer"></i>
             Print</button>&nbsp;
         <button type="button" class="btn btn-warning" [disabled]="!showTable" (click)="exportToExcel()"><i
                 class="bi bi-box-arrow-in-down"></i> Export
-            to Excel</button>
+        </button>
     </div>
     <!-- <div class="col-2">
         <span>Filter By Category</span>
@@ -77,35 +81,24 @@
                 <thead>
                     <tr>
                         <th scope="col" width="50">#</th>
-                        <th scope="col" width="100">Tr. No.</th>
-                        <th scope="col" width="150">InvoiceNo</th>
-                        <th scope="col" width="100">Date</th>
-                        <th scope="col">Supplier/Provider Name</th>
-                        <!-- <th scope="col">Model Name</th> -->
-
-                        <th scope="col">Stock</th>
-                        <th scope="col">GST</th>
-                        <th scope="col">Grand Total</th>
+                        <th scope="col" width="100">Order No.</th>
+                        <th scope="col" width="150">Date</th>
+                        <th scope="col">Provider Name</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Quantity</th>
                         <th scope="col">Net Amount</th>
-                        <!-- <th scope="col">Quantity</th> -->
-                        <!-- <th scope="col">Net Amount</th> -->
                     </tr>
                 </thead>
                 <tbody>
-                    <ng-container *ngFor="let transaction of transactionsData;let i=index">
+                    <ng-container *ngFor="let order of orders;let i=index">
                         <tr (click)="toggleDetails(i)" [ngClass]="{'table-info': selectedRowIndex === i}">
                             <th scope="row" width="50">{{i+1}}</th>
-                            <td width="100">{{transaction.transactionNo}}</td>
-                            <td width="150">{{transaction.invoiceNo}}</td>
-                            <td width="100">{{transaction.date}}</td>
-                            <td>{{transaction.supplierName}}</td>
-                            <td>{{transaction.quantity}}</td>
-                            <td>{{transaction.gst}}</td>
-                            <td>{{transaction.grandTotal}}</td>
-                            <td>{{transaction.netAmount}}</td>
-                            <!-- <td width="200">{{jobCard.partName}}</td> -->
-                            <!-- <td>{{jobCard.quantity}}</td> -->
-                            <!-- <td>{{jobCard.netAmount}}</td> -->
+                            <td width="100">{{order.workOrderNumber}}</td>
+                            <td width="150">{{order.date}}</td>
+                            <td>{{order.serviceProviderName}}</td>
+                            <td>{{order.status}}</td>
+                            <td>{{order.totalQuantity}}</td>
+                            <td>{{order.totalAmount}}</td>
 
                         </tr>
                         <tr *ngIf="selectedRowIndex === i" class="table-light">
@@ -123,7 +116,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let item of transaction.data; let j=index">
+                                        <tr *ngFor="let item of order.partsData; let j=index">
                                             <th>{{j+1}}</th>
                                             <td>{{item.partNo}}</td>
                                             <td>{{item.partName}}</td>
@@ -146,9 +139,7 @@
                     <tr class="text-danger">
                         <td width="50"></td>
                         <td width="100"></td>
-                        <td width="100"></td>
-                        <td width="100"></td>
-                        <td></td>
+                        <td width="150"></td>
                         <td></td>
                         <td>Total</td>
                         <td>{{totalQuantity}}</td>

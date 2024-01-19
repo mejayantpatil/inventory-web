@@ -50,6 +50,11 @@ export class GroupsComponent {
 
   saveGroup() {
     if (this.groupForm.valid) {
+      const result = this.data.find(g => g.groupName === this.groupForm.value.groupName)
+      if (result) {
+        alert('Group name exist with ' + this.groupForm.value.groupName)
+        return;
+      }
       this.groupSerivce.saveGroup(this.groupForm.value).subscribe(res => {
         this.cancel();
         this.getAllGroups();

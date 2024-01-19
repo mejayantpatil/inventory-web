@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import jsPDF from 'jspdf';
+import { companyName } from 'src/app/constants';
 import { Account } from 'src/app/models/account';
 import { Group } from 'src/app/models/group';
 import { Product } from 'src/app/models/product';
@@ -297,6 +298,7 @@ export class PartsRepairedComponent {
     this.partInwardForm.patchValue({
       supplierName: e.accountName
     })
+    this.checkExisting()
   }
 
   setPartNo(e: any) {
@@ -339,8 +341,24 @@ export class PartsRepairedComponent {
     return
   };
 
-  saveTransaction() {
+  checkExisting() {
+    let isExist = false;
+    if (this.partInwardForm.value.supplierName && this.partInwardForm.value.supplierInvoiceNo) {
+      const supplier = typeof (this.partInwardForm.value.supplierName) === 'string' ? this.partInwardForm.value.supplierName : this.partInwardForm.value.supplierName.accountName
+      const result = this.transactions.find(t => t.supplierInvoiceNo === this.partInwardForm.value.supplierInvoiceNo && t.supplierName === supplier)
+      // console.log(result)
+      if (result) {
+        isExist = true;
+        alert('Supplier Invoice No ' + result.supplierInvoiceNo + ' with Supplier ' + result.supplierName + ' is Exist in Transaction No ' + result.transactionNo + ' On this Date ' + result.date)
+      }
+    }
+    return isExist;
+  }
 
+  saveTransaction() {
+    // if (this.checkExisting()) {
+    //   return;
+    // }
 
     if (this.partInwardForm.valid && this.data.length > 0) {
       const payload = {
@@ -712,7 +730,7 @@ export class PartsRepairedComponent {
     doc.setFontSize(8);
 
     doc.text("Bill No: " + this.partInwardForm.value.transactionNo.toString(), 14, 40)
-    doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+    doc.text("Firm Name: " + companyName, 14, 45)
 
     doc.text("Date: " + this.partInwardForm.value.date, 140, 40)
     // doc.text("Firm Name: Wishvayodha Multitrade", 10, 40)

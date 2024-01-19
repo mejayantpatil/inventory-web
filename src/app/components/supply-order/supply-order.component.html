@@ -6,6 +6,7 @@
     <div class="col-12">
         <div *ngIf="!showNewSupplyOrderForm">
             <h2>Purchase Orders</h2>
+            <hr>
             <div class="row">
                 <div class="col-12 mt-1">
                     <br>
@@ -26,16 +27,16 @@
                         <div class="tab-pane fademt-5" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                             <br>
                             <div class="row">
-                                <div class="col-8">
+                                <div class="col-12">
                                     <div class="responsive-table">
                                         <table class="table table-striped table-hover table-sm" id="excel-table">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col"><input class="form-check-input"
+                                                    <th width="50" scope="col"><input class="form-check-input"
                                                             [(ngModel)]="selectAll" type="checkbox"
                                                             (change)="checkAll()" value="All">
                                                     </th>
-                                                    <th scope="col">#</th>
+                                                    <th width="50" scope="col">#</th>
                                                     <th scope="col">Part No</th>
                                                     <th scope="col">Part Name</th>
                                                     <th scope="col">Qty</th>
@@ -50,10 +51,11 @@
                                             </thead>
                                             <tbody>
                                                 <tr *ngFor="let product of productsWithLowQty;let i=index">
-                                                    <td scope="col"><input class="form-check-input" type="checkbox"
+                                                    <td width="50" scope="col"><input class="form-check-input"
+                                                            type="checkbox"
                                                             (change)="product.checked = !product.checked"
                                                             [checked]="product.checked" value="product.checked"></td>
-                                                    <th scope="row">{{i+1}}</th>
+                                                    <th width="50" scope="row">{{i+1}}</th>
                                                     <td>{{product.partNumber}}</td>
                                                     <td>{{product.partName}}</td>
                                                     <td>{{product.quantity}}</td>
@@ -70,6 +72,7 @@
                                             </button>
                                         </div>
                                     </div>
+                                    <br><br>
                                 </div>
                                 <div class="col-4"></div>
                             </div>
@@ -94,16 +97,16 @@
                             </div>
                             <hr>
 
-                            <div class="col-10">
+                            <div class="col-12">
                                 <table class="table table-striped table-hover" id="excel-table">
                                     <thead>
                                         <tr>
                                             <th scope="col" width="50">#</th>
-                                            <th scope="col">Order No</th>
-                                            <th scope="col">Order Date</th>
+                                            <th scope="col" width="100">Order No</th>
+                                            <th scope="col" width="100">Order Date</th>
                                             <th scope="col">Supplier Name</th>
-                                            <th scope="col">Total Quantity</th>
-                                            <th scope="col">Order Status</th>
+                                            <th scope="col" width="150">Total Quantity</th>
+                                            <th scope="col" width="100">Order Status</th>
                                             <th scope="col" width="200">Action</th>
                                         </tr>
                                     </thead>
@@ -111,19 +114,19 @@
 
                                         <tr *ngFor="let order of supplyOrders;let i=index">
                                             <th scope=" row" width="50">{{i+1}}</th>
-                                            <td>{{order.supplyOrderNumber}}</td>
-                                            <td>{{order.date}}</td>
+                                            <td width="100">{{order.supplyOrderNumber}}</td>
+                                            <td width="100">{{order.date}}</td>
                                             <td>{{order.supplierName}}</td>
-                                            <td>{{order.totalQuantity}}</td>
-                                            <td
+                                            <td width="150">{{order.totalQuantity}}</td>
+                                            <td width="100"
                                                 [ngClass]="{'text-success': order.status === 'Complete', 'text-primary': order.status === 'Pending'}">
                                                 {{order.status}}</td>
 
                                             <td width="200">
                                                 <i class="bi bi-pencil-square" (click)="editSupplyOrder(order)"
                                                     title="Edit"></i>&nbsp;&nbsp;
-                                                <!-- <i class="bi bi-trash3" (click)="deleteSupplyOrder(order._id)"
-                                                    title="Delete"></i>&nbsp;&nbsp; -->
+                                                <i class="bi bi-trash3" (click)="delete(order._id)"
+                                                    *ngIf="order.status !== 'Complete'" title="Delete"></i>&nbsp;&nbsp;
                                                 <i class="bi bi-check-lg" *ngIf="order.status !== 'Complete'"
                                                     [ngClass]="{'complete': order.status === 'Complete', 'pending': order.status === 'Pending'}"
                                                     (click)="completeOrder(order)" title="Click to Complete"></i>
@@ -154,7 +157,7 @@
         </div>
         <div *ngIf="showNewSupplyOrderForm">
             <h2>Purchase Order </h2>
-            <br>
+            <hr>
             <form [formGroup]="supplyOrderForm">
                 <div class="row">
                     <div class="col-2">
@@ -178,6 +181,13 @@
                     <div class="col-2">
                         Order Date
                         <input class="form-control" type="date" formControlName="date" />
+                    </div>
+                    <div class="col-2">
+                        <br>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#addNewProduct">
+                            Add New Product
+                        </button>
                     </div>
 
                 </div>
@@ -230,16 +240,20 @@
                         Last GST%
                         <input class="form-control" type="number" (blur)="addData()" formControlName="gst" />
                     </div>
-
+                    <div class="col-2">
+                        <!-- <br>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#addNewProduct">
+                            Add New Product
+                        </button> -->
+                    </div>
                 </div>
-                <br>
-                <br>
                 <div class="col-lg-2 col-xs-12">
                     <!-- <button type="button" class="btn btn-warning" (click)="cancelUpdate()">Cancel</button>&nbsp; -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#addNewProduct">
                         Add New Product
-                    </button>
+                    </button> -->
 
                 </div>
                 <div class="modal fade" id="addNewProduct" tabindex="-1" aria-labelledby="addNewProductLabel"
@@ -318,13 +332,13 @@
                         <table class="table table-striped table-hover" id="excel-table">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Part No</th>
+                                    <th scope="col" width="50">#</th>
+                                    <th scope="col" width="150">Part No</th>
                                     <th scope="col">Part Name</th>
-                                    <th scope="col" class="text-right">Last Rate</th>
-                                    <th scope="col" class="text-right">Qty</th>
-                                    <th scope="col">Unit</th>
-                                    <th scope="col" class="text-right">GST</th>
+                                    <th scope="col" width="100" class="text-right">Last Rate</th>
+                                    <th scope="col" width="100" class="text-right">Qty</th>
+                                    <th scope="col" width="100">Unit</th>
+                                    <th scope="col" width="100" class="text-right">GST</th>
                                     <!-- <th scope="col" class="text-right">Dis%</th>
                                                                     <th scope="col" class="text-right">Dis AMT</th>
                                                                     <th scope="col" class="text-right">Gross</th>
@@ -333,17 +347,17 @@
                                                                     <th scope="col" class="text-right">CGST%</th>
                                                                     <th scope="col" class="text-right">CGST Amt</th> -->
                                     <!-- <th scope="col" class="text-right">Net Amount</th> -->
-                                    <th scope="col">Action</th>
+                                    <th scope="col" width="100">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let pi of partsData;let i=index">
-                                    <th scope="row">{{i+1}}</th>
-                                    <td>{{pi.partNo}}</td>
+                                    <th scope="row" width="50">{{i+1}}</th>
+                                    <td width="150">{{pi.partNo}}</td>
                                     <td>{{pi.partName}}</td>
-                                    <td class="text-right">{{pi.rate}}</td>
-                                    <td class="text-right">{{pi.quantity}}</td>
-                                    <td>{{pi.unit}}</td>
+                                    <td width="100" class="text-right">{{pi.rate}}</td>
+                                    <td width="100" class="text-right">{{pi.quantity}}</td>
+                                    <td width="100">{{pi.unit}}</td>
 
                                     <!-- <td class="text-right">{{pi.discountPercentage}}%</td>
                                                                     <td class="text-right">{{pi.discount}}</td>
@@ -352,8 +366,8 @@
                                                                     <td class="text-right">{{pi.sgstAmount}}</td>
                                                                     <td class="text-right">{{pi.cgstPercentage}}%</td>
                                                                     <td class="text-right">{{pi.cgstAmount}}</td> -->
-                                    <td class="text-right">{{pi.gst}}%</td>
-                                    <td>
+                                    <td width="100" class="text-right">{{pi.gst}}%</td>
+                                    <td width="100">
                                         <i class="bi bi-pencil-square" (click)="editData(i)"></i>&nbsp;
                                         <i class="bi bi-trash3" (click)="deleteData(i)"></i>
                                     </td>
@@ -369,11 +383,13 @@
                         Order Description
                         <textarea class="form-control" id="comment" formControlName="comment" rows="3"></textarea>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6"></div>
+                    <div class="col-12">
+                        <hr>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="button" class="btn btn-warning" (click)="cancel()">Goto List</button>
                             <button type="button" class="btn btn-primary pull-right" (click)="saveSupplyOrder()"
-                                [disabled]="!supplyOrderForm.value.supplierName">Save
+                                [disabled]="!supplyOrderForm.value.supplierName || partsData.length ===0">Save
                             </button>
                             <button type="button" class="btn btn-success pull-right" (click)="printOrder()"
                                 [disabled]="!supplyOrderForm.value.supplierName">Print</button>

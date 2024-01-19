@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import { CategoryService } from 'src/app/services/category.service';
 import { TransactionService } from 'src/app/services/transactions.service';
 import { JobService } from 'src/app/services/jobs.service';
+import { companyName } from 'src/app/constants';
 
 
 @Component({
@@ -312,6 +313,10 @@ export class SupplyOrderComponent {
     })
   }
 
+  resetForm() {
+    this.supplyOrderForm.reset();
+  }
+
   cancelUpdate() {
     this.supplyOrderForm.patchValue({
       partNo: '',
@@ -432,6 +437,14 @@ export class SupplyOrderComponent {
     })
     this.calculateTotal();
   }
+  delete(id: string) {
+    // this.modalService.show(id);
+    if (window.confirm('Are you sure ?')) {
+      this.deleteSupplyOrder(id)
+    } else {
+      console.log('not ok')
+    }
+  }
 
   deleteSupplyOrder(id: string) {
     this.supplyOrderService.deleteSupplyOrder(id).subscribe(() => {
@@ -474,6 +487,7 @@ export class SupplyOrderComponent {
         // this.printOrder()
         this.cancelUpdate();
         this.getAllOrders();
+        this.resetForm()
         // this.showNewSupplyOrderForm = false;
         this.showToast()
       })
@@ -485,6 +499,7 @@ export class SupplyOrderComponent {
         this.getAllOrders();
         this.cancelUpdate();
         this.showToast()
+        this.resetForm()
         // this.showNewSupplyOrderForm = false;
       })
     }
@@ -566,7 +581,7 @@ export class SupplyOrderComponent {
     doc.text("PURCHASE ORDER", 100, 15, { align: 'center' })
 
     // doc.setFontSize(8);
-    // doc.text("Order By: Vishwayoddha Shetkari Multitrade", 100, 2, { align: 'center' })
+    // doc.text("Order By: ", 100, 2, { align: 'center' })
     // doc.setFontSize(7);
     // doc.text("Address: Katraj, Pune.", 100, 25, { align: 'center' })
 
@@ -584,7 +599,7 @@ export class SupplyOrderComponent {
     doc.text(this.supplyOrderForm.value.date, 40, 35);
 
     doc.line(14, 40, 196, 40);
-    doc.text("Order By: Vishwayoddha Shetkari Multitrade", 14, 45)
+    doc.text("Order By: " + companyName, 14, 45)
     // doc.setFontSize(7);
     doc.text("Address: Katraj, Pune.", 14, 50)
 

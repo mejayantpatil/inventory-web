@@ -30,6 +30,8 @@ import { VehicleReportsComponent } from './components/vehicle-reports/vehicle-re
 import { AuthGuard } from './services/auth.guard';
 import { PartsOutwardComponent } from './components/parts-outward/parts-outward.component';
 import { OutTransactionComponent } from './components/out-transactions/transactions.component';
+import { PurchaseOrderReportsComponent } from './components/purchase-order-reports/purchase-order-reports.component';
+import { WorkOrderReportsComponent } from './components/work-order-reports/work-order-reports.component';
 
 const routes: Routes = [
   {
@@ -69,6 +71,12 @@ const routes: Routes = [
     path: 'purchase-reports', component: PurchaseReportsComponent, canActivate: [AuthGuard]
   },
   {
+    path: 'purchase-order-reports', component: PurchaseOrderReportsComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'work-order-reports', component: WorkOrderReportsComponent, canActivate: [AuthGuard]
+  },
+  {
     path: 'stock-wise-reports', component: StockWiseReportsComponent, canActivate: [AuthGuard]
   },
   {
@@ -96,7 +104,7 @@ const routes: Routes = [
     path: 'transactions', component: TransactionComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'out-transactions', component: PartsOutwardComponent, canActivate: [AuthGuard]
+    path: 'out-transactions', component: OutTransactionComponent, canActivate: [AuthGuard]
   },
   {
     path: 'purchase-order', component: SupplyOrderComponent, canActivate: [AuthGuard]

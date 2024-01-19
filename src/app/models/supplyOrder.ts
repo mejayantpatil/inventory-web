@@ -11,7 +11,7 @@ export interface SupplyOrder {
 }
 
 interface PartsData {
-    partNumber: string
+    partNo: string
     partName: string
     quantity: number
     rate: number

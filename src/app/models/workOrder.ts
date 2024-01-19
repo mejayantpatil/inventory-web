@@ -12,7 +12,7 @@ export interface WorkOrder {
 }
 
 interface PartsData {
-    partNumber: string
+    partNo: string
     partName: string
     quantity: number
     rate: number

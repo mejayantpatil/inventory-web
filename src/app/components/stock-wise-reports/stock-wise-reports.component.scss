@@ -17,6 +17,15 @@ thead {
 
 table {
     font-size: 10pt;
+
+    thead {
+        tr {
+            th {
+                font-size: 9pt !important;
+            }
+        }
+    }
+
 }
 
 @media (max-width: 599px) {

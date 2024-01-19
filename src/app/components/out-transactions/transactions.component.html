@@ -24,7 +24,7 @@
                     <input placeholder="Filter By Tr. No. /Invoice No./Supplier Name" type="text" class="form-control"
                         [(ngModel)]="invoiceNo">
                 </div>
-                <div class="col-lg-9 col-xs-12">
+                <div class="col-lg-8 col-xs-12">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <!-- <input *ngIf="showFileUpload" type="file" class="file-upload" (change)="onFileChange($event)">
                 <button *ngIf="showFileUpload" type="button" class="btn btn-danger"
@@ -34,11 +34,11 @@
                         <button type="button" class="btn btn-warning" (click)="exportToExcel()"><i
                                 class="bi bi-box-arrow-in-down"></i> Export
                             to Excel</button>
-                        <button type="button" class="btn btn-primary pull-right"
+                        <!-- <button type="button" class="btn btn-primary pull-right"
                             (click)="newTransaction('repaired')">Add Repaired
-                            Parts</button>
+                            Parts</button> -->
                         <!-- <button type="button" class="btn btn-info">Info</button> -->
-                        <button type="button" class="btn btn-primary pull-right" (click)="newTransaction()">Add New
+                        <button type="button" class="btn btn-primary pull-right" (click)="newTransaction()">Add Out
                             Parts</button>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container *ngFor="let transaction of data| filterInvoice: invoiceNo;let i=index">
+                        <ng-container *ngFor="let transaction of data | filterInvoice: invoiceNo;let i=index">
                             <tr (click)="toggleDetails(i, transaction)"
                                 [ngClass]="{'table-info': selectedRowIndex === i}">
 
@@ -79,9 +79,6 @@
                                 <td class="text-right">{{transaction.grossAmount}}</td>
                                 <td class="text-right">{{transaction.gst}}</td>
                                 <td class="text-right">{{transaction.tradeDiscount}}</td>
-                                <!-- <td class="text-right">{{transaction.grandTotal}}</td> -->
-                                <!-- <td class="text-right">{{transaction.cashDiscount}}</td>
-                        <td class="text-right">{{transaction.otherCharges}}</td> -->
                                 <td class="text-right">{{transaction.netAmount}}</td>
                                 <td class="text-center">
                                     <!-- <i class="bi bi-pencil-square" (click)="editTransaction(transaction)"></i>&nbsp; -->

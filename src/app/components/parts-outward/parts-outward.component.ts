@@ -4,6 +4,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { async } from 'rxjs';
+import { companyName } from 'src/app/constants';
 import { Account } from 'src/app/models/account';
 import { Group } from 'src/app/models/group';
 import { Product } from 'src/app/models/product';
@@ -627,7 +628,7 @@ export class PartsOutwardComponent {
     doc.setFontSize(8);
 
     doc.text("Bill No: " + this.partInwardForm.value.transactionNo.toString(), 14, 40)
-    doc.text("Firm Name: Vishwayoddha Shetkari Multitrade", 14, 45)
+    doc.text("Firm Name: " + companyName, 14, 45)
 
     doc.text("Date: " + this.partInwardForm.value.date, 140, 40)
     // doc.text("Firm Name: Wishvayodha Multitrade", 10, 40)
