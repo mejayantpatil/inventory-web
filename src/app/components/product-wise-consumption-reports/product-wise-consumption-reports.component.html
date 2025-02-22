@@ -75,10 +75,12 @@
                         <th scope="col" width="50">#</th>
                         <th scope="col" width="100">Job Card No</th>
                         <th scope="col" width="100">Job Date</th>
-                        <th scope="col">Vehicle No.</th>
                         <th scope="col">Model Name</th>
+                        <th scope="col">Vehicle No.</th>
+                        <th scope="col" width="150">KM Covered</th>
                         <th scope="col" width="150">Part No.</th>
                         <th scope="col" width="200">Part Name</th>
+                        <th scope="col">Comment</th>
                         <th scope="col" width="100">Quantity</th>
                         <th scope="col">Net Amount</th>
                     </tr>
@@ -88,10 +90,12 @@
                         <th scope="row" width="50">{{i+1}}</th>
                         <td width="100">{{jobCard.jobCardNo}}</td>
                         <td width="100">{{jobCard.jobCardDate}}</td>
-                        <td>{{jobCard.registrationNumber}}</td>
                         <td>{{jobCard.modelName}}</td>
+                        <td>{{jobCard.registrationNumber}}</td>
+                        <td width="150">{{jobCard.kmCovered}}</td>
                         <td width="150">{{jobCard.partNo}}</td>
                         <td width="200">{{jobCard.partName}}</td>
+                        <td>{{jobCard.comment}}</td>
                         <td width="100">{{jobCard.quantity}}</td>
                         <td>{{jobCard.netAmount}}</td>
 
@@ -104,6 +108,7 @@
                     <tr class="text-danger">
                         <td width="50"></td>
                         <td width="100"></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

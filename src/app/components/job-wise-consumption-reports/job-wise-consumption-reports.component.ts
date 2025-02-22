@@ -114,7 +114,8 @@ export class JobWiseConsumptionReportsComponent {
       this.data = data;
 
     } else {
-      this.data = this.jobs
+      this.search();
+      // this.data = this.jobs
     }
   }
 

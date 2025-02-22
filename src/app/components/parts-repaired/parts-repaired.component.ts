@@ -479,16 +479,18 @@ export class PartsRepairedComponent {
 
   setLGST() {
     if (this.partInwardForm.value.lgstPercentage) {
-      const amount = this.partInwardForm.value.labourCharges + this.partInwardForm.value.otherCharges;
+      const amount = parseFloat(this.partInwardForm.value.labourCharges) + parseFloat(this.partInwardForm.value.otherCharges);
       const gst = (amount * this.partInwardForm.value.lgstPercentage) / 100;
       const total = amount + gst;// + this.partInwardForm.value.labourCharges;
+      console.log(amount, gst, 'total', total)
       this.partInwardForm.patchValue({
         lgst: parseFloat(gst.toString()).toFixed(2),
         lnetAmount: parseFloat(total.toString()).toFixed(2),
       })
     } else {
-      const amount = this.partInwardForm.value.labourCharges + this.partInwardForm.value.otherCharges;
+      const amount = parseFloat(this.partInwardForm.value.labourCharges) + parseFloat(this.partInwardForm.value.otherCharges);
       const total = this.partInwardForm.value.labourCharges + this.partInwardForm.value.otherCharges;
+      console.log(amount, total)
       this.partInwardForm.patchValue({
         lgst: 0,
         lnetAmount: parseFloat(total.toString()).toFixed(2),
@@ -498,6 +500,7 @@ export class PartsRepairedComponent {
   }
 
   setTotal() {
+    console.log(this.partInwardForm.value.partNetAmount, this.partInwardForm.value.lnetAmount)
     const total = parseFloat(this.partInwardForm.value.partNetAmount) + parseFloat(this.partInwardForm.value.lnetAmount)
     const gst = parseFloat(this.partInwardForm.value.gst) + parseFloat(this.partInwardForm.value.lgst)
     const percentage = parseInt(this.partInwardForm.value.gstPercentage) + parseInt(this.partInwardForm.value.lgstPercentage)

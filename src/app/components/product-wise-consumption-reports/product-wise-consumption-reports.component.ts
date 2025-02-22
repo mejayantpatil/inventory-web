@@ -123,6 +123,8 @@ export class ProductWiseConsumptionReportsComponent {
               quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                kmCovered: j.kmCovered,
+                comment: j.comment,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
@@ -131,6 +133,7 @@ export class ProductWiseConsumptionReportsComponent {
               quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                kmCovered: j.kmCovered, comment: j.comment,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
@@ -144,6 +147,7 @@ export class ProductWiseConsumptionReportsComponent {
             quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+              kmCovered: j.kmCovered, comment: j.comment,
               modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
             })
           })
@@ -175,6 +179,7 @@ export class ProductWiseConsumptionReportsComponent {
 
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                kmCovered: j.kmCovered, comment: j.comment,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
@@ -183,6 +188,7 @@ export class ProductWiseConsumptionReportsComponent {
               quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                kmCovered: j.kmCovered, comment: j.comment,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
@@ -196,6 +202,7 @@ export class ProductWiseConsumptionReportsComponent {
             quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+              kmCovered: j.kmCovered, comment: j.comment,
               modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
             })
           })
@@ -224,6 +231,7 @@ export class ProductWiseConsumptionReportsComponent {
           quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
           this.jobsData.push({
             jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+            kmCovered: j.kmCovered, comment: j.comment,
             modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
           })
         })
@@ -252,6 +260,7 @@ export class ProductWiseConsumptionReportsComponent {
             quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
             this.jobsData.push({
               jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+              kmCovered: j.kmCovered, comment: j.comment,
               modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
             })
           }
@@ -261,6 +270,7 @@ export class ProductWiseConsumptionReportsComponent {
               quantity = quantity + parseInt(s.quantity ? s.quantity.toString() : '0')
               this.jobsData.push({
                 jobCardNo: j.jobCardNo, jobCardDate: j.jobCardDate, registrationNumber: j.registrationNumber,
+                kmCovered: j.kmCovered, comment: j.comment,
                 modelName: j.modelName, partNo: s.partNo, partNumber: s.partNo, partName: s.partName, quantity: s.quantity, netAmount: s.netAmount
               })
             }
@@ -282,23 +292,23 @@ export class ProductWiseConsumptionReportsComponent {
     }
   }
 
-  getTransactions() {
-    this.transactionService.getTransactionsByDate(this.startDate, this.endDate).subscribe((res: any) => {
-      this.transactions = res;
-      // this.formatData();
-      res.map((t: any) => {
-        t.data.map((i: any) => {
-          this.stockPurchased[i.partNo] = parseInt(this.stockPurchased[i.partNo] ? this.stockPurchased[i.partNo] : '0') + parseInt(i.quantity);
-          this.stockPuchasedValues[i.partNo] = i.newRate ? i.newRate : 0
-          this.totalPurchasedQty = this.totalPurchasedQty + parseInt(i.quantity);
-        })
+  // getTransactions() {
+  //   this.transactionService.getTransactionsByDate(this.startDate, this.endDate).subscribe((res: any) => {
+  //     this.transactions = res;
+  //     // this.formatData();
+  //     res.map((t: any) => {
+  //       t.data.map((i: any) => {
+  //         this.stockPurchased[i.partNo] = parseInt(this.stockPurchased[i.partNo] ? this.stockPurchased[i.partNo] : '0') + parseInt(i.quantity);
+  //         this.stockPuchasedValues[i.partNo] = i.newRate ? i.newRate : 0
+  //         this.totalPurchasedQty = this.totalPurchasedQty + parseInt(i.quantity);
+  //       })
 
-      });
-      // Object.keys(this.stockPuchasedValues).map(p => {
-      // this.totalPurchasedRate = this.totalPurchasedRate + this.stockPuchasedValues[p]
-      // })
-    })
-  }
+  //     });
+  //     // Object.keys(this.stockPuchasedValues).map(p => {
+  //     // this.totalPurchasedRate = this.totalPurchasedRate + this.stockPuchasedValues[p]
+  //     // })
+  //   })
+  // }
 
   getJobs() {
 
@@ -318,7 +328,7 @@ export class ProductWiseConsumptionReportsComponent {
     this.spinner.showSpinner();
     this.mySelect.nativeElement.value = ''
     this.showTable = true;
-    this.getTransactions();
+    // this.getTransactions();
     this.getJobs();
   }
 
@@ -347,10 +357,12 @@ export class ProductWiseConsumptionReportsComponent {
       arr.push(index + 1)
       arr.push(item.jobCardNo)
       arr.push(item.jobCardDate)
-      arr.push(item.registrationNumber)
       arr.push(item.modelName)
+      arr.push(item.registrationNumber)
+      arr.push(item.kmCovered)
       arr.push(item.partNo)
       arr.push(item.partName)
+      arr.push(item.comment)
       arr.push(item.quantity)
       arr.push(item.netAmount)
       data.push(arr);
@@ -388,10 +400,12 @@ export class ProductWiseConsumptionReportsComponent {
         "Sr.No.",
         "Job No.",
         "Job Date",
-        "Vehicle No.",
         "Model Name",
+        "Vehicle No.",
+        "KM Covered",
         "Part No",
         "Part Name",
+        "Comment",
         "Qty",
         "Net Amount",
       ]],

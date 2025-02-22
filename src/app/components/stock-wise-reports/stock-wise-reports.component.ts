@@ -56,7 +56,7 @@ export class StockWiseReportsComponent {
     })
   }
 
-  getAllProducts() {
+  getAllProducts(formatDate: boolean = false) {
     this.spinner.showSpinner();
     this.productService.getProducts().subscribe((res: any) => {
       this.spinner.hideSpinner();
@@ -66,12 +66,14 @@ export class StockWiseReportsComponent {
         this.totalPurchasedRate = this.totalPurchasedRate + (d.newRate ? d.newRate : 0)
         // this.totalSaleRate = this.totalSaleRate + parseFloat(d.saleRate);
       })
+      if (formatDate) this.formatData();
     });
   }
 
   getTransactions() {
+    this.stockPurchased = {};
     this.transactionService.getTransactionsByDate(this.startDate, this.endDate).subscribe((res: any) => {
-      this.stockPurchased = {};
+      // this.stockPurchased = {};
       res.map((t: any) => {
         t.data.map((i: any) => {
           this.stockPurchased[i.partNo] = parseInt(this.stockPurchased[i.partNo] ? this.stockPurchased[i.partNo] : '0') + parseInt(i.quantity);
@@ -88,8 +90,9 @@ export class StockWiseReportsComponent {
   }
 
   getJobs() {
+    this.stockConsumed = {}
     this.jobService.getJobByDate(this.startDate, this.endDate).subscribe((res: any) => {
-      this.stockConsumed = {}
+      // this.stockConsumed = {}
       res.map((t: any) => {
         t.spareParts.map((i: any) => {
           // if (t.status === 'Complete') {
@@ -103,12 +106,14 @@ export class StockWiseReportsComponent {
   }
 
   search() {
+    console.log('lol');
     this.showTable = true;
     this.getTransactions();
     // this.getJobs();
   }
 
   filterResults(categoryID: string) {
+    console.log('categoryID', categoryID)
     if (categoryID) {
       this.spinner.showSpinner();
       this.productService.getProductsByCategory(categoryID).subscribe((res: any) => {
@@ -117,7 +122,7 @@ export class StockWiseReportsComponent {
         this.formatData()
       });
     } else {
-      this.getAllProducts();
+      this.getAllProducts(true);
     }
   }
 
@@ -133,6 +138,7 @@ export class StockWiseReportsComponent {
     this.totalOpeningStockValue = 0
     this.totalClosingStockValue = 0;
     this.newData = [];
+    let test = 0;
     this.data.map(d => {
       const quantity = d.quantity ? d.quantity : 0;
       const purchasedQty = this.stockPurchased[d.partNumber] ? this.stockPurchased[d.partNumber] : 0;
@@ -148,8 +154,11 @@ export class StockWiseReportsComponent {
       this.totalPurchasedQty = this.totalPurchasedQty + purchasedQty;
       this.totalConsumedQty = this.totalConsumedQty + consumedQty;
       const openingStockValue = (opening * d.saleRate);
-      const closingStockValue = (closingQty * (d.newRate ? d.newRate : d.saleRate || 0))
+      const closingStockValue = (closingQty * (d.newRate ? d.newRate : (d.saleRate ? d.saleRate : 0)))
+      // console.log('closingQty', closingQty, 'd.newRate ', d.newRate, 'd.saleRate', d.saleRate, 'closingStockValue=', closingStockValue);
+      test = test + closingStockValue;
       this.totalOpeningStockValue = this.totalOpeningStockValue + openingStockValue;
+      console.log(d.partNumber, closingStockValue, 'total=', this.totalClosingStockValue.toFixed(2));
       this.totalClosingStockValue = this.totalClosingStockValue + closingStockValue;
       this.newData.push({
         partNumber: d.partNumber,
@@ -161,11 +170,12 @@ export class StockWiseReportsComponent {
         consumedQty, closingQty,
         saleRate: (d.newRate ? d.newRate : d.saleRate || 0).toFixed(2),
         closingRate: (d.quantity * d.saleRate).toFixed(2),
-        closingStockValue: Math.abs(closingStockValue).toFixed(2)
+        closingStockValue: closingStockValue.toFixed(2)// Math.abs(closingStockValue).toFixed(2)
       })
       // console.log(d.partNumber, d.partName, opening ? opening : 0, purchasedQty, consumedQty, closingQty, d.saleRate, d.quantity * d.saleRate)
     })
-    // console.log('-->', this.openingQuantity, this.totalPurchasedQty, this.totalConsumedQty, this.closingQuanity, this.totalItemSaleRate, this.totalSaleRate)
+    // console.log('lol', test, this.totalClosingStockValue)
+    // console.log('-->', this.totalOpeningStockValue, this.totalQty, this.totalPurchasedQty, this.totalConsumedQty, this.closingQuanity, this.totalClosingStockValue)
   }
 
 

@@ -116,6 +116,9 @@ export class PurchaseReportsComponent {
     this.totalCost = 0;
     this.totalQuantity = 0;
     this.transactions.map((t: any) => {
+      // if (t.netAmount > 500000) {
+      //   console.log(t)
+      // }
       if (this.supplierName) {
         let product: any = {}
         let quantity = 0;
@@ -131,6 +134,7 @@ export class PurchaseReportsComponent {
             netAmount: t.netAmount, quantity: quantity, data: t.data,
             invoiceNo: t.supplierInvoiceNo, gst: t.gst, grandTotal: t.grandTotal
           })
+          console.log(t.netAmount, 'total=', this.totalCost)
           this.totalCost = this.totalCost + t.netAmount
           this.totalQuantity = this.totalQuantity + (quantity ? quantity : 0)
         }
@@ -147,13 +151,15 @@ export class PurchaseReportsComponent {
           netAmount: t.netAmount, quantity: quantity, data: t.data,
           invoiceNo: t.supplierInvoiceNo, gst: t.gst, grandTotal: t.grandTotal
         })
+        console.log(t.netAmount, 'total=', this.totalCost)
         this.totalCost = this.totalCost + t.netAmount
         this.totalQuantity = this.totalQuantity + (quantity ? quantity : 0)
 
       }
 
     });
-    console.log(this.transactionsData)
+    console.log(this.totalCost, this.totalQuantity)
+    // console.log(this.transactionsData)
   }
 
   getAllJobs() {

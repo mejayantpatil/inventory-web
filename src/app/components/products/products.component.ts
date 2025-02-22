@@ -285,12 +285,13 @@ export class ProductsComponent {
     this.transactions.map((t: any) => {
 
       t.data.map((i: any) => {
-
         if (i.partNo === partNumber) {
-          console.log(i)
+          //console.log(i)
 
           if (this.stockPurchasedData[partNumber]) {
-            t.quantity = parseInt(t.quantity ? t.quantity : '0') + parseInt(i.quantity ? i.quantity : '0');
+            console.log(t.quantity, i.quantity);
+            // t.quantity = parseInt(t.quantity ? t.quantity : '0') + parseInt(i.quantity ? i.quantity : '0');
+            t.quantity = parseInt(i.quantity ? i.quantity : '0');
             t.total = i.netAmount;
             t.partNo = i.partNo;
             this.stockPurchasedData[partNumber].push(t);
