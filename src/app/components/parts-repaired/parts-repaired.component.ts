@@ -480,16 +480,21 @@ export class PartsRepairedComponent {
   setLGST() {
     if (this.partInwardForm.value.lgstPercentage) {
       const amount = parseFloat(this.partInwardForm.value.labourCharges) + parseFloat(this.partInwardForm.value.otherCharges);
+      console.log('amount', amount, this.partInwardForm.value.lgstPercentage);
       const gst = (amount * this.partInwardForm.value.lgstPercentage) / 100;
+      console.log('gst', gst);
       const total = amount + gst;// + this.partInwardForm.value.labourCharges;
-      console.log(amount, gst, 'total', total)
+      console.log('total', total)
       this.partInwardForm.patchValue({
         lgst: parseFloat(gst.toString()).toFixed(2),
         lnetAmount: parseFloat(total.toString()).toFixed(2),
       })
     } else {
+      console.log('else');
       const amount = parseFloat(this.partInwardForm.value.labourCharges) + parseFloat(this.partInwardForm.value.otherCharges);
+      console.log('amount', amount);
       const total = this.partInwardForm.value.labourCharges + this.partInwardForm.value.otherCharges;
+      console.log('total', total);
       console.log(amount, total)
       this.partInwardForm.patchValue({
         lgst: 0,
@@ -500,9 +505,10 @@ export class PartsRepairedComponent {
   }
 
   setTotal() {
-    console.log(this.partInwardForm.value.partNetAmount, this.partInwardForm.value.lnetAmount)
+    console.log(this.partInwardForm.value)
     const total = parseFloat(this.partInwardForm.value.partNetAmount) + parseFloat(this.partInwardForm.value.lnetAmount)
     const gst = parseFloat(this.partInwardForm.value.gst) + parseFloat(this.partInwardForm.value.lgst)
+    console.log('total GST', gst)
     const percentage = parseInt(this.partInwardForm.value.gstPercentage) + parseInt(this.partInwardForm.value.lgstPercentage)
     this.partInwardForm.patchValue({
       total: total.toFixed(2),
@@ -568,7 +574,7 @@ export class PartsRepairedComponent {
         total: data.total,
         lnetAmount: data.lnetAmount,
         gstPercentage: data.gstPercentage,
-        gst: data.cgstAmount,
+        gst: data.gst,
         netAmount: data.netAmount,
         partNetAmount: data.partNetAmount
       })
@@ -600,6 +606,7 @@ export class PartsRepairedComponent {
         otherChargesDesc: this.partInwardForm.value.otherChargesDesc,
         lgstPercentage: this.partInwardForm.value.lgstPercentage,
         lgst: this.partInwardForm.value.lgst,
+        gst: this.partInwardForm.value.gst,
         gstPercentage: this.partInwardForm.value.gstPercentage,
         totalGST: this.partInwardForm.value.totalGST,
         lnetAmount: this.partInwardForm.value.lnetAmount,
@@ -630,7 +637,7 @@ export class PartsRepairedComponent {
         lgstPercentage: this.partInwardForm.value.lgstPercentage,
         totalGST: this.partInwardForm.value.totalGST,
         lgst: this.partInwardForm.value.lgst,
-        gst: this.partInwardForm.value.gstPercentage,
+        gst: this.partInwardForm.value.gst,
         gstPercentage: this.partInwardForm.value.gstPercentage,
         lnetAmount: this.partInwardForm.value.lnetAmount,
         partNetAmount: this.partInwardForm.value.partNetAmount,

@@ -50,6 +50,8 @@ import { OutTransactionComponent } from './components/out-transactions/transacti
 import { DeleteModalComponent } from './components/delete-modal/delete-modal.component';
 import { PurchaseOrderReportsComponent } from './components/purchase-order-reports/purchase-order-reports.component';
 import { WorkOrderReportsComponent } from './components/work-order-reports/work-order-reports.component';
+import { PartOutComponent } from './components/part-out/part-out.component';
+import { RepairedPartsReportsComponent } from './components/repaired-parts-reports/repaired-parts-reports.component';
 
 @NgModule({
   declarations: [
@@ -94,7 +96,9 @@ import { WorkOrderReportsComponent } from './components/work-order-reports/work-
     VehicleReportsComponent,
     DeleteModalComponent,
     WorkOrderReportsComponent,
-    PurchaseOrderReportsComponent
+    PurchaseOrderReportsComponent,
+    PartOutComponent,
+    RepairedPartsReportsComponent
   ],
   imports: [
     BrowserModule,

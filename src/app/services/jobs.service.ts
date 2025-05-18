@@ -62,6 +62,11 @@ export class JobService {
     getJobByDate(startDate: string, endDate: string) {
         return this.http.post(this.baseUrl + '/getByDate', { startDate, endDate });
     }
+
+    getJobByDateRage(startDate: string, endDate: string) {
+        return this.http.post(this.baseUrl + '/getByDateRange', { startDate, endDate });
+    }
+
     backUp() {
         return this.http.post(this.baseUrl + '/backup', {});
     }

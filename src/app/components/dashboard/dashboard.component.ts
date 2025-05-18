@@ -94,7 +94,6 @@ export class DashboardComponent {
   getKM(vehicle: Vehicle) {
     if (this.kmByBusNo[vehicle.vehicleNumber]) {
       this.kmByBusNo[vehicle.vehicleNumber].sort((a: number, b: number) => b - a);
-      // console.log(vehicle.vehicleNumber, vehicle.currentKM, this.kmByBusNo[vehicle.vehicleNumber][1])
       const val = vehicle.currentKM - (this.kmByBusNo[vehicle.vehicleNumber][1] ? this.kmByBusNo[vehicle.vehicleNumber][1] : this.kmByBusNo[vehicle.vehicleNumber][0] ? this.kmByBusNo[vehicle.vehicleNumber][0] : vehicle.currentKM)
       return val > 0 ? val : 0
     } else return 0
@@ -176,7 +175,6 @@ export class DashboardComponent {
   }
 
   setPartNo(e: any, index: number) {
-    // console.log(e)
     this.selectedProducts[index].partNumber = e.partNumber
     this.selectedProducts[index].partName = e.partName
     this.selectedProducts[index].gst = e.gst

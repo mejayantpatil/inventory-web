@@ -32,6 +32,8 @@ import { PartsOutwardComponent } from './components/parts-outward/parts-outward.
 import { OutTransactionComponent } from './components/out-transactions/transactions.component';
 import { PurchaseOrderReportsComponent } from './components/purchase-order-reports/purchase-order-reports.component';
 import { WorkOrderReportsComponent } from './components/work-order-reports/work-order-reports.component';
+import { PartOutComponent } from './components/part-out/part-out.component';
+import { RepairedPartsReportsComponent } from './components/repaired-parts-reports/repaired-parts-reports.component';
 
 const routes: Routes = [
   {
@@ -135,6 +137,12 @@ const routes: Routes = [
   },
   {
     path: 'users', component: UsersComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'part-out', component: PartOutComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'repaired-parts-report', component: RepairedPartsReportsComponent, canActivate: [AuthGuard]
   }
 
 ];

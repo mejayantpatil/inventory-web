@@ -15,7 +15,7 @@
       <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="mb-3">
           <div class="alert alert-primary" role="alert">
-            <h2>Total Stock Purchased <br>&#8377;: {{totalStockCost | number :
+            <h2>Total Stock Purchased <br>&#8377;: {{totalStockCost===0?'loading...':totalStockCost | number :
               '1.2-2'}}</h2>
             <div class="text-end ">
               <br>
@@ -27,9 +27,10 @@
       <div class="col-lg-6 col-md-6 col-xs-12">
         <div class="mb-3">
           <div class="alert alert-primary" role="alert">
-            <h2>Total Stock Consumed <br>&#8377;: {{totalConsumedCost | number :
+            <h2>Total Stock Consumed <br>&#8377;: {{totalConsumedCost===0?'loading...':totalConsumedCost | number :
               '1.2-2'}}</h2>
             <div class="text-end ">
+              
               <br>
               <button type="button" class="btn btn-primary" routerLink="/job-wise-consumption-reports">View
                 Details</button>

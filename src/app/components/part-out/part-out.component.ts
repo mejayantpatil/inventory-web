@@ -9,11 +9,11 @@ import * as XLSX from 'xlsx'
 import { VehicleService } from 'src/app/services/vehicle.service';
 import { CardService } from 'src/app/services/cards.service';
 @Component({
-  selector: 'app-jobs',
-  templateUrl: './jobs.component.html',
-  styleUrls: ['./jobs.component.scss']
+  selector: 'app-part-out',
+  templateUrl: './part-out.component.html',
+  styleUrls: ['./part-out.component.scss']
 })
-export class JobsComponent {
+export class PartOutComponent {
   private fileName: string = 'Jobs Data ' + new Date().toISOString().substring(0, 10) + '.xlsx';
   public data: any[] = [];
   public Job: any = {};
@@ -37,7 +37,6 @@ export class JobsComponent {
   public jobIDandCardMap: any = {}
   public vehicles: any = [];
   public activeCards: any = [];
-  public selectedFYear: string = '2025';
   @ViewChild('closeModal') closeModal: any
   @ViewChild('mySelect') mySelect: any;
   constructor(private jobService: JobService,
@@ -70,11 +69,6 @@ export class JobsComponent {
 
   }
 
-  setFYear() {
-    // this.selectedFYear = year;
-    this.getAllJobs();
-  }
-
   getActiveCards() {
     this.cardService.getCards().subscribe((res: any) => {
       this.activeCards = res;
@@ -100,52 +94,26 @@ export class JobsComponent {
 
   getAllJobs() {
     this.spinner.showSpinner();
-    if (this.selectedFYear != '') {
-      const startDate = this.selectedFYear + '-04-01';
-      const endDate = (parseInt(this.selectedFYear) + 1) + '-03-31';
-      this.jobService.getJobByDateRage(startDate, endDate).subscribe((res: any) => {
-        this.spinner.hideSpinner();
-        const data: any = [];
-        this.originalData = res;
-        res.forEach((i: any) => {
-          let arr = {}
-          i.cardData.map((c: any, index: number) => {
-            if (index > 0) return;
-            arr = { _id: i._id, jobCardNo: i.jobCardNo, ...c };
-            data.push(arr);
-          })
+    this.jobService.getJobs().subscribe((res: any) => {
+      this.spinner.hideSpinner();
+      const data: any = [];
+      this.originalData = res;
+      res.forEach((i: any) => {
+        let arr = {}
+        i.cardData.map((c: any, index: number) => {
+          if (index > 0) return;
+          arr = { _id: i._id, jobCardNo: i.jobCardNo, ...c };
+          data.push(arr);
         })
-        data.sort((a: Job, b: Job) => {
-          const aa = parseInt(a.jobCardNo)
-          const bb = parseInt(b.jobCardNo)
-          return bb - aa;
-        });
-        this.Jobs = data;
-        this.data = data;
+      })
+      data.sort((a: Job, b: Job) => {
+        const aa = parseInt(a.jobCardNo)
+        const bb = parseInt(b.jobCardNo)
+        return bb - aa;
       });
-      return;
-    } else {
-      this.jobService.getJobs().subscribe((res: any) => {
-        this.spinner.hideSpinner();
-        const data: any = [];
-        this.originalData = res;
-        res.forEach((i: any) => {
-          let arr = {}
-          i.cardData.map((c: any, index: number) => {
-            if (index > 0) return;
-            arr = { _id: i._id, jobCardNo: i.jobCardNo, ...c };
-            data.push(arr);
-          })
-        })
-        data.sort((a: Job, b: Job) => {
-          const aa = parseInt(a.jobCardNo)
-          const bb = parseInt(b.jobCardNo)
-          return bb - aa;
-        });
-        this.Jobs = data;
-        this.data = data;
-      });
-    }
+      this.Jobs = data;
+      this.data = data;
+    });
   }
 
   initializeForm() {
